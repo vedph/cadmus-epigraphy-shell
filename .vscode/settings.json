@@ -1,0 +1,17 @@
+{
+    "workbench.colorCustomizations": {
+        "[*Dark*]": {
+            "progressBar.background": "#0D9373",
+            "notificationsInfoIcon.foreground": "#0D9373",
+            "editor.selectionBackground": "#0D937333"
+        },
+        "[*Light*]": {
+            "progressBar.background": "#0D9373",
+            "notificationsInfoIcon.foreground": "#0D9373",
+            "editor.selectionBackground": "#0D937333"
+        },
+        "activityBar.background": "#242D43",
+        "titleBar.activeBackground": "#323F5E",
+        "titleBar.activeForeground": "#F9FAFC"
+    }
+}
