@@ -161,27 +161,14 @@
         </mat-tab>
 
         <!-- FIG TAB -->
-        <mat-tab label="figurative" *ngIf="figTypeEntries?.length || frameEntries?.length || figFlags?.length">
-          <!-- figType, fraType -->
-          <div class="form-row">
-            <!-- figType (bound) -->
-            <mat-form-field *ngIf="figTypeEntries?.length">
-              <mat-label>fig.type</mat-label>
-              <mat-select [formControl]="figType">
-                <mat-option *ngFor="let e of figTypeEntries" [value]="e.id">{{
-                  e.value
-                }}</mat-option>
-              </mat-select>
-              <mat-error
-                *ngIf="
-                  $any(figType).errors?.required &&
-                  (figType.dirty || figType.touched)
-                "
-                >fig.type required</mat-error
-              >
-            </mat-form-field>
-
-            <!-- frameType (bound) -->
+        <mat-tab
+          label="figurative"
+          *ngIf="
+            figTypeEntries?.length || frameEntries?.length || figFlags?.length
+          "
+        >
+          <!-- frameType (bound) -->
+          <div>
             <mat-form-field *ngIf="frameEntries?.length">
               <mat-label>frame</mat-label>
               <mat-select [formControl]="frameType">
@@ -192,15 +179,40 @@
             </mat-form-field>
           </div>
 
-          <!-- figFeatures -->
-          <fieldset *ngIf="figFlags?.length">
-            <legend>fig.features</legend>
-            <cadmus-ui-flags-picker
-              [flags]="figFlags"
-              [selectedIds]="initialFigFeatures"
-              (selectedIdsChange)="onFigIdsChange($event)"
-            ></cadmus-ui-flags-picker>
-          </fieldset>
+          <!-- figType, fraType -->
+          <div
+            style="
+              display: flex;
+              gap: 8px;
+              align-items: flex-start;
+              flex-wrap: wrap;
+            "
+          >
+            <!-- figType -->
+            <fieldset>
+              <legend>figure type</legend>
+              <div id="fig-type">
+                {{ figType.value?.value }}
+              </div>
+              <cadmus-thesaurus-tree
+                *ngIf="figTypeEntries?.length"
+                [entries]="figTypeEntries"
+                rootLabel="fig.types"
+                [renderLabel]="renderLabel"
+                (entryChange)="onFigTypeChange($event)"
+              ></cadmus-thesaurus-tree>
+            </fieldset>
+
+            <!-- figFeatures -->
+            <fieldset *ngIf="figFlags?.length">
+              <legend>fig.features</legend>
+              <cadmus-ui-flags-picker
+                [flags]="figFlags"
+                [selectedIds]="initialFigFeatures"
+                (selectedIdsChange)="onFigIdsChange($event)"
+              ></cadmus-ui-flags-picker>
+            </fieldset>
+          </div>
         </mat-tab>
       </mat-tab-group>
     </mat-card-content>

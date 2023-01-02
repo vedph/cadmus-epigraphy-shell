@@ -9,7 +9,11 @@ import {
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
 import { DecoratedCount } from '@myrmidon/cadmus-refs-decorated-counts';
-import { EditedObject, ModelEditorComponentBase } from '@myrmidon/cadmus-ui';
+import {
+  EditedObject,
+  ModelEditorComponentBase,
+  renderLabelFromLastColon,
+} from '@myrmidon/cadmus-ui';
 import { Flag } from '@myrmidon/cadmus-ui-flags-picker';
 import { NgToolsValidators } from '@myrmidon/ng-tools';
 
@@ -38,7 +42,7 @@ export class EpiWritingPartComponent
   public tool: FormControl<string | null>;
   public frameType: FormControl<string | null>;
   public counts: FormControl<DecoratedCount[]>;
-  public figType: FormControl<string | null>;
+  public figType: FormControl<ThesaurusEntry | null>;
   public figFeatures: FormControl<string[]>;
   public scriptFeatures: FormControl<string[]>;
   public languages: FormControl<string[]>;
@@ -105,7 +109,7 @@ export class EpiWritingPartComponent
     this.tool = formBuilder.control(null, Validators.maxLength(50));
     this.frameType = formBuilder.control(null, Validators.maxLength(50));
     this.counts = formBuilder.control([], { nonNullable: true });
-    this.figType = formBuilder.control(null, Validators.maxLength(50));
+    this.figType = formBuilder.control(null);
     this.figFeatures = formBuilder.control([], { nonNullable: true });
     this.scriptFeatures = formBuilder.control([], { nonNullable: true });
     this.languages = formBuilder.control([], {
@@ -255,7 +259,9 @@ export class EpiWritingPartComponent
     this.technique.setValue(part.technique || null);
     this.tool.setValue(part.tool || null);
     this.frameType.setValue(part.frameType || null);
-    this.figType.setValue(part.figType || null);
+    this.figType.setValue(
+      this.figTypeEntries?.find((e) => e.id === part.figType) || null
+    );
     this.languages.setValue(part.languages || []);
     this.hasPoetry.setValue(part.hasPoetry || false);
 
@@ -286,7 +292,7 @@ export class EpiWritingPartComponent
     part.tool = this.tool.value?.trim();
     part.frameType = this.frameType.value?.trim();
     part.counts = this.counts.value?.length ? this.counts.value : undefined;
-    part.figType = this.figType.value?.trim();
+    part.figType = this.figType.value?.id;
     part.figFeatures = this.figFeatures.value.length
       ? this.figFeatures.value
       : undefined;
@@ -298,6 +304,14 @@ export class EpiWritingPartComponent
     part.metres = this.metres.value?.length ? this.metres.value : undefined;
 
     return part;
+  }
+
+  public onFigTypeChange(entry: ThesaurusEntry): void {
+    this.figType.setValue(entry);
+  }
+
+  public renderLabel(label: string): string {
+    return renderLabelFromLastColon(label);
   }
 
   public onCountsChange(counts: DecoratedCount[]): void {

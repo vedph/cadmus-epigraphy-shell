@@ -12,3 +12,9 @@ fieldset {
 .form-row * {
   flex: 0 0 auto;
 }
+#fig-type {
+  border: 1px solid silver;
+  border-radius: 4px;
+  padding: 4px;
+  margin-bottom: 6px;
+}
