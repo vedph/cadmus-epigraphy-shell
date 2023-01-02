@@ -63,6 +63,7 @@ import { AuthJwtAdminModule } from '@myrmidon/auth-jwt-admin';
 import { CadmusRefsDocReferencesModule } from '@myrmidon/cadmus-refs-doc-references';
 import { CadmusRefsHistoricalDateModule } from '@myrmidon/cadmus-refs-historical-date';
 import { CadmusRefsAssertedIdsModule } from '@myrmidon/cadmus-refs-asserted-ids';
+import { CadmusUiFlagsPickerModule } from '@myrmidon/cadmus-ui-flags-picker';
 
 // cadmus
 import { CadmusApiModule } from '@myrmidon/cadmus-api';
@@ -167,6 +168,7 @@ export function initElfDevTools(actions: Actions) {
     CadmusRefsDocReferencesModule,
     CadmusRefsHistoricalDateModule,
     CadmusRefsAssertedIdsModule,
+    CadmusUiFlagsPickerModule,
     // cadmus
     CadmusApiModule,
     CadmusCoreModule,

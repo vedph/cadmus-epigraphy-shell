@@ -115,7 +115,15 @@ const routes: Routes = [
       ),
     canActivate: [AuthJwtGuardService],
   },
-  // TODO: project-specific parts here...
+  // epigraphy
+  {
+    path: 'items/:iid/epigraphy',
+    loadChildren: () =>
+      import('@myrmidon/cadmus-part-epigraphy-pg').then(
+        (module) => module.CadmusPartEpigraphyPgModule
+      ),
+    canActivate: [AuthJwtGuardService],
+  },
   // fallback
   { path: '**', component: HomeComponent },
 ];

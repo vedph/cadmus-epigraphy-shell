@@ -3,6 +3,12 @@
   "compileOnSave": false,
   "compilerOptions": {
     "paths": {
+      "@myrmidon/cadmus-fr-epigraphy-ligatures": [
+        "dist/myrmidon/cadmus-fr-epigraphy-ligatures"
+      ],
+      "@myrmidon/cadmus-part-epigraphy-pg": [
+        "dist/myrmidon/cadmus-part-epigraphy-pg"
+      ],
       "@myrmidon/cadmus-part-epigraphy-support": [
         "dist/myrmidon/cadmus-part-epigraphy-support"
       ],

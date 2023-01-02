@@ -1,0 +1,67 @@
+<form [formGroup]="form" (submit)="save()">
+  <mat-card>
+    <mat-card-header>
+      <div mat-card-avatar>
+        <mat-icon>textsms</mat-icon>
+      </div>
+      <mat-card-title>Epigraphic Ligatures Fragment </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- types -->
+      <div>
+        <cadmus-ui-flags-picker
+          [selectedIds]="initialTypes"
+          [flags]="typeFlags"
+          [numbering]="true"
+          [toolbar]="true"
+          (selectedIdsChange)="onIdsChange($event)"
+        >
+        </cadmus-ui-flags-picker>
+      </div>
+
+      <div class="form-row">
+        <!-- eid -->
+        <mat-form-field>
+          <mat-label>EID</mat-label>
+          <input matInput [formControl]="eid" />
+          <mat-error
+            *ngIf="$any(eid).errors?.maxLength && (eid.dirty || eid.touched)"
+            >EID too long</mat-error
+          >
+        </mat-form-field>
+
+        <!-- group ID -->
+        <mat-form-field>
+          <mat-label>group ID</mat-label>
+          <input matInput [formControl]="groupId" />
+          <mat-error
+            *ngIf="
+              $any(groupId).errors?.maxLength &&
+              (groupId.dirty || groupId.touched)
+            "
+            >group ID too long</mat-error
+          >
+        </mat-form-field>
+      </div>
+
+      <!-- note -->
+      <mat-form-field class="long-text">
+        <mat-label>note</mat-label>
+        <textarea matInput [formControl]="note"></textarea>
+        <mat-error
+          *ngIf="$any(note).errors?.maxLength && (note.dirty || note.touched)"
+          >note too long</mat-error
+        >
+      </mat-form-field>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <cadmus-close-save-buttons
+        [form]="form"
+        [noSave]="userLevel < 2"
+        (closeRequest)="close()"
+      ></cadmus-close-save-buttons>
+    </mat-card-actions>
+  </mat-card>
+</form>

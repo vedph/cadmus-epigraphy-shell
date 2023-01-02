@@ -159,6 +159,72 @@
           }
         }
       }
+    },
+    "@myrmidon/cadmus-fr-epigraphy-ligatures": {
+      "projectType": "library",
+      "root": "projects/myrmidon/cadmus-fr-epigraphy-ligatures",
+      "sourceRoot": "projects/myrmidon/cadmus-fr-epigraphy-ligatures/src",
+      "prefix": "cadmus",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/myrmidon/cadmus-fr-epigraphy-ligatures/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/myrmidon/cadmus-fr-epigraphy-ligatures/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/myrmidon/cadmus-fr-epigraphy-ligatures/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "projects/myrmidon/cadmus-fr-epigraphy-ligatures/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
+    },
+    "@myrmidon/cadmus-part-epigraphy-pg": {
+      "projectType": "library",
+      "root": "projects/myrmidon/cadmus-part-epigraphy-pg",
+      "sourceRoot": "projects/myrmidon/cadmus-part-epigraphy-pg/src",
+      "prefix": "cadmus",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/myrmidon/cadmus-part-epigraphy-pg/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/myrmidon/cadmus-part-epigraphy-pg/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/myrmidon/cadmus-part-epigraphy-pg/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "projects/myrmidon/cadmus-part-epigraphy-pg/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
     }
   }
 }

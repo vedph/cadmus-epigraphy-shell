@@ -21,9 +21,13 @@ import {
   ORTHOGRAPHY_FRAGMENT_TYPEID,
 } from '@myrmidon/cadmus-part-philology-ui';
 import { PartEditorKeys } from '@myrmidon/cadmus-core';
+import { EPI_SUPPORT_PART_TYPEID } from '@myrmidon/cadmus-part-epigraphy-support';
+import { EPI_WRITING_PART_TYPEID } from '@myrmidon/cadmus-part-epigraphy-writing';
+import { EPI_LIGATURES_FRAGMENT_TYPEID } from '@myrmidon/cadmus-fr-epigraphy-ligatures';
 
 const GENERAL = 'general';
 const PHILOLOGY = 'philology';
+const EPIGRAPHY = 'epigraphy';
 const TOKEN_TEXT_LAYER_PART_TYPEID = 'it.vedph.token-text-layer';
 
 /**
@@ -33,6 +37,7 @@ const TOKEN_TEXT_LAYER_PART_TYPEID = 'it.vedph.token-text-layer';
  * with the mappings between fragment type IDs and their editor keys.
  */
 export const PART_EDITOR_KEYS: PartEditorKeys = {
+  // general
   [BIBLIOGRAPHY_PART_TYPEID]: {
     part: GENERAL,
   },
@@ -75,23 +80,25 @@ export const PART_EDITOR_KEYS: PartEditorKeys = {
   [TOKEN_TEXT_PART_TYPEID]: {
     part: GENERAL,
   },
+  // epigraphy
+  [EPI_SUPPORT_PART_TYPEID]: {
+    part: EPIGRAPHY,
+  },
+  [EPI_WRITING_PART_TYPEID]: {
+    part: EPIGRAPHY,
+  },
   // layer parts
   [TOKEN_TEXT_LAYER_PART_TYPEID]: {
     part: GENERAL,
     fragments: {
+      // general
       [CHRONOLOGY_FRAGMENT_TYPEID]: GENERAL,
       [COMMENT_FRAGMENT_TYPEID]: GENERAL,
+      // philology
       [APPARATUS_FRAGMENT_TYPEID]: PHILOLOGY,
       [ORTHOGRAPHY_FRAGMENT_TYPEID]: PHILOLOGY,
-    },
-  },
-  [TILED_TEXT_LAYER_PART_TYPEID]: {
-    part: GENERAL,
-    fragments: {
-      [CHRONOLOGY_FRAGMENT_TYPEID]: GENERAL,
-      [COMMENT_FRAGMENT_TYPEID]: GENERAL,
-      [APPARATUS_FRAGMENT_TYPEID]: PHILOLOGY,
-      [ORTHOGRAPHY_FRAGMENT_TYPEID]: PHILOLOGY,
+      // epigraphy
+      [EPI_LIGATURES_FRAGMENT_TYPEID]: EPIGRAPHY,
     },
   },
 };
