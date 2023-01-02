@@ -21,7 +21,7 @@ import { EpiSupportPart, EPI_SUPPORT_PART_TYPEID } from '../epi-support-part';
  * physical-size-dim-tags (all optional).
  */
 @Component({
-  selector: 'cadmus-gisarc-epi-support-part',
+  selector: 'cadmus-epi-support-part',
   templateUrl: './epi-support-part.component.html',
   styleUrls: ['./epi-support-part.component.css'],
 })

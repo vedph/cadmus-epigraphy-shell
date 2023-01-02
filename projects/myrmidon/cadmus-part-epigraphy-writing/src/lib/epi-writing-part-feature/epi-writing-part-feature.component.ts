@@ -6,7 +6,7 @@ import { EditPartFeatureBase, PartEditorService } from '@myrmidon/cadmus-state';
 import { ItemService, ThesaurusService } from '@myrmidon/cadmus-api';
 
 @Component({
-  selector: 'cadmus-gisarc-epi-writing-part-feature',
+  selector: 'cadmus-epi-writing-part-feature',
   templateUrl: './epi-writing-part-feature.component.html',
   styleUrls: ['./epi-writing-part-feature.component.css'],
 })

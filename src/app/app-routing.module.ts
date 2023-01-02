@@ -97,6 +97,15 @@ const routes: Routes = [
       ),
     canActivate: [AuthJwtGuardService],
   },
+  // epigraphy
+  {
+    path: 'items/:iid/epigraphy',
+    loadChildren: () =>
+      import('@myrmidon/cadmus-part-epigraphy-pg').then(
+        (module) => module.CadmusPartEpigraphyPgModule
+      ),
+    canActivate: [AuthJwtGuardService],
+  },
   // cadmus - graph
   {
     path: 'graph',
@@ -112,15 +121,6 @@ const routes: Routes = [
     loadChildren: () =>
       import('@myrmidon/cadmus-preview-pg').then(
         (module) => module.CadmusPreviewPgModule
-      ),
-    canActivate: [AuthJwtGuardService],
-  },
-  // epigraphy
-  {
-    path: 'items/:iid/epigraphy',
-    loadChildren: () =>
-      import('@myrmidon/cadmus-part-epigraphy-pg').then(
-        (module) => module.CadmusPartEpigraphyPgModule
       ),
     canActivate: [AuthJwtGuardService],
   },

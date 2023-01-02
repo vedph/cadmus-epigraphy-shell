@@ -22,7 +22,7 @@ export interface EpiWritingPart extends Part {
 /**
  * The type ID used to identify the EpiWritingPart type.
  */
-export const EPI_WRITING_PART_TYPEID = 'it.vedph.gisarc.epi-writing';
+export const EPI_WRITING_PART_TYPEID = 'it.vedph.epigraphy.writing';
 
 /**
  * JSON schema for the EpiWriting part.
@@ -30,7 +30,7 @@ export const EPI_WRITING_PART_TYPEID = 'it.vedph.gisarc.epi-writing';
  */
 export const EPI_WRITING_PART_SCHEMA = {
   $schema: 'http://json-schema.org/draft-07/schema#',
-  $id: 'www.vedph.it/cadmus/parts/gisarc/' + EPI_WRITING_PART_TYPEID + '.json',
+  $id: 'www.vedph.it/cadmus/parts/epigraphy/' + EPI_WRITING_PART_TYPEID + '.json',
   type: 'object',
   title: 'EpiWritingPart',
   required: [

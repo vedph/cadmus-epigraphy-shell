@@ -6,7 +6,7 @@ import { EditPartFeatureBase, PartEditorService } from '@myrmidon/cadmus-state';
 import { ItemService, ThesaurusService } from '@myrmidon/cadmus-api';
 
 @Component({
-  selector: 'cadmus-gisarc-epi-support-part-feature',
+  selector: 'cadmus-epi-support-part-feature',
   templateUrl: './epi-support-part-feature.component.html',
   styleUrls: ['./epi-support-part-feature.component.css'],
 })

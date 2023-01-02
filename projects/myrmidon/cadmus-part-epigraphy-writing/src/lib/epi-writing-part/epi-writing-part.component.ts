@@ -24,7 +24,7 @@ import { EpiWritingPart, EPI_WRITING_PART_TYPEID } from '../epi-writing-part';
  * decorated-count-ids, decorated-count-tags.
  */
 @Component({
-  selector: 'cadmus-gisarc-epi-writing-part',
+  selector: 'cadmus-epi-writing-part',
   templateUrl: './epi-writing-part.component.html',
   styleUrls: ['./epi-writing-part.component.css'],
 })
