@@ -76,7 +76,7 @@ services:
       - cadmus-network
 
   cadmus-web:
-    image: vedph2020/cadmus-epigraphy-api:0.0.1
+    image: vedph2020/cadmus-epigraphy-shell:0.0.1
     ports:
       - 4200:80
     depends_on:
