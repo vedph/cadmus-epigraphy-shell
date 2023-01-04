@@ -18,6 +18,10 @@ import {
   EpiWritingPartFeatureComponent,
   EPI_WRITING_PART_TYPEID,
 } from '@myrmidon/cadmus-part-epigraphy-writing';
+import {
+  EpiLigaturesFragmentFeatureComponent,
+  EPI_LIGATURES_FRAGMENT_TYPEID,
+} from '@myrmidon/cadmus-fr-epigraphy-ligatures';
 
 export const RouterModuleForChild = RouterModule.forChild([
   {
@@ -30,6 +34,13 @@ export const RouterModuleForChild = RouterModule.forChild([
     path: `${EPI_WRITING_PART_TYPEID}/:pid`,
     pathMatch: 'full',
     component: EpiWritingPartFeatureComponent,
+    canDeactivate: [PendingChangesGuard],
+  },
+  // fragments
+  {
+    path: `fragment/:pid/${EPI_LIGATURES_FRAGMENT_TYPEID}/:loc`,
+    pathMatch: 'full',
+    component: EpiLigaturesFragmentFeatureComponent,
     canDeactivate: [PendingChangesGuard],
   },
 ]);

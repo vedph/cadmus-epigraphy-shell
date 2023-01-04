@@ -20,12 +20,12 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-              "src/env.js",
               "src/assets",
+              "src/env.js",
               {
                 "glob": "**/*",
                 "input": "node_modules/monaco-editor",
-                "output": "/assets/monaco/"
+                "output": "assets/monaco-editor"
               }
             ],
             "styles": [
