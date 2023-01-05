@@ -14,3 +14,7 @@ Quick Docker image build:
 1. `npm run build-lib`
 2. update version in `env.js` and `ng build`
 3. `docker build . -t vedph2020/cadmus-epigraphy-shell:0.0.1 -t vedph2020/cadmus-epigraphy-shell:latest` (replace with the current version).
+
+## History
+
+- 2023-01-05: added MapBoxGL for asserted locations.

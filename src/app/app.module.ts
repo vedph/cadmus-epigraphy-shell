@@ -47,6 +47,8 @@ import { Actions } from '@ngneat/effects-ng';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
 // ngx-markdown
 import { MarkdownModule } from 'ngx-markdown';
+// mapbox
+import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
 
 // myrmidon
 import { NgxDirtyCheckModule } from '@myrmidon/ngx-dirty-check';
@@ -156,6 +158,7 @@ export function initElfDevTools(actions: Actions) {
     // vendors
     MonacoEditorModule.forRoot(),
     MarkdownModule.forRoot(),
+    NgxMapboxGLModule,
     // myrmidon
     NgToolsModule,
     NgMatToolsModule,
