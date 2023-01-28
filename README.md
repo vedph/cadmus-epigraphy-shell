@@ -17,4 +17,5 @@ Quick Docker image build:
 
 ## History
 
+- 2023-01-28: updated packages.
 - 2023-01-05: added MapBoxGL for asserted locations.
