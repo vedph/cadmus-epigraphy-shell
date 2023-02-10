@@ -17,5 +17,9 @@ Quick Docker image build:
 
 ## History
 
+- 2023-02-10: updated Angular and packages.
+
+### 0.0.1
+
 - 2023-01-28: updated packages.
 - 2023-01-05: added MapBoxGL for asserted locations.
