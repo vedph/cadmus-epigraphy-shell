@@ -17,6 +17,7 @@ Quick Docker image build:
 
 ## History
 
+- 2023-02-11: integrated new flags component.
 - 2023-02-10: updated Angular and packages.
 
 ### 0.0.1

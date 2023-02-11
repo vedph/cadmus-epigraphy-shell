@@ -116,7 +116,7 @@
           <div *ngIf="cidEntries?.length">
             <cadmus-refs-decorated-counts
               [idEntries]="cidEntries"
-              [counts]="initialCounts"
+              [counts]="counts.value"
               (countsChange)="onCountsChange($event)"
             ></cadmus-refs-decorated-counts>
           </div>
@@ -128,21 +128,21 @@
           <fieldset>
             <legend>language(s)</legend>
             <cadmus-ui-flags-picker
-              [flags]="lngFlags"
-              [selectedIds]="initialLanguages"
-              (selectedIdsChange)="onLngIdsChange($event)"
+              [flags]="languageFlags$ | async"
+              (flagsChange)="onLanguageFlagsChange($event)"
             ></cadmus-ui-flags-picker>
           </fieldset>
 
           <!-- scriptFeatures -->
-          <fieldset *ngIf="scrFlags?.length">
-            <legend>script features</legend>
-            <cadmus-ui-flags-picker
-              [flags]="scrFlags"
-              [selectedIds]="initialScriptFeatures"
-              (selectedIdsChange)="onScriptIdsChange($event)"
-            ></cadmus-ui-flags-picker>
-          </fieldset>
+          <div *ngIf="scriptFlags$ | async as flags">
+            <fieldset *ngIf="flags?.length">
+              <legend>script features</legend>
+              <cadmus-ui-flags-picker
+                [flags]="flags"
+                (flagsChange)="onScriptFeatFlagsChange($event)"
+              ></cadmus-ui-flags-picker>
+            </fieldset>
+          </div>
 
           <!-- hasPoetry -->
           <div>
@@ -150,21 +150,24 @@
           </div>
 
           <!-- metres -->
-          <fieldset *ngIf="mtrFlags?.length">
-            <legend>metres</legend>
-            <cadmus-ui-flags-picker
-              [flags]="mtrFlags"
-              [selectedIds]="initialMetres"
-              (selectedIdsChange)="onMetreIdsChange($event)"
-            ></cadmus-ui-flags-picker>
-          </fieldset>
+          <div *ngIf="metreFlags$ | async as flags">
+            <fieldset *ngIf="flags?.length">
+              <legend>metres</legend>
+              <cadmus-ui-flags-picker
+                [flags]="flags"
+                (flagsChange)="onMetreFlagsChange($event)"
+              ></cadmus-ui-flags-picker>
+            </fieldset>
+          </div>
         </mat-tab>
 
         <!-- FIG TAB -->
         <mat-tab
           label="figurative"
           *ngIf="
-            figTypeEntries?.length || frameEntries?.length || figFlags?.length
+            figTypeEntries?.length ||
+            frameEntries?.length ||
+            (figureFlags$ | async)
           "
         >
           <!-- frameType (bound) -->
@@ -204,14 +207,15 @@
             </fieldset>
 
             <!-- figFeatures -->
-            <fieldset *ngIf="figFlags?.length">
-              <legend>fig.features</legend>
-              <cadmus-ui-flags-picker
-                [flags]="figFlags"
-                [selectedIds]="initialFigFeatures"
-                (selectedIdsChange)="onFigIdsChange($event)"
-              ></cadmus-ui-flags-picker>
-            </fieldset>
+            <div *ngIf="figureFlags$ | async as flags">
+              <fieldset *ngIf="flags?.length">
+                <legend>fig.features</legend>
+                <cadmus-ui-flags-picker
+                  [flags]="flags"
+                  (flagsChange)="onFigFeatFlagsChange($event)"
+                ></cadmus-ui-flags-picker>
+              </fieldset>
+            </div>
           </div>
         </mat-tab>
       </mat-tab-group>

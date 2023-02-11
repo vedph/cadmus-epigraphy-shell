@@ -11,11 +11,10 @@
       <!-- types -->
       <div>
         <cadmus-ui-flags-picker
-          [selectedIds]="initialTypes"
-          [flags]="typeFlags"
+          [flags]="typeFlags$ | async"
           [numbering]="true"
           [toolbar]="true"
-          (selectedIdsChange)="onIdsChange($event)"
+          (flagsChange)="onTypeFlagsChange($event)"
         >
         </cadmus-ui-flags-picker>
       </div>

@@ -10,9 +10,17 @@ import {
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
 import { EditedObject, ModelEditorComponentBase } from '@myrmidon/cadmus-ui';
-import { Flag } from '@myrmidon/cadmus-ui-flags-picker';
+import { Flag, FlagsPickerAdapter } from '@myrmidon/cadmus-ui-flags-picker';
 import { NgToolsValidators } from '@myrmidon/ng-tools';
+import { Observable } from 'rxjs';
 import { EpiLigaturesFragment } from '../epi-ligatures-fragment';
+
+function entryToFlag(entry: ThesaurusEntry): Flag {
+  return {
+    id: entry.id,
+    label: entry.value,
+  };
+}
 
 /**
  * EpiLigatures fragment editor component.
@@ -27,19 +35,35 @@ export class EpiLigaturesFragmentComponent
   extends ModelEditorComponentBase<EpiLigaturesFragment>
   implements OnInit
 {
-  public types: FormControl<string[]>;
+  private readonly _flagAdapter: FlagsPickerAdapter;
+  private _typeEntries: ThesaurusEntry[];
+
+  public types: FormControl<Flag[]>;
   public eid: FormControl<string | null>;
   public groupId: FormControl<string | null>;
   public note: FormControl<string | null>;
 
-  public typeEntries: ThesaurusEntry[] | undefined;
-  public typeFlags: Flag[];
-  public initialTypes: string[];
+  public set typeEntries(value: ThesaurusEntry[] | undefined | null) {
+    if (this._typeEntries === value) {
+      return;
+    }
+    this._typeEntries = value || [];
+    this._typeEntries = value || [];
+    this._flagAdapter.setSlotFlags('types', this._typeEntries.map(entryToFlag));
+  }
+  public get typeEntries(): ThesaurusEntry[] | undefined | null {
+    return this._typeEntries;
+  }
+
+  // flags
+  public typeFlags$: Observable<Flag[]>;
 
   constructor(authService: AuthJwtService, formBuilder: FormBuilder) {
     super(authService, formBuilder);
-    this.typeFlags = [];
-    this.initialTypes = [];
+    // flags
+    this._typeEntries = [];
+    this._flagAdapter = new FlagsPickerAdapter();
+    this.typeFlags$ = this._flagAdapter.selectFlags('types');
     // form
     this.types = formBuilder.control([], {
       validators: NgToolsValidators.strictMinLengthValidator(1),
@@ -67,16 +91,8 @@ export class EpiLigaturesFragmentComponent
     const key = 'epi-ligature-types';
     if (this.hasThesaurus(key)) {
       this.typeEntries = thesauri[key].entries;
-      this.typeFlags =
-        this.typeEntries?.map((e) => {
-          return {
-            id: e.id,
-            label: e.value,
-          } as Flag;
-        }) || [];
     } else {
       this.typeEntries = undefined;
-      this.typeFlags = [];
     }
   }
 
@@ -86,15 +102,16 @@ export class EpiLigaturesFragmentComponent
       return;
     }
 
-    this.initialTypes = fr.types;
+    this._flagAdapter.setSlotChecks('types', fr.types);
     this.eid.setValue(fr.eid || null);
     this.groupId.setValue(fr.groupId || null);
     this.note.setValue(fr.note || null);
     this.form.markAsPristine();
   }
 
-  public onIdsChange(ids: string[]): void {
-    this.types.setValue(ids);
+  public onTypeFlagsChange(flags: Flag[]): void {
+    this._flagAdapter.setSlotFlags('types', flags, true);
+    this.types.setValue(flags);
     this.types.markAsDirty();
     this.types.updateValueAndValidity();
   }
@@ -114,7 +131,7 @@ export class EpiLigaturesFragmentComponent
   protected getValue(): EpiLigaturesFragment {
     const fr = this.getEditedFragment() as EpiLigaturesFragment;
 
-    fr.types = this.types.value;
+    fr.types = this._flagAdapter.getCheckedFlagIds('types');
     fr.eid = this.eid.value?.trim();
     fr.groupId = this.groupId.value?.trim();
     fr.note = this.note.value?.trim();

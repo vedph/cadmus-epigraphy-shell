@@ -14,10 +14,18 @@ import {
   ModelEditorComponentBase,
   renderLabelFromLastColon,
 } from '@myrmidon/cadmus-ui';
-import { Flag } from '@myrmidon/cadmus-ui-flags-picker';
+import { Flag, FlagsPickerAdapter } from '@myrmidon/cadmus-ui-flags-picker';
 import { NgToolsValidators } from '@myrmidon/ng-tools';
+import { Observable } from 'rxjs';
 
 import { EpiWritingPart, EPI_WRITING_PART_TYPEID } from '../epi-writing-part';
+
+function entryToFlag(entry: ThesaurusEntry): Flag {
+  return {
+    id: entry.id,
+    label: entry.value,
+  };
+}
 
 /**
  * EpiWriting part editor component.
@@ -36,6 +44,12 @@ export class EpiWritingPartComponent
   extends ModelEditorComponentBase<EpiWritingPart>
   implements OnInit
 {
+  private readonly _flagAdapter: FlagsPickerAdapter;
+  private _lngEntries: ThesaurusEntry[];
+  private _figFeatEntries: ThesaurusEntry[];
+  private _scriptFeatEntries: ThesaurusEntry[];
+  private _mtrEntries: ThesaurusEntry[];
+
   public system: FormControl<string>;
   public type: FormControl<string>;
   public technique: FormControl<string | null>;
@@ -43,22 +57,16 @@ export class EpiWritingPartComponent
   public frameType: FormControl<string | null>;
   public counts: FormControl<DecoratedCount[]>;
   public figType: FormControl<ThesaurusEntry | null>;
-  public figFeatures: FormControl<string[]>;
-  public scriptFeatures: FormControl<string[]>;
-  public languages: FormControl<string[]>;
+  public figFeatures: FormControl<Flag[]>;
+  public scriptFeatures: FormControl<Flag[]>;
+  public languages: FormControl<Flag[]>;
   public hasPoetry: FormControl<boolean>;
-  public metres: FormControl<string[]>;
+  public metres: FormControl<Flag[]>;
 
-  public lngFlags: Flag[];
-  public figFlags: Flag[];
-  public scrFlags: Flag[];
-  public mtrFlags: Flag[];
-
-  public initialLanguages: string[];
-  public initialFigFeatures: string[];
-  public initialScriptFeatures: string[];
-  public initialMetres: string[];
-  public initialCounts: DecoratedCount[];
+  public languageFlags$: Observable<Flag[]>;
+  public figureFlags$: Observable<Flag[]>;
+  public scriptFlags$: Observable<Flag[]>;
+  public metreFlags$: Observable<Flag[]>;
 
   // epi-writing-systems
   public sysEntries: ThesaurusEntry[] | undefined;
@@ -73,13 +81,58 @@ export class EpiWritingPartComponent
   // epi-writing-fig-types
   public figTypeEntries: ThesaurusEntry[] | undefined;
   // epi-writing-languages
-  public lngEntries: ThesaurusEntry[] | undefined;
+  public get lngEntries(): ThesaurusEntry[] | undefined {
+    return this._lngEntries;
+  }
+  public set lngEntries(value: ThesaurusEntry[] | undefined) {
+    if (this._lngEntries === value) {
+      return;
+    }
+    this._lngEntries = value || [];
+    this._flagAdapter.setSlotFlags(
+      'languages',
+      this._lngEntries.map(entryToFlag)
+    );
+  }
   // epi-writing-fig-features
-  public figFeatEntries: ThesaurusEntry[] | undefined;
+  public get figFeatEntries(): ThesaurusEntry[] | undefined {
+    return this._figFeatEntries;
+  }
+  public set figFeatEntries(value: ThesaurusEntry[] | undefined) {
+    if (this._figFeatEntries === value) {
+      return;
+    }
+    this._figFeatEntries = value || [];
+    this._flagAdapter.setSlotFlags(
+      'figures',
+      this._figFeatEntries.map(entryToFlag)
+    );
+  }
   // epi-writing-script-features
-  public scriptFeatEntries: ThesaurusEntry[] | undefined;
+  public get scriptFeatEntries(): ThesaurusEntry[] | undefined {
+    return this._scriptFeatEntries;
+  }
+  public set scriptFeatEntries(value: ThesaurusEntry[] | undefined) {
+    if (this._scriptFeatEntries === value) {
+      return;
+    }
+    this._scriptFeatEntries = value || [];
+    this._flagAdapter.setSlotFlags(
+      'scripts',
+      this._scriptFeatEntries.map(entryToFlag)
+    );
+  }
   // epi-writing-metres
-  public mtrEntries: ThesaurusEntry[] | undefined;
+  public get mtrEntries(): ThesaurusEntry[] | undefined {
+    return this._mtrEntries;
+  }
+  public set mtrEntries(value: ThesaurusEntry[] | undefined) {
+    if (this._mtrEntries === value) {
+      return;
+    }
+    this._mtrEntries = value || [];
+    this._flagAdapter.setSlotFlags('metres', this._mtrEntries.map(entryToFlag));
+  }
   // decorated-count-ids
   public cidEntries: ThesaurusEntry[] | undefined;
   // decorated-count-tags
@@ -87,15 +140,16 @@ export class EpiWritingPartComponent
 
   constructor(authService: AuthJwtService, formBuilder: FormBuilder) {
     super(authService, formBuilder);
-    this.lngFlags = [];
-    this.figFlags = [];
-    this.scrFlags = [];
-    this.mtrFlags = [];
-    this.initialLanguages = [];
-    this.initialFigFeatures = [];
-    this.initialScriptFeatures = [];
-    this.initialMetres = [];
-    this.initialCounts = [];
+    // flags
+    this._lngEntries = [];
+    this._figFeatEntries = [];
+    this._scriptFeatEntries = [];
+    this._mtrEntries = [];
+    this._flagAdapter = new FlagsPickerAdapter();
+    this.languageFlags$ = this._flagAdapter.selectFlags('languages');
+    this.figureFlags$ = this._flagAdapter.selectFlags('figures');
+    this.scriptFlags$ = this._flagAdapter.selectFlags('scripts');
+    this.metreFlags$ = this._flagAdapter.selectFlags('metres');
     // form
     this.system = formBuilder.control('', {
       validators: [Validators.required, Validators.maxLength(50)],
@@ -141,13 +195,6 @@ export class EpiWritingPartComponent
     });
   }
 
-  private entryToFlag(entry: ThesaurusEntry): Flag {
-    return {
-      id: entry.id,
-      label: entry.value,
-    };
-  }
-
   private updateThesauri(thesauri: ThesauriSet): void {
     let key = 'epi-writing-systems';
     if (this.hasThesaurus(key)) {
@@ -188,34 +235,26 @@ export class EpiWritingPartComponent
     key = 'epi-writing-languages';
     if (this.hasThesaurus(key)) {
       this.lngEntries = thesauri[key].entries;
-      this.lngFlags = this.lngEntries!.map((e) => this.entryToFlag(e));
     } else {
       this.lngEntries = undefined;
-      this.lngFlags = [];
     }
     key = 'epi-writing-fig-features';
     if (this.hasThesaurus(key)) {
       this.figFeatEntries = thesauri[key].entries;
-      this.figFlags = this.figFeatEntries!.map((e) => this.entryToFlag(e));
     } else {
       this.figFeatEntries = undefined;
-      this.figFlags = [];
     }
     key = 'epi-writing-script-features';
     if (this.hasThesaurus(key)) {
       this.scriptFeatEntries = thesauri[key].entries;
-      this.scrFlags = this.scriptFeatEntries!.map((e) => this.entryToFlag(e));
     } else {
       this.scriptFeatEntries = undefined;
-      this.scrFlags = [];
     }
     key = 'epi-writing-metres';
     if (this.hasThesaurus(key)) {
       this.mtrEntries = thesauri[key].entries;
-      this.mtrFlags = this.mtrEntries!.map((e) => this.entryToFlag(e));
     } else {
       this.mtrEntries = undefined;
-      this.mtrFlags = [];
     }
     key = 'decorated-count-ids';
     if (this.hasThesaurus(key)) {
@@ -242,11 +281,6 @@ export class EpiWritingPartComponent
       this.form.reset();
       this.system.setValue(this.getDefaultEntryId(this.sysEntries) || '');
       this.type.setValue(this.getDefaultEntryId(this.typeEntries) || '');
-      this.initialCounts = [];
-      this.initialLanguages = [];
-      this.initialFigFeatures = [];
-      this.initialScriptFeatures = [];
-      this.initialMetres = [];
       return;
     }
 
@@ -262,15 +296,15 @@ export class EpiWritingPartComponent
     this.figType.setValue(
       this.figTypeEntries?.find((e) => e.id === part.figType) || null
     );
-    this.languages.setValue(part.languages || []);
     this.hasPoetry.setValue(part.hasPoetry || false);
-
-    this.initialCounts = part.counts || [];
-    this.initialLanguages = part.languages;
-    this.initialFigFeatures = part.figFeatures || [];
-    this.initialScriptFeatures = part.scriptFeatures || [];
-    this.initialMetres = part.metres || [];
-
+    this.counts.setValue(part.counts || []);
+    // update languages control as it's involved in form's validation
+    this.languages.setValue(
+      this._flagAdapter.setSlotChecks('languages', part.languages)
+    );
+    this._flagAdapter.setSlotChecks('figures', part.figFeatures || []);
+    this._flagAdapter.setSlotChecks('scripts', part.scriptFeatures || []);
+    this._flagAdapter.setSlotChecks('metres', part.metres || []);
     this.form.markAsPristine();
   }
 
@@ -293,16 +327,12 @@ export class EpiWritingPartComponent
     part.frameType = this.frameType.value?.trim();
     part.counts = this.counts.value?.length ? this.counts.value : undefined;
     part.figType = this.figType.value?.id;
-    part.figFeatures = this.figFeatures.value.length
-      ? this.figFeatures.value
-      : undefined;
-    part.scriptFeatures = this.scriptFeatures.value.length
-      ? this.scriptFeatures.value
-      : undefined;
-    part.languages = this.languages.value;
+    part.figFeatures = this._flagAdapter.getOptionalCheckedFlagIds('figures');
+    part.scriptFeatures =
+      this._flagAdapter.getOptionalCheckedFlagIds('scripts');
+    part.languages = this._flagAdapter.getCheckedFlagIds('languages');
     part.hasPoetry = this.hasPoetry.value || undefined;
-    part.metres = this.metres.value?.length ? this.metres.value : undefined;
-
+    part.metres = this._flagAdapter.getOptionalCheckedFlagIds('metres');
     return part;
   }
 
@@ -318,19 +348,27 @@ export class EpiWritingPartComponent
     this.counts.setValue(counts);
   }
 
-  public onLngIdsChange(ids: string[]): void {
-    this.languages.setValue(ids);
+  public onLanguageFlagsChange(flags: Flag[]): void {
+    this.languages.setValue(flags);
+    this.languages.updateValueAndValidity();
+    this.languages.markAsDirty();
   }
 
-  public onFigIdsChange(ids: string[]): void {
-    this.figFeatures.setValue(ids);
+  public onFigFeatFlagsChange(flags: Flag[]): void {
+    this.figFeatures.setValue(flags);
+    this.figFeatures.updateValueAndValidity();
+    this.figFeatures.markAsDirty();
   }
 
-  public onScriptIdsChange(ids: string[]): void {
-    this.scriptFeatures.setValue(ids);
+  public onScriptFeatFlagsChange(flags: Flag[]): void {
+    this.scriptFeatures.setValue(flags);
+    this.scriptFeatures.updateValueAndValidity();
+    this.scriptFeatures.markAsDirty();
   }
 
-  public onMetreIdsChange(ids: string[]): void {
-    this.metres.setValue(ids);
+  public onMetreFlagsChange(flags: Flag[]): void {
+    this.metres.setValue(flags);
+    this.metres.updateValueAndValidity();
+    this.metres.markAsDirty();
   }
 }
