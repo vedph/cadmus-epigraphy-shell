@@ -17,6 +17,9 @@ Quick Docker image build:
 
 ## History
 
+- 2023-03-08:
+  - adding epigraphic formula patterns part.
+  - updated Angular and packages.
 - 2023-02-11: integrated new flags component.
 - 2023-02-10: updated Angular and packages.
 

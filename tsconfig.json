@@ -6,6 +6,9 @@
       "@myrmidon/cadmus-fr-epigraphy-ligatures": [
         "dist/myrmidon/cadmus-fr-epigraphy-ligatures"
       ],
+      "@myrmidon/cadmus-part-epigraphy-formula-patterns": [
+        "dist/myrmidon/cadmus-part-epigraphy-formula-patterns"
+      ],
       "@myrmidon/cadmus-part-epigraphy-pg": [
         "dist/myrmidon/cadmus-part-epigraphy-pg"
       ],
