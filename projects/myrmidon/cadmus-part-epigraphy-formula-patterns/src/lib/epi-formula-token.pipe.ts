@@ -11,7 +11,7 @@ export class EpiFormulaTokenPipe implements PipeTransform {
       return null;
     }
     const sb: string[] = [];
-    sb.push(value.isOptional ? '[' : '[');
+    sb.push(value.isOptional ? '[' : '<');
 
     if (value.tags?.length) {
       sb.push(value.tags.join('.'));
@@ -27,7 +27,7 @@ export class EpiFormulaTokenPipe implements PipeTransform {
     }
 
     if (value.note) {
-      sb.push(`{${value.note}}`);
+      sb.push(` {${value.note}}`);
     }
 
     sb.push(value.isOptional ? ']' : '>');

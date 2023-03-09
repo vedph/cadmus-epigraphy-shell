@@ -1,1 +1,101 @@
-<p>epigraphy-formula-patterns-part works!</p>
+<form [formGroup]="form" (submit)="save()">
+  <mat-card>
+    <mat-card-header>
+      <div mat-card-avatar>
+        <mat-icon>picture_in_picture</mat-icon>
+      </div>
+      <mat-card-title>Epigraphic Formula Patterns Part</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div>
+        <button
+          type="button"
+          mat-flat-button
+          color="primary"
+          (click)="addPattern()"
+        >
+          <mat-icon>add_circle</mat-icon> pattern
+        </button>
+      </div>
+      <table *ngIf="patterns.value?.length">
+        <tbody>
+          <tr
+            *ngFor="
+              let pattern of patterns.value;
+              let i = index;
+              let first = first;
+              let last = last
+            "
+          >
+            <td>
+              <button
+                type="button"
+                mat-icon-button
+                color="primary"
+                matTooltip="Edit this pattern"
+                (click)="editPattern(pattern, i)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                type="button"
+                mat-icon-button
+                matTooltip="Move this pattern up"
+                [disabled]="first"
+                (click)="movePatternUp(i)"
+              >
+                <mat-icon>arrow_upward</mat-icon>
+              </button>
+              <button
+                type="button"
+                mat-icon-button
+                matTooltip="Move this pattern down"
+                [disabled]="last"
+                (click)="movePatternDown(i)"
+              >
+                <mat-icon>arrow_downward</mat-icon>
+              </button>
+              <button
+                type="button"
+                mat-icon-button
+                color="warn"
+                matTooltip="Delete this pattern"
+                (click)="deletePattern(i)"
+              >
+                <mat-icon>remove_circle</mat-icon>
+              </button>
+            </td>
+            <td>
+              <ul>
+                <li *ngFor="let t of pattern.tokens">
+                  {{ t | epiFormulaToken }}
+                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <mat-expansion-panel [disabled]="!edited" [expanded]="edited">
+        <mat-expansion-panel-header
+          >Pattern #{{ editedIndex }}</mat-expansion-panel-header
+        >
+        <cadmus-epi-formula-pattern
+          [langEntries]="langEntries"
+          [tagEntries]="tagEntries"
+          [tokTagEntries]="tokTagEntries"
+          [pattern]="edited"
+          (editorClose)="closePattern()"
+          (patternChange)="savePattern($event)"
+        ></cadmus-epi-formula-pattern>
+      </mat-expansion-panel>
+    </mat-card-content>
+    <mat-card-actions>
+      <cadmus-close-save-buttons
+        [form]="form"
+        [noSave]="userLevel < 2"
+        (closeRequest)="close()"
+      ></cadmus-close-save-buttons>
+    </mat-card-actions>
+  </mat-card>
+</form>

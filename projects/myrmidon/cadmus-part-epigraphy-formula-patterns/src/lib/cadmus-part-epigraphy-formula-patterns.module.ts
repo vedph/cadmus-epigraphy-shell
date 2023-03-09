@@ -33,6 +33,7 @@ import { EpiFormulaPatternsPartComponent } from './epi-formula-patterns-part/epi
 import { EpiFormulaTokenPipe } from './epi-formula-token.pipe';
 import { EpiFormulaPatternComponent } from './epi-formula-pattern/epi-formula-pattern.component';
 import { EpiFormulaTokenComponent } from './epi-formula-token/epi-formula-token.component';
+import { EpiFormulaPatternsPartFeatureComponent } from './epi-formula-patterns-part-feature/epi-formula-patterns-part-feature.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { EpiFormulaTokenComponent } from './epi-formula-token/epi-formula-token.
     EpiFormulaTokenPipe,
     EpiFormulaPatternComponent,
     EpiFormulaTokenComponent,
+    EpiFormulaPatternsPartFeatureComponent,
   ],
   imports: [
     CommonModule,
@@ -77,7 +79,8 @@ import { EpiFormulaTokenComponent } from './epi-formula-token/epi-formula-token.
     EpiFormulaPatternsPartComponent,
     EpiFormulaTokenPipe,
     EpiFormulaPatternComponent,
-    EpiFormulaTokenComponent
+    EpiFormulaTokenComponent,
+    EpiFormulaPatternsPartFeatureComponent
   ],
 })
 export class CadmusPartEpigraphyFormulaPatternsModule {}

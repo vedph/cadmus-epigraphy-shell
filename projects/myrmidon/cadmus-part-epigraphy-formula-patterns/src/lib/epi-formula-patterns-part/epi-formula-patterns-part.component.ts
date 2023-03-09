@@ -33,8 +33,7 @@ export class EpiFormulaPatternsPartComponent
   extends ModelEditorComponentBase<EpiFormulaPatternsPart>
   implements OnInit
 {
-  private _editedIndex: number;
-
+  public editedIndex: number;
   public edited: EpiFormulaPattern | undefined;
 
   // epi-formula-pattern-languages
@@ -52,7 +51,7 @@ export class EpiFormulaPatternsPartComponent
     private _dialogService: DialogService
   ) {
     super(authService, formBuilder);
-    this._editedIndex = -1;
+    this.editedIndex = -1;
     // form
     this.patterns = formBuilder.control([], {
       // at least 1 entry
@@ -130,21 +129,21 @@ export class EpiFormulaPatternsPartComponent
   }
 
   public editPattern(entry: EpiFormulaPattern, index: number): void {
-    this._editedIndex = index;
+    this.editedIndex = index;
     this.edited = entry;
   }
 
   public closePattern(): void {
-    this._editedIndex = -1;
+    this.editedIndex = -1;
     this.edited = undefined;
   }
 
   public savePattern(pattern: EpiFormulaPattern): void {
     const patterns = [...this.patterns.value];
-    if (this._editedIndex === -1) {
+    if (this.editedIndex === -1) {
       patterns.push(pattern);
     } else {
-      patterns.splice(this._editedIndex, 1, pattern);
+      patterns.splice(this.editedIndex, 1, pattern);
     }
     this.patterns.setValue(patterns);
     this.patterns.markAsDirty();
@@ -158,7 +157,7 @@ export class EpiFormulaPatternsPartComponent
       .pipe(take(1))
       .subscribe((yes) => {
         if (yes) {
-          if (this._editedIndex === index) {
+          if (this.editedIndex === index) {
             this.closePattern();
           }
           const patterns = [...this.patterns.value];
