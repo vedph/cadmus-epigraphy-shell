@@ -1,1 +1,100 @@
-<form [formGroup]="form"></form>
+<form [formGroup]="form" (submit)="save()">
+  <div class="form-row">
+    <!-- placeholder -->
+    <mat-checkbox [formControl]="placeholder">placeholder</mat-checkbox>
+
+    <!-- optional -->
+    <mat-checkbox [formControl]="optional">optional</mat-checkbox>
+  </div>
+
+  <!-- tags -->
+  <div class="form-row">
+    <!-- picker -->
+    <cadmus-thesaurus-tree
+      [entries]="tags.value"
+      rootLabel="categories"
+      [renderLabel]="renderLabel"
+      (entryChange)="onEntryChange($event)"
+    ></cadmus-thesaurus-tree>
+    <!-- list -->
+    <table *ngIf="tags.value.length; else noTags">
+      <tbody>
+        <tr
+          *ngFor="
+            let e of tags.value;
+            let i = index;
+            let first = first;
+            let last = last
+          "
+        >
+          <td>
+            <button
+              [disabled]="first"
+              mat-icon-button
+              type="button"
+              matTooltip="Move tag up"
+              (click)="moveTagUp(i)"
+            >
+              <mat-icon>arrow_upward</mat-icon>
+            </button>
+            <button
+              [disabled]="last"
+              mat-icon-button
+              type="button"
+              matTooltip="Move tag down"
+              (click)="moveTagDown(i)"
+            >
+              <mat-icon>arrow_downward</mat-icon>
+            </button>
+            <button
+              type="button"
+              mat-icon-button
+              color="warn"
+              (click)="removeTag(i)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+          <td>{{ e.value }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <ng-template #noTags>
+      <span class="error">no tags</span>
+    </ng-template>
+  </div>
+
+  <!-- note -->
+  <div>
+    <mat-form-field class="long-text">
+      <mat-label>note</mat-label>
+      <textarea matInput [formControl]="note"></textarea>
+      <mat-error
+        *ngIf="$any(note).errors?.maxLength && (note.dirty || note.touched)"
+        >note too long</mat-error
+      >
+    </mat-form-field>
+  </div>
+
+  <!-- buttons -->
+  <div>
+    <button
+      type="button"
+      color="warn"
+      mat-icon-button
+      matTooltip="Discard changes"
+      (click)="cancel()"
+    >
+      <mat-icon>clear</mat-icon>
+    </button>
+    <button
+      type="submit"
+      color="primary"
+      mat-icon-button
+      matTooltip="Accept changes"
+      [disabled]="form.invalid || form.pristine"
+    >
+      <mat-icon>check_circle</mat-icon>
+    </button>
+  </div>
+</form>

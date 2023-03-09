@@ -6,6 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ThesaurusEntry } from '@myrmidon/cadmus-core';
+import { renderLabelFromLastColon } from '@myrmidon/cadmus-ui';
 import { NgToolsValidators } from '@myrmidon/ng-tools';
 
 import { EpiFormulaToken } from '../epi-formula-patterns-part';
@@ -112,6 +113,32 @@ export class EpiFormulaTokenComponent {
     this.tags.updateValueAndValidity();
   }
 
+  public moveTagUp(index: number): void {
+    if (index < 1) {
+      return;
+    }
+    const tags = [...this.tags.value];
+    const e = tags[index];
+    tags[index] = tags[index - 1];
+    tags[index - 1] = e;
+    this.tags.setValue(tags);
+    this.tags.markAsDirty();
+    this.tags.updateValueAndValidity();
+  }
+
+  public moveTagDown(index: number): void {
+    if (index + 1 >= this.tags.value.length) {
+      return;
+    }
+    const tags = [...this.tags.value];
+    const e = tags[index];
+    tags[index] = tags[index + 1];
+    tags[index + 1] = e;
+    this.tags.setValue(tags);
+    this.tags.markAsDirty();
+    this.tags.updateValueAndValidity();
+  }
+
   private getToken(): EpiFormulaToken {
     return {
       tags: this.tags.value.map((e) => e.id),
@@ -132,5 +159,9 @@ export class EpiFormulaTokenComponent {
     }
     this._token = this.getToken();
     this.tokenChange.emit(this._token);
+  }
+
+  public renderLabel(label: string): string {
+    return renderLabelFromLastColon(label);
   }
 }
