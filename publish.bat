@@ -25,4 +25,9 @@ call npm publish --access=public
 cd ..\..\..
 pause
 
+cd .\dist\myrmidon\cadmus-part-epigraphy-formula-patterns
+call npm publish --access=public
+cd ..\..\..
+pause
+
 echo ALL DONE

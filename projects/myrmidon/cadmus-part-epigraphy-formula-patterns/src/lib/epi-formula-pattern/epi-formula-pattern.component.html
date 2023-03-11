@@ -132,13 +132,13 @@
       <mat-expansion-panel-header
         >Token #{{ editedIndex + 1 }}</mat-expansion-panel-header
       >
+      <cadmus-epi-formula-token
+        [token]="edited"
+        [tagEntries]="tokTagEntries"
+        (tokenChange)="saveToken($event)"
+        (editorClose)="closeToken()"
+      ></cadmus-epi-formula-token>
     </mat-expansion-panel>
-    <cadmus-epi-formula-token
-      [token]="edited"
-      [tagEntries]="tokTagEntries"
-      (tokenChange)="saveToken($event)"
-      (editorClose)="closeToken()"
-    ></cadmus-epi-formula-token>
   </fieldset>
 
   <!-- buttons -->
