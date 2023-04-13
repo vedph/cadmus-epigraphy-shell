@@ -64,6 +64,20 @@
     </ng-template>
   </div>
 
+  <!-- values -->
+  <mat-form-field class="long-text">
+    <textarea [formControl]="values" matInput rows="3"></textarea>
+    <mat-hint>value(s), one per line</mat-hint>
+    <mat-error
+      *ngIf="$any(values).errors?.required && (values.dirty || values.touched)"
+      >value(s) required</mat-error
+    >
+    <mat-error
+      *ngIf="$any(values).errors?.maxLength && (values.dirty || values.touched)"
+      >value(s) too long</mat-error
+    >
+  </mat-form-field>
+
   <!-- note -->
   <div>
     <mat-form-field class="long-text">

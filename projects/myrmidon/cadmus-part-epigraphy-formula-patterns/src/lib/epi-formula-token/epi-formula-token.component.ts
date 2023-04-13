@@ -47,7 +47,7 @@ export class EpiFormulaTokenComponent {
   public optional: FormControl<boolean>;
   public placeholder: FormControl<boolean>;
   public tags: FormControl<ThesaurusEntry[]>;
-  public values: FormControl<string[]>;
+  public values: FormControl<string>;
   public note: FormControl<string | null>;
   public form: FormGroup;
 
@@ -59,8 +59,8 @@ export class EpiFormulaTokenComponent {
       validators: NgToolsValidators.strictMinLengthValidator(1),
       nonNullable: true,
     });
-    this.values = formBuilder.control([], {
-      validators: NgToolsValidators.strictMinLengthValidator(1),
+    this.values = formBuilder.control('', {
+      validators: [Validators.required, Validators.maxLength(500)],
       nonNullable: true,
     });
     this.note = formBuilder.control(null, Validators.maxLength(1000));
@@ -88,7 +88,7 @@ export class EpiFormulaTokenComponent {
         (t) => this.tagEntries?.find((e) => e.id === t) || { id: t, value: t }
       )
     );
-    this.values.setValue(pattern.values);
+    this.values.setValue(pattern.values.join('\n'));
     this.note.setValue(pattern.note || null);
     this.form.markAsPristine();
   }
@@ -141,8 +141,11 @@ export class EpiFormulaTokenComponent {
 
   private getToken(): EpiFormulaToken {
     return {
-      tags: this.tags.value.map((e) => e.id),
-      values: this.values.value,
+      tags: this.tags.value.map((e: ThesaurusEntry) => e.id),
+      values: this.values.value
+        .split('\n')
+        .map((s: string) => s.trim())
+        .filter((s: string) => s),
       isOptional: this.optional.value ? true : undefined,
       isPlaceholder: this.placeholder.value ? true : undefined,
       note: this.note.value?.trim(),
