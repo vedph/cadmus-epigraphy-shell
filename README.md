@@ -17,6 +17,7 @@ Cadmus epigraphic components development shell.
 
 ## History
 
+- 2023-05-12: updated to Angular 16.
 - 2023-04-13: token values in formula editor.
 
 ### 0.0.2
