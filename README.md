@@ -13,10 +13,15 @@ Cadmus epigraphic components development shell.
 
 1. `npm run build-lib` (publish if required);
 2. update version in `env.js` (and Docker files) and `ng build`;
-3. `docker build . -t vedph2020/cadmus-epigraphy-shell:0.0.2 -t vedph2020/cadmus-epigraphy-shell:latest` (replace with the current version).
+3. `docker build . -t vedph2020/cadmus-epigraphy-shell:1.0.0 -t vedph2020/cadmus-epigraphy-shell:latest` (replace with the current version).
 
 ## History
 
+### 1.0.0
+
+- 2023-06-17:
+  - updated Angular and packages.
+  - moved to PostgreSQL.
 - 2023-05-24: updated Angular and packages. No changes required for introducing `AssertedCompositeId` here, so libraries versions stay the same.
 - 2023-05-12: updated to Angular 16.
 - 2023-04-13: token values in formula editor.
