@@ -17,6 +17,11 @@ Cadmus epigraphic components development shell.
 
 ## History
 
+- 2023-11-07:
+  - updated Angular and packages.
+  - removed ELF.
+  - opted in for thesauri import.
+
 ### 1.0.0
 
 - 2023-06-17:

@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -38,10 +38,6 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
-
-// ELF
-import { devTools } from '@ngneat/elf-devtools';
-import { Actions } from '@ngneat/effects-ng';
 
 // ngx-monaco
 import { MonacoEditorModule } from 'ngx-monaco-editor';
@@ -93,16 +89,6 @@ import { AppComponent } from './app.component';
 import { PART_EDITOR_KEYS } from './part-editor-keys';
 import { INDEX_LOOKUP_DEFINITIONS } from './index-lookup-definitions';
 import { ITEM_BROWSER_KEYS } from './item-browser-keys';
-
-// https://ngneat.github.io/elf/docs/dev-tools/
-export function initElfDevTools(actions: Actions) {
-  return () => {
-    devTools({
-      name: 'Cadmus Epigraphy',
-      actionsDispatcher: actions,
-    });
-  };
-}
 
 @NgModule({
   declarations: [
@@ -213,13 +199,6 @@ export function initElfDevTools(actions: Actions) {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthJwtInterceptor,
       multi: true,
-    },
-    // ELF dev tools
-    {
-      provide: APP_INITIALIZER,
-      multi: true,
-      useFactory: initElfDevTools,
-      deps: [Actions],
     },
   ],
   bootstrap: [AppComponent],
