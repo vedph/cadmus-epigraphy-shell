@@ -71,10 +71,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "cadmus-epigraphy-shell:build:production"
+              "buildTarget": "cadmus-epigraphy-shell:build:production"
             },
             "development": {
-              "browserTarget": "cadmus-epigraphy-shell:build:development"
+              "buildTarget": "cadmus-epigraphy-shell:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -82,7 +82,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "cadmus-epigraphy-shell:build"
+            "buildTarget": "cadmus-epigraphy-shell:build"
           }
         },
         "test": {

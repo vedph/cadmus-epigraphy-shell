@@ -17,6 +17,9 @@ Cadmus epigraphic components development shell.
 
 ## History
 
+### 2.0.0
+
+- 2023-11-09: ⚠️ upgraded to Angular 17.
 - 2023-11-07:
   - updated Angular and packages.
   - removed ELF.
