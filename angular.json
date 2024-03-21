@@ -25,7 +25,7 @@
               {
                 "glob": "**/*",
                 "input": "node_modules/monaco-editor",
-                "output": "assets/monaco-editor"
+                "output": "/assets/monaco/"
               }
             ],
             "styles": [
@@ -185,10 +185,7 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "tsConfig": "projects/myrmidon/cadmus-fr-epigraphy-ligatures/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
+            "polyfills": ["zone.js", "zone.js/testing"]
           }
         }
       }
@@ -218,10 +215,7 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "tsConfig": "projects/myrmidon/cadmus-part-epigraphy-pg/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
+            "polyfills": ["zone.js", "zone.js/testing"]
           }
         }
       }
@@ -251,10 +245,7 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "tsConfig": "projects/myrmidon/cadmus-part-epigraphy-formula-patterns/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
+            "polyfills": ["zone.js", "zone.js/testing"]
           }
         }
       }

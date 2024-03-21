@@ -17,6 +17,8 @@ Cadmus epigraphic components development shell.
 
 ## History
 
+- 2024-03-21: updated Angular and packages, replacing `ngx-monaco-editor` with [ngx-monaco-editor-v2](https://github.com/miki995/ngx-monaco-editor-v2). This changes affects only the shell UI, not the libraries.
+
 ### 2.0.0
 
 - 2023-11-09: ⚠️ upgraded to Angular 17.
