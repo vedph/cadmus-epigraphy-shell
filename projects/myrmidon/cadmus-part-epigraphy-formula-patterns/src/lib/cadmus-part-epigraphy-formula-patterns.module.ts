@@ -21,12 +21,18 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+// bricks
+import { DecoratedCountsComponent } from '@myrmidon/cadmus-refs-decorated-counts';
+import { FlagsPickerComponent } from '@myrmidon/cadmus-ui-flags-picker';
+import {
+  PhysicalSizeComponent,
+  PhysicalSizePipe,
+} from '@myrmidon/cadmus-mat-physical-size';
+
+// cadmus
 import { CadmusCoreModule } from '@myrmidon/cadmus-core';
-import { CadmusMatPhysicalSizeModule } from '@myrmidon/cadmus-mat-physical-size';
-import { CadmusRefsDecoratedCountsModule } from '@myrmidon/cadmus-refs-decorated-counts';
 import { CadmusStateModule } from '@myrmidon/cadmus-state';
 import { CadmusUiModule } from '@myrmidon/cadmus-ui';
-import { CadmusUiFlagsPickerModule } from '@myrmidon/cadmus-ui-flags-picker';
 import { CadmusUiPgModule } from '@myrmidon/cadmus-ui-pg';
 
 import { EpiFormulaPatternsPartComponent } from './epi-formula-patterns-part/epi-formula-patterns-part.component';
@@ -70,9 +76,10 @@ import { EpiFormulaPatternsPartFeatureComponent } from './epi-formula-patterns-p
     CadmusCoreModule,
     CadmusStateModule,
     CadmusUiModule,
-    CadmusUiFlagsPickerModule,
-    CadmusMatPhysicalSizeModule,
-    CadmusRefsDecoratedCountsModule,
+    FlagsPickerComponent,
+    PhysicalSizeComponent,
+    PhysicalSizePipe,
+    DecoratedCountsComponent,
     CadmusUiPgModule,
   ],
   exports: [
@@ -80,7 +87,7 @@ import { EpiFormulaPatternsPartFeatureComponent } from './epi-formula-patterns-p
     EpiFormulaTokenPipe,
     EpiFormulaPatternComponent,
     EpiFormulaTokenComponent,
-    EpiFormulaPatternsPartFeatureComponent
+    EpiFormulaPatternsPartFeatureComponent,
   ],
 })
 export class CadmusPartEpigraphyFormulaPatternsModule {}

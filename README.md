@@ -17,6 +17,7 @@ Cadmus epigraphic components development shell.
 
 ## History
 
+- 2024-04-13: ⚠️ upgraded to [bricks V2](https://github.com/vedph/cadmus-bricks-shell-v2). All the epigraphy libraries versions have been bumped to **version** 3.0.0.
 - 2024-03-21: updated Angular and packages, replacing `ngx-monaco-editor` with [ngx-monaco-editor-v2](https://github.com/miki995/ngx-monaco-editor-v2). This changes affects only the shell UI, not the libraries.
 
 ### 2.0.0

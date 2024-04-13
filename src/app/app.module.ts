@@ -40,9 +40,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 
 // vendors
-import { MarkdownModule } from 'ngx-markdown';
-import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
-import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { NgeMonacoModule } from '@cisstech/nge/monaco';
+import { NgeMarkdownModule } from '@cisstech/nge/markdown';
 
 // myrmidon
 import { NgxDirtyCheckModule } from '@myrmidon/ngx-dirty-check';
@@ -55,10 +55,10 @@ import {
 import { AuthJwtAdminModule } from '@myrmidon/auth-jwt-admin';
 
 // cadmus bricks
-import { CadmusRefsDocReferencesModule } from '@myrmidon/cadmus-refs-doc-references';
-import { CadmusRefsHistoricalDateModule } from '@myrmidon/cadmus-refs-historical-date';
-import { CadmusRefsAssertedIdsModule } from '@myrmidon/cadmus-refs-asserted-ids';
-import { CadmusUiFlagsPickerModule } from '@myrmidon/cadmus-ui-flags-picker';
+import { DocReferencesComponent } from '@myrmidon/cadmus-refs-doc-references';
+import { HistoricalDateComponent } from '@myrmidon/cadmus-refs-historical-date';
+import { AssertedIdsComponent } from '@myrmidon/cadmus-refs-asserted-ids';
+import { FlagsPickerComponent } from '@myrmidon/cadmus-ui-flags-picker';
 
 // cadmus
 import { CadmusApiModule } from '@myrmidon/cadmus-api';
@@ -140,9 +140,9 @@ import { ITEM_BROWSER_KEYS } from './item-browser-keys';
     MatToolbarModule,
     MatTreeModule,
     // vendors
-    MonacoEditorModule.forRoot(),
-    MarkdownModule.forRoot(),
-    NgxMapboxGLModule,
+    LeafletModule,
+    NgeMonacoModule.forRoot({}),
+    NgeMarkdownModule,
     // myrmidon
     NgToolsModule,
     NgMatToolsModule,
@@ -150,10 +150,10 @@ import { ITEM_BROWSER_KEYS } from './item-browser-keys';
     AuthJwtLoginModule,
     AuthJwtAdminModule,
     // cadmus bricks
-    CadmusRefsDocReferencesModule,
-    CadmusRefsHistoricalDateModule,
-    CadmusRefsAssertedIdsModule,
-    CadmusUiFlagsPickerModule,
+    DocReferencesComponent,
+    HistoricalDateComponent,
+    AssertedIdsComponent,
+    FlagsPickerComponent,
     // cadmus
     CadmusApiModule,
     CadmusCoreModule,

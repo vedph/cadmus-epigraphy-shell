@@ -22,13 +22,18 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 
+// bricks
+import { DecoratedCountsComponent } from '@myrmidon/cadmus-refs-decorated-counts';
+import { FlagsPickerComponent } from '@myrmidon/cadmus-ui-flags-picker';
+import {
+  PhysicalSizeComponent,
+  PhysicalSizePipe,
+} from '@myrmidon/cadmus-mat-physical-size';
+
 // cadmus
 import { CadmusCoreModule } from '@myrmidon/cadmus-core';
-import { CadmusMatPhysicalSizeModule } from '@myrmidon/cadmus-mat-physical-size';
-import { CadmusRefsDecoratedCountsModule } from '@myrmidon/cadmus-refs-decorated-counts';
 import { CadmusStateModule } from '@myrmidon/cadmus-state';
 import { CadmusUiModule } from '@myrmidon/cadmus-ui';
-import { CadmusUiFlagsPickerModule } from '@myrmidon/cadmus-ui-flags-picker';
 import { CadmusUiPgModule } from '@myrmidon/cadmus-ui-pg';
 
 import { EpiSupportPartComponent } from './epi-support-part/epi-support-part.component';
@@ -63,9 +68,10 @@ import { EpiSupportPartFeatureComponent } from './epi-support-part-feature/epi-s
     CadmusCoreModule,
     CadmusStateModule,
     CadmusUiModule,
-    CadmusUiFlagsPickerModule,
-    CadmusMatPhysicalSizeModule,
-    CadmusRefsDecoratedCountsModule,
+    FlagsPickerComponent,
+    PhysicalSizeComponent,
+    PhysicalSizePipe,
+    DecoratedCountsComponent,
     CadmusUiPgModule,
   ],
   exports: [EpiSupportPartComponent, EpiSupportPartFeatureComponent],

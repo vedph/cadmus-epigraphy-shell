@@ -22,22 +22,25 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 
+// bricks
+import {
+  PhysicalSizeComponent,
+  PhysicalSizePipe,
+} from '@myrmidon/cadmus-mat-physical-size';
+import { DecoratedCountsComponent } from '@myrmidon/cadmus-refs-decorated-counts';
+import { FlagsPickerComponent } from '@myrmidon/cadmus-ui-flags-picker';
+
 // cadmus
 import { CadmusCoreModule } from '@myrmidon/cadmus-core';
-import { CadmusMatPhysicalSizeModule } from '@myrmidon/cadmus-mat-physical-size';
-import { CadmusRefsDecoratedCountsModule } from '@myrmidon/cadmus-refs-decorated-counts';
 import { CadmusStateModule } from '@myrmidon/cadmus-state';
 import { CadmusUiModule } from '@myrmidon/cadmus-ui';
-import { CadmusUiFlagsPickerModule } from '@myrmidon/cadmus-ui-flags-picker';
 import { CadmusUiPgModule } from '@myrmidon/cadmus-ui-pg';
+
 import { EpiWritingPartComponent } from './epi-writing-part/epi-writing-part.component';
 import { EpiWritingPartFeatureComponent } from './epi-writing-part-feature/epi-writing-part-feature.component';
 
 @NgModule({
-  declarations: [
-    EpiWritingPartComponent,
-    EpiWritingPartFeatureComponent
-  ],
+  declarations: [EpiWritingPartComponent, EpiWritingPartFeatureComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -65,14 +68,12 @@ import { EpiWritingPartFeatureComponent } from './epi-writing-part-feature/epi-w
     CadmusCoreModule,
     CadmusStateModule,
     CadmusUiModule,
-    CadmusUiFlagsPickerModule,
-    CadmusMatPhysicalSizeModule,
-    CadmusRefsDecoratedCountsModule,
+    PhysicalSizeComponent,
+    PhysicalSizePipe,
+    FlagsPickerComponent,
+    DecoratedCountsComponent,
     CadmusUiPgModule,
   ],
-  exports: [
-    EpiWritingPartComponent,
-    EpiWritingPartFeatureComponent
-  ],
+  exports: [EpiWritingPartComponent, EpiWritingPartFeatureComponent],
 })
 export class CadmusPartEpigraphyWritingModule {}
