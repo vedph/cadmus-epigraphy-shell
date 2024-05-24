@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -36,46 +36,40 @@ import { CadmusUiPgModule } from '@myrmidon/cadmus-ui-pg';
 import { EpiLigaturesFragmentComponent } from './epi-ligatures-fragment/epi-ligatures-fragment.component';
 import { EpiLigaturesFragmentFeatureComponent } from './epi-ligatures-fragment-feature/epi-ligatures-fragment-feature.component';
 
-@NgModule({
-  declarations: [
-    EpiLigaturesFragmentComponent,
-    EpiLigaturesFragmentFeatureComponent,
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterModule,
-    HttpClientModule,
-    // material
-    MatButtonModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatDatepickerModule,
-    MatDialogModule,
-    MatExpansionModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatListModule,
-    MatNativeDateModule,
-    MatProgressBarModule,
-    MatSelectModule,
-    MatSnackBarModule,
-    MatTabsModule,
-    MatTooltipModule,
-    // cadmus
-    CadmusCoreModule,
-    CadmusStateModule,
-    CadmusUiModule,
-    PhysicalSizeComponent,
-    DecoratedCountsComponent,
-    FlagsPickerComponent,
-    CadmusUiPgModule,
-  ],
-  exports: [
-    EpiLigaturesFragmentComponent,
-    EpiLigaturesFragmentFeatureComponent,
-  ],
-})
+@NgModule({ declarations: [
+        EpiLigaturesFragmentComponent,
+        EpiLigaturesFragmentFeatureComponent,
+    ],
+    exports: [
+        EpiLigaturesFragmentComponent,
+        EpiLigaturesFragmentFeatureComponent,
+    ], imports: [CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        RouterModule,
+        // material
+        MatButtonModule,
+        MatCardModule,
+        MatCheckboxModule,
+        MatDatepickerModule,
+        MatDialogModule,
+        MatExpansionModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatListModule,
+        MatNativeDateModule,
+        MatProgressBarModule,
+        MatSelectModule,
+        MatSnackBarModule,
+        MatTabsModule,
+        MatTooltipModule,
+        // cadmus
+        CadmusCoreModule,
+        CadmusStateModule,
+        CadmusUiModule,
+        PhysicalSizeComponent,
+        DecoratedCountsComponent,
+        FlagsPickerComponent,
+        CadmusUiPgModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class CadmusFrEpigraphyLigaturesModule {}

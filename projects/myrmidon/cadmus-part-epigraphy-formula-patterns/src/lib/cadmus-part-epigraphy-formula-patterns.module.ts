@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -41,53 +41,47 @@ import { EpiFormulaPatternComponent } from './epi-formula-pattern/epi-formula-pa
 import { EpiFormulaTokenComponent } from './epi-formula-token/epi-formula-token.component';
 import { EpiFormulaPatternsPartFeatureComponent } from './epi-formula-patterns-part-feature/epi-formula-patterns-part-feature.component';
 
-@NgModule({
-  declarations: [
-    EpiFormulaPatternsPartComponent,
-    EpiFormulaTokenPipe,
-    EpiFormulaPatternComponent,
-    EpiFormulaTokenComponent,
-    EpiFormulaPatternsPartFeatureComponent,
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterModule,
-    HttpClientModule,
-    // material
-    MatButtonModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatDatepickerModule,
-    MatDialogModule,
-    MatExpansionModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatListModule,
-    MatNativeDateModule,
-    MatProgressBarModule,
-    MatSelectModule,
-    MatSnackBarModule,
-    MatTabsModule,
-    MatTooltipModule,
-    // cadmus
-    CadmusCoreModule,
-    CadmusStateModule,
-    CadmusUiModule,
-    FlagsPickerComponent,
-    PhysicalSizeComponent,
-    PhysicalSizePipe,
-    DecoratedCountsComponent,
-    CadmusUiPgModule,
-  ],
-  exports: [
-    EpiFormulaPatternsPartComponent,
-    EpiFormulaTokenPipe,
-    EpiFormulaPatternComponent,
-    EpiFormulaTokenComponent,
-    EpiFormulaPatternsPartFeatureComponent,
-  ],
-})
+@NgModule({ declarations: [
+        EpiFormulaPatternsPartComponent,
+        EpiFormulaTokenPipe,
+        EpiFormulaPatternComponent,
+        EpiFormulaTokenComponent,
+        EpiFormulaPatternsPartFeatureComponent,
+    ],
+    exports: [
+        EpiFormulaPatternsPartComponent,
+        EpiFormulaTokenPipe,
+        EpiFormulaPatternComponent,
+        EpiFormulaTokenComponent,
+        EpiFormulaPatternsPartFeatureComponent,
+    ], imports: [CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        RouterModule,
+        // material
+        MatButtonModule,
+        MatCardModule,
+        MatCheckboxModule,
+        MatDatepickerModule,
+        MatDialogModule,
+        MatExpansionModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatListModule,
+        MatNativeDateModule,
+        MatProgressBarModule,
+        MatSelectModule,
+        MatSnackBarModule,
+        MatTabsModule,
+        MatTooltipModule,
+        // cadmus
+        CadmusCoreModule,
+        CadmusStateModule,
+        CadmusUiModule,
+        FlagsPickerComponent,
+        PhysicalSizeComponent,
+        PhysicalSizePipe,
+        DecoratedCountsComponent,
+        CadmusUiPgModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class CadmusPartEpigraphyFormulaPatternsModule {}
