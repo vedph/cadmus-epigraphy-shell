@@ -19,16 +19,12 @@
         (entryChange)="onEntryChange($event)"
       ></cadmus-thesaurus-tree>
       <!-- list -->
-      <table *ngIf="tags.value.length; else noTags">
+      @if (tags.value.length) {
+      <table>
         <tbody>
-          <tr
-            *ngFor="
-              let e of tags.value;
-              let i = index;
-              let first = first;
-              let last = last
-            "
-          >
+          @for ( e of tags.value; track e; let i = $index; let first = $first;
+          let last = $last) {
+          <tr>
             <td>
               <button
                 [disabled]="first"
@@ -54,16 +50,17 @@
                 color="warn"
                 (click)="removeTag(i)"
               >
-                <mat-icon>delete</mat-icon>
+                <mat-icon class="mat-warn">delete</mat-icon>
               </button>
             </td>
             <td>{{ e.value }}</td>
           </tr>
+          }
         </tbody>
       </table>
-      <ng-template #noTags>
-        <span class="error">no tags</span>
-      </ng-template>
+      } @else {
+      <span class="error">no tags</span>
+      }
     </div>
   </fieldset>
 
@@ -71,14 +68,11 @@
   <mat-form-field class="long-text">
     <textarea [formControl]="values" matInput rows="3"></textarea>
     <mat-hint>value(s), one per line</mat-hint>
-    <mat-error
-      *ngIf="$any(values).errors?.required && (values.dirty || values.touched)"
-      >value(s) required</mat-error
-    >
-    <mat-error
-      *ngIf="$any(values).errors?.maxLength && (values.dirty || values.touched)"
-      >value(s) too long</mat-error
-    >
+    @if ($any(values).errors?.required && (values.dirty || values.touched)) {
+    <mat-error>value(s) required</mat-error>
+    } @if ($any(values).errors?.maxLength && (values.dirty || values.touched)) {
+    <mat-error>value(s) too long</mat-error>
+    }
   </mat-form-field>
 
   <!-- note -->
@@ -86,10 +80,9 @@
     <mat-form-field class="long-text">
       <mat-label>note</mat-label>
       <textarea matInput [formControl]="note"></textarea>
-      <mat-error
-        *ngIf="$any(note).errors?.maxLength && (note.dirty || note.touched)"
-        >note too long</mat-error
-      >
+      @if ($any(note).errors?.maxLength && (note.dirty || note.touched)) {
+      <mat-error>note too long</mat-error>
+      }
     </mat-form-field>
   </div>
 
@@ -102,7 +95,7 @@
       matTooltip="Discard changes"
       (click)="cancel()"
     >
-      <mat-icon>clear</mat-icon>
+      <mat-icon class="mat-warn">clear</mat-icon>
     </button>
     <button
       type="submit"
@@ -111,7 +104,7 @@
       matTooltip="Accept changes"
       [disabled]="form.invalid || form.pristine"
     >
-      <mat-icon>check_circle</mat-icon>
+      <mat-icon class="mat-primary">check_circle</mat-icon>
     </button>
   </div>
 </form>

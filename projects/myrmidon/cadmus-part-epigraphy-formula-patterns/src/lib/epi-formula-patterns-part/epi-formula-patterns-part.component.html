@@ -12,21 +12,18 @@
           type="button"
           mat-flat-button
           color="primary"
+          class="mat-primary"
           (click)="addPattern()"
         >
           <mat-icon>add_circle</mat-icon> pattern
         </button>
       </div>
-      <table *ngIf="patterns.value?.length">
+      @if (patterns.value?.length) {
+      <table>
         <tbody>
-          <tr
-            *ngFor="
-              let pattern of patterns.value;
-              let i = index;
-              let first = first;
-              let last = last
-            "
-          >
+          @for ( pattern of patterns.value; track pattern; let i = $index; let
+          first = $first; let last = $last) {
+          <tr>
             <td>
               <button
                 type="button"
@@ -35,7 +32,7 @@
                 matTooltip="Edit this pattern"
                 (click)="editPattern(pattern, i)"
               >
-                <mat-icon>edit</mat-icon>
+                <mat-icon class="mat-primary">edit</mat-icon>
               </button>
               <button
                 type="button"
@@ -62,19 +59,23 @@
                 matTooltip="Delete this pattern"
                 (click)="deletePattern(i)"
               >
-                <mat-icon>remove_circle</mat-icon>
+                <mat-icon class="mat-primary">remove_circle</mat-icon>
               </button>
             </td>
             <td>
               <ul>
-                <li *ngFor="let t of pattern.tokens">
+                @for (t of pattern.tokens; track t) {
+                <li>
                   {{ t | epiFormulaToken }}
                 </li>
+                }
               </ul>
             </td>
           </tr>
+          }
         </tbody>
       </table>
+      }
 
       <mat-expansion-panel [disabled]="!edited" [expanded]="edited">
         <mat-expansion-panel-header

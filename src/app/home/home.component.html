@@ -20,19 +20,25 @@
       <p>
         You can find the full source code of Cadmus infrastructure and projects
         at
-        <a href="https://github.com/vedph" target="_blank">github.com/vedph</a>.
-        More complete technical documentation to come at
-        <a href="https://myrmex.github.io/overview/cadmus" target="_blank"
+        <a href="https://github.com/vedph" target="_blank" rel="noopener"
+          >github.com/vedph</a
+        >. More complete technical documentation to come at
+        <a
+          href="https://myrmex.github.io/overview/cadmus"
+          rel="noopener"
+          target="_blank"
           >this site.</a
         >
       </p>
       <p>
         Also, you can have a look at the (incomplete)
-        <a href="https://cadmus.fusi-soft.com" target="_blank"
+        <a href="https://cadmus.fusi-soft.com" target="_blank" rel="noopener"
           >presentation site</a
         >.
       </p>
-      <p *ngIf="!logged">Please <a routerLink="/login">login</a> to start.</p>
+      @if (!logged) {
+      <p>Please <a routerLink="/login">login</a> to start.</p>
+      }
     </div>
   </div>
 </div>

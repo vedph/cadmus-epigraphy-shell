@@ -13,113 +13,107 @@
           <!-- system, type -->
           <div class="form-row">
             <!-- system (bound) -->
-            <mat-form-field *ngIf="sysEntries?.length">
+            @if (sysEntries?.length) {
+            <mat-form-field>
               <mat-label>system</mat-label>
               <mat-select [formControl]="system">
-                <mat-option *ngFor="let e of sysEntries" [value]="e.id">{{
-                  e.value
-                }}</mat-option>
+                @for (e of sysEntries; track e.id) {
+                <mat-option [value]="e.id">{{ e.value }}</mat-option>
+                }
               </mat-select>
-              <mat-error
-                *ngIf="
-                  $any(system).errors?.required &&
-                  (system.dirty || system.touched)
-                "
-                >system required</mat-error
-              >
+              @if ( $any(system).errors?.required && (system.dirty ||
+              system.touched) ) {
+              <mat-error>system required</mat-error>
+              }
             </mat-form-field>
+            }
             <!-- system (free) -->
-            <mat-form-field *ngIf="!sysEntries?.length">
+            @if (!sysEntries?.length) {
+            <mat-form-field>
               <mat-label>system</mat-label>
               <input matInput [formControl]="system" />
-              <mat-error
-                *ngIf="
-                  $any(system).errors?.required &&
-                  (system.dirty || system.touched)
-                "
-                >system required</mat-error
-              >
-              <mat-error
-                *ngIf="
-                  $any(system).errors?.maxLength &&
-                  (system.dirty || system.touched)
-                "
-                >system too long</mat-error
-              >
+              @if ( $any(system).errors?.required && (system.dirty ||
+              system.touched) ) {
+              <mat-error>system required</mat-error>
+              } @if ( $any(system).errors?.maxLength && (system.dirty ||
+              system.touched) ) {
+              <mat-error>system too long</mat-error>
+              }
             </mat-form-field>
+            }
 
             <!-- type (bound) -->
-            <mat-form-field *ngIf="typeEntries?.length">
+            @if (typeEntries?.length) {
+            <mat-form-field>
               <mat-label>type</mat-label>
               <mat-select [formControl]="type">
-                <mat-option *ngFor="let e of typeEntries" [value]="e.id">{{
-                  e.value
-                }}</mat-option>
+                @for (e of typeEntries; track e.id) {
+                <mat-option [value]="e.id">{{ e.value }}</mat-option>
+                }
               </mat-select>
-              <mat-error
-                *ngIf="
-                  $any(type).errors?.required && (type.dirty || type.touched)
-                "
-                >type required</mat-error
-              >
+              @if ( $any(type).errors?.required && (type.dirty || type.touched)
+              ) {
+              <mat-error>type required</mat-error>
+              }
             </mat-form-field>
+            }
             <!-- type (free) -->
-            <mat-form-field *ngIf="!typeEntries?.length">
+            @if (!typeEntries?.length) {
+            <mat-form-field>
               <mat-label>type</mat-label>
               <input matInput [formControl]="type" />
-              <mat-error
-                *ngIf="
-                  $any(type).errors?.required && (type.dirty || type.touched)
-                "
-                >type required</mat-error
-              >
-              <mat-error
-                *ngIf="
-                  $any(type).errors?.maxLength && (type.dirty || type.touched)
-                "
-                >type too long</mat-error
-              >
+              @if ( $any(type).errors?.required && (type.dirty || type.touched)
+              ) {
+              <mat-error>type required</mat-error>
+              } @if ( $any(type).errors?.maxLength && (type.dirty ||
+              type.touched) ) {
+              <mat-error>type too long</mat-error>
+              }
             </mat-form-field>
+            }
           </div>
 
           <!-- technique, tool -->
           <div class="form-row">
             <!-- technique (bound) -->
-            <mat-form-field *ngIf="techEntries?.length">
+            @if (techEntries?.length) {
+            <mat-form-field>
               <mat-label>technique</mat-label>
               <mat-select [formControl]="technique">
-                <mat-option *ngFor="let e of techEntries" [value]="e.id">{{
-                  e.value
-                }}</mat-option>
+                @for (e of techEntries; track e.id) {
+                <mat-option [value]="e.id">{{ e.value }}</mat-option>
+                }
               </mat-select>
-              <mat-error
-                *ngIf="
-                  $any(technique).errors?.required &&
-                  (technique.dirty || technique.touched)
-                "
-                >technique required</mat-error
-              >
+              @if ( $any(technique).errors?.required && (technique.dirty ||
+              technique.touched) ) {
+              <mat-error>technique required</mat-error>
+              }
             </mat-form-field>
+            }
 
             <!-- tool (bound) -->
-            <mat-form-field *ngIf="toolEntries?.length">
+            @if (toolEntries?.length) {
+            <mat-form-field>
               <mat-label>tool</mat-label>
               <mat-select [formControl]="tool">
-                <mat-option *ngFor="let e of toolEntries" [value]="e.id">{{
-                  e.value
-                }}</mat-option>
+                @for (e of toolEntries; track e.id) {
+                <mat-option [value]="e.id">{{ e.value }}</mat-option>
+                }
               </mat-select>
             </mat-form-field>
+            }
           </div>
 
           <!-- counts -->
-          <div *ngIf="cidEntries?.length">
+          @if (cidEntries?.length) {
+          <div>
             <cadmus-refs-decorated-counts
               [idEntries]="cidEntries"
               [counts]="counts.value"
               (countsChange)="onCountsChange($event)"
             ></cadmus-refs-decorated-counts>
           </div>
+          }
         </mat-tab>
 
         <!-- TEXT TAB -->
@@ -134,15 +128,19 @@
           </fieldset>
 
           <!-- scriptFeatures -->
-          <div *ngIf="scriptFlags$ | async as flags">
-            <fieldset *ngIf="flags?.length">
+          @if (scriptFlags$ | async; as flags) {
+          <div>
+            @if (flags?.length) {
+            <fieldset>
               <legend>script features</legend>
               <cadmus-ui-flags-picker
                 [flags]="flags"
                 (flagsChange)="onScriptFeatFlagsChange($event)"
               ></cadmus-ui-flags-picker>
             </fieldset>
+            }
           </div>
+          }
 
           <!-- hasPoetry -->
           <div>
@@ -150,38 +148,38 @@
           </div>
 
           <!-- metres -->
-          <div *ngIf="metreFlags$ | async as flags">
-            <fieldset *ngIf="flags?.length">
+          @if (metreFlags$ | async; as flags) {
+          <div>
+            @if (flags?.length) {
+            <fieldset>
               <legend>metres</legend>
               <cadmus-ui-flags-picker
                 [flags]="flags"
                 (flagsChange)="onMetreFlagsChange($event)"
               ></cadmus-ui-flags-picker>
             </fieldset>
+            }
           </div>
+          }
         </mat-tab>
 
         <!-- FIG TAB -->
-        <mat-tab
-          label="figurative"
-          *ngIf="
-            figTypeEntries?.length ||
-            frameEntries?.length ||
-            (figureFlags$ | async)
-          "
-        >
+        @if ( figTypeEntries?.length || frameEntries?.length || (figureFlags$ |
+        async) ) {
+        <mat-tab label="figurative">
           <!-- frameType (bound) -->
           <div>
-            <mat-form-field *ngIf="frameEntries?.length">
+            @if (frameEntries?.length) {
+            <mat-form-field>
               <mat-label>frame</mat-label>
               <mat-select [formControl]="frameType">
-                <mat-option *ngFor="let e of frameEntries" [value]="e.id">{{
-                  e.value
-                }}</mat-option>
+                @for (e of frameEntries; track e.id) {
+                <mat-option [value]="e.id">{{ e.value }}</mat-option>
+                }
               </mat-select>
             </mat-form-field>
+            }
           </div>
-
           <!-- figType, fraType -->
           <div
             style="
@@ -197,27 +195,32 @@
               <div id="fig-type">
                 {{ figType.value?.value }}
               </div>
+              @if (figTypeEntries?.length) {
               <cadmus-thesaurus-tree
-                *ngIf="figTypeEntries?.length"
                 [entries]="figTypeEntries"
                 rootLabel="fig.types"
                 [renderLabel]="renderLabel"
                 (entryChange)="onFigTypeChange($event)"
               ></cadmus-thesaurus-tree>
+              }
             </fieldset>
-
             <!-- figFeatures -->
-            <div *ngIf="figureFlags$ | async as flags">
-              <fieldset *ngIf="flags?.length">
+            @if (figureFlags$ | async; as flags) {
+            <div>
+              @if (flags?.length) {
+              <fieldset>
                 <legend>fig.features</legend>
                 <cadmus-ui-flags-picker
                   [flags]="flags"
                   (flagsChange)="onFigFeatFlagsChange($event)"
                 ></cadmus-ui-flags-picker>
               </fieldset>
+              }
             </div>
+            }
           </div>
         </mat-tab>
+        }
       </mat-tab-group>
     </mat-card-content>
     <mat-card-actions>
