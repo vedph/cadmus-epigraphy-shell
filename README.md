@@ -17,6 +17,8 @@ Cadmus epigraphic components development shell.
 
 ## History
 
+- 2024-06-22: updated Angular and packages.
+
 ### 3.1.1
 
 - 2024-06-09:
