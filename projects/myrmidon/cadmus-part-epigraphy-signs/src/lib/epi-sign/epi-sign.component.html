@@ -1,0 +1,62 @@
+<form [formGroup]="form" (submit)="save()">
+  <!-- id -->
+  <mat-form-field>
+    <mat-label>ID</mat-label>
+    <input matInput [formControl]="id" />
+    @if ($any(id).errors?.required && (id.dirty || id.touched)) {
+    <mat-error>ID required</mat-error>
+    } @if ($any(id).errors?.maxLength && (id.dirty || id.touched)) {
+    <mat-error>ID too long</mat-error>
+    }
+  </mat-form-field>
+
+  <!-- features -->
+  <div>
+    <cadmus-ui-flags-picker
+      [flags]="featFlags$ | async"
+      (flagsChange)="onFeatFlagsChange($event)"
+    ></cadmus-ui-flags-picker>
+  </div>
+
+  <!-- description -->
+  <div id="editor">
+    <nge-monaco-editor
+      style="--editor-height: 100%"
+      (ready)="onEditorInit($event)"
+    />
+  </div>
+
+  <!-- measurements -->
+  <fieldset>
+    <legend>measurements</legend>
+    <cadmus-physical-measurement-set
+      [nameEntries]="measNameEntries"
+      [unitEntries]="measUnitEntries"
+      [dimTagEntries]="measDimTagEntries"
+      [measurements]="measurements.value"
+      (measurementsChange)="onMeasurementsChange($event)"
+    />
+  </fieldset>
+
+  <!-- buttons -->
+  <div class="form-row">
+    <button
+      type="button"
+      color="warn"
+      mat-icon-button
+      matTooltip="Discard changes"
+      (click)="cancel()"
+    >
+      <mat-icon>clear</mat-icon>
+    </button>
+    <button
+      type="submit"
+      color="primary"
+      mat-icon-button
+      matTooltip="Accept changes"
+      [disabled]="form.invalid || form.pristine"
+    >
+      <mat-icon>check_circle</mat-icon>
+    </button>
+  </div>
+</form>

@@ -1,0 +1,32 @@
+{
+  "name": "@myrmidon/cadmus-part-epigraphy-signs",
+  "version": "0.0.1",
+  "description": "Cadmus - epigraphic signs components.",
+  "keywords": [
+    "Cadmus",
+    "epigraphy"
+  ],
+  "homepage": "https://github.com/vedph/cadmus-epigraphy-shell",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vedph/cadmus-epigraphy-shell"
+  },
+  "author": {
+    "name": "Daniele Fusi"
+  },
+  "peerDependencies": {
+    "@angular/common": "^18.0.0",
+    "@angular/core": "^18.0.0",
+    "@cisstech/nge": "^17.7.1",
+    "@myrmidon/cadmus-mat-physical-size": "^5.1.1",
+    "@myrmidon/cadmus-ui-flags-picker": "^5.1.1",
+    "@myrmidon/cadmus-core": "^8.1.0",
+    "@myrmidon/cadmus-state": "^8.1.0",
+    "@myrmidon/cadmus-ui": "^8.1.2",
+    "@myrmidon/cadmus-ui-pg": "^8.1.1"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}

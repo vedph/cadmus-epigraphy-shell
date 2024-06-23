@@ -12,6 +12,9 @@
       "@myrmidon/cadmus-part-epigraphy-pg": [
         "dist/myrmidon/cadmus-part-epigraphy-pg"
       ],
+      "@myrmidon/cadmus-part-epigraphy-signs": [
+        "./dist/myrmidon/cadmus-part-epigraphy-signs"
+      ],
       "@myrmidon/cadmus-part-epigraphy-support": [
         "dist/myrmidon/cadmus-part-epigraphy-support"
       ],
