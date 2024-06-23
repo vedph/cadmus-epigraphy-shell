@@ -187,14 +187,21 @@ export class EpiSignsPartComponent
     });
   }
 
-  public saveSign(entry: EpiSign): void {
-    const entries = [...this.signs.value];
-    if (this._editedIndex === -1) {
-      entries.push(entry);
-    } else {
-      entries.splice(this._editedIndex, 1, entry);
+  public saveSign(sign: EpiSign): void {
+    const signs = [...this.signs.value];
+
+    // if fr.id already exists, replace it
+    const i = signs.findIndex((s) => s.id === sign.id);
+    if (i > -1) {
+      this._editedIndex = i;
     }
-    this.signs.setValue(entries);
+
+    if (this._editedIndex === -1) {
+      signs.push(sign);
+    } else {
+      signs.splice(this._editedIndex, 1, sign);
+    }
+    this.signs.setValue(signs);
     this.signs.markAsDirty();
     this.signs.updateValueAndValidity();
     this.closeSign();
@@ -221,11 +228,11 @@ export class EpiSignsPartComponent
     if (index < 1) {
       return;
     }
-    const entry = this.signs.value[index];
-    const entries = [...this.signs.value];
-    entries.splice(index, 1);
-    entries.splice(index - 1, 0, entry);
-    this.signs.setValue(entries);
+    const sign = this.signs.value[index];
+    const signs = [...this.signs.value];
+    signs.splice(index, 1);
+    signs.splice(index - 1, 0, sign);
+    this.signs.setValue(signs);
     this.signs.markAsDirty();
     this.signs.updateValueAndValidity();
   }
@@ -234,11 +241,11 @@ export class EpiSignsPartComponent
     if (index + 1 >= this.signs.value.length) {
       return;
     }
-    const entry = this.signs.value[index];
-    const entries = [...this.signs.value];
-    entries.splice(index, 1);
-    entries.splice(index + 1, 0, entry);
-    this.signs.setValue(entries);
+    const sign = this.signs.value[index];
+    const signs = [...this.signs.value];
+    signs.splice(index, 1);
+    signs.splice(index + 1, 0, sign);
+    this.signs.setValue(signs);
     this.signs.markAsDirty();
     this.signs.updateValueAndValidity();
   }

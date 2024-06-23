@@ -1,1 +1,104 @@
-<p>epi-support-frr-part works!</p>
+<form [formGroup]="form" (submit)="save()">
+  <mat-card>
+    <mat-card-header>
+      <div mat-card-avatar>
+        <mat-icon>picture_in_picture</mat-icon>
+      </div>
+      <mat-card-title>Epigraphic Support Fragments Part</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-tab-group [(selectedIndex)]="tabIndex">
+        <mat-tab label="fragments">
+          <div>
+            <button
+              type="button"
+              mat-flat-button
+              color="primary"
+              (click)="addFr()"
+            >
+              <mat-icon>add_circle</mat-icon> Fr
+            </button>
+          </div>
+          @if (fragments.value.length) {
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>ID</th>
+                <th>size</th>
+                <th>bounds</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (fr of fragments.value; track fr.id; let i = $index; let
+              first = $first; let last = $last) {
+              <tr>
+                <td class="fit-width">
+                  <button
+                    type="button"
+                    mat-icon-button
+                    color="primary"
+                    matTooltip="Edit this fragment"
+                    (click)="editFr(fr, i)"
+                  >
+                    <mat-icon class="mat-primary">edit</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Move this fragment up"
+                    [disabled]="first"
+                    (click)="moveFrUp(i)"
+                  >
+                    <mat-icon>arrow_upward</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Move this fragment down"
+                    [disabled]="last"
+                    (click)="moveFrDown(i)"
+                  >
+                    <mat-icon>arrow_downward</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    color="warn"
+                    matTooltip="Delete this fragment"
+                    (click)="deleteFr(i)"
+                  >
+                    <mat-icon class="mat-warn">remove_circle</mat-icon>
+                  </button>
+                </td>
+                <td>{{ fr.id }}</td>
+                <td>{{ fr.size }}</td>
+                <td>{{ fr.headText }} ... {{ fr.tailText }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+          }
+        </mat-tab>
+
+        <mat-tab label="Fr" *ngIf="edited">
+          <cadmus-epi-support-fr
+            [tagEntries]="tagEntries"
+            [unitEntries]="unitEntries"
+            [dimTagEntries]="dimTagEntries"
+            [fragment]="edited"
+            (fragmentChange)="saveFr($event)"
+            (fragmentCancel)="closeFr()"
+          />
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+    <mat-card-actions>
+      <cadmus-close-save-buttons
+        [form]="form"
+        [noSave]="userLevel < 2"
+        (closeRequest)="close()"
+      ></cadmus-close-save-buttons>
+    </mat-card-actions>
+  </mat-card>
+</form>
