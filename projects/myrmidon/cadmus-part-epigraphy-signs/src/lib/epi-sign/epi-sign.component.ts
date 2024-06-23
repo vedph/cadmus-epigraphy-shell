@@ -73,6 +73,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   ],
   templateUrl: './epi-sign.component.html',
   styleUrl: './epi-sign.component.scss',
+  providers: [CadmusTextEdService],
 })
 export class EpiSignComponent implements OnDestroy {
   private _sign?: EpiSign;

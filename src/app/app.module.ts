@@ -210,10 +210,10 @@ import { ITEM_BROWSER_KEYS } from './item-browser-keys';
       provide: 'itemBrowserKeys',
       useValue: ITEM_BROWSER_KEYS,
     },
-    {
-      provide: CadmusTextEdService,
-      useClass: CadmusTextEdService,
-    },
+    // {
+    //   provide: CadmusTextEdService,
+    //   useClass: CadmusTextEdService,
+    // },
     // text editor plugins
     // https://github.com/vedph/cadmus-bricks-shell-v2/blob/master/projects/myrmidon/cadmus-text-ed/README.md
     MdBoldCtePlugin,
