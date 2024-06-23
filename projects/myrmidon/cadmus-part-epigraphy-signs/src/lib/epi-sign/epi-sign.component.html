@@ -11,12 +11,13 @@
   </mat-form-field>
 
   <!-- features -->
-  <div>
+  <fieldset>
+    <legend>features</legend>
     <cadmus-ui-flags-picker
       [flags]="featFlags$ | async"
       (flagsChange)="onFeatFlagsChange($event)"
     ></cadmus-ui-flags-picker>
-  </div>
+  </fieldset>
 
   <!-- description -->
   <div id="editor">

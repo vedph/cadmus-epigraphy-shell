@@ -123,7 +123,7 @@ export class EpiSignComponent implements OnDestroy {
     }
     this._featEntries = value || [];
     this._flagAdapter.setSlotFlags(
-      'states',
+      'features',
       this._featEntries.map(entryToFlag)
     );
   }
