@@ -26,6 +26,10 @@ import {
   EpiFormulaPatternsPartFeatureComponent,
   EPI_FORMULA_PATTERNS_PART_TYPEID,
 } from '@myrmidon/cadmus-part-epigraphy-formula-patterns';
+import {
+  EPI_SIGNS_PART_TYPEID,
+  EpiSignsPartFeatureComponent,
+} from '@myrmidon/cadmus-part-epigraphy-signs';
 
 export const RouterModuleForChild = RouterModule.forChild([
   {
@@ -38,6 +42,12 @@ export const RouterModuleForChild = RouterModule.forChild([
     path: `${EPI_WRITING_PART_TYPEID}/:pid`,
     pathMatch: 'full',
     component: EpiWritingPartFeatureComponent,
+    canDeactivate: [PendingChangesGuard],
+  },
+  {
+    path: `${EPI_SIGNS_PART_TYPEID}/:pid`,
+    pathMatch: 'full',
+    component: EpiSignsPartFeatureComponent,
     canDeactivate: [PendingChangesGuard],
   },
   {

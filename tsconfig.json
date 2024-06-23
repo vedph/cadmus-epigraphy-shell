@@ -18,6 +18,9 @@
       "@myrmidon/cadmus-part-epigraphy-support": [
         "dist/myrmidon/cadmus-part-epigraphy-support"
       ],
+      "@myrmidon/cadmus-part-epigraphy-support-frr": [
+        "./dist/myrmidon/cadmus-part-epigraphy-support-frr"
+      ],
       "@myrmidon/cadmus-part-epigraphy-writing": [
         "dist/myrmidon/cadmus-part-epigraphy-writing"
       ]
