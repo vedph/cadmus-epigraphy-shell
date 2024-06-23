@@ -16,7 +16,7 @@
               color="primary"
               (click)="addFr()"
             >
-              <mat-icon>add_circle</mat-icon> Fr
+              <mat-icon>add_circle</mat-icon> fragment
             </button>
           </div>
           @if (fragments.value.length) {
@@ -37,7 +37,6 @@
                   <button
                     type="button"
                     mat-icon-button
-                    color="primary"
                     matTooltip="Edit this fragment"
                     (click)="editFr(fr, i)"
                   >
@@ -72,7 +71,7 @@
                   </button>
                 </td>
                 <td>{{ fr.id }}</td>
-                <td>{{ fr.size }}</td>
+                <td>{{ fr.size | physicalSize }}</td>
                 <td>{{ fr.headText }} ... {{ fr.tailText }}</td>
               </tr>
               }

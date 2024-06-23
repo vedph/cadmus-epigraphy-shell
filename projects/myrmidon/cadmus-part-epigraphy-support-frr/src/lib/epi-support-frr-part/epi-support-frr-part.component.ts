@@ -27,6 +27,7 @@ import {
   ModelEditorComponentBase,
 } from '@myrmidon/cadmus-ui';
 import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
+import { PhysicalSizePipe } from '@myrmidon/cadmus-mat-physical-size';
 import {
   EPI_SUPPORT_FRR_PART_TYPEID,
   EpiSupportFr,
@@ -56,6 +57,7 @@ import { EpiSupportFrComponent } from '../epi-support-fr/epi-support-fr.componen
     MatTooltipModule,
     NgToolsModule,
     CadmusUiModule,
+    PhysicalSizePipe,
     EpiSupportFrComponent,
   ],
   templateUrl: './epi-support-frr-part.component.html',
