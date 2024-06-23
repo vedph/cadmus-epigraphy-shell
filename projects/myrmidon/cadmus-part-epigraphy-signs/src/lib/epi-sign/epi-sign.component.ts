@@ -33,6 +33,7 @@ import {
 import {
   CADMUS_TEXT_ED_BINDINGS_TOKEN,
   CadmusTextEdBindings,
+  CadmusTextEdService,
 } from '@myrmidon/cadmus-text-ed';
 import { ThesaurusEntry } from '@myrmidon/cadmus-core';
 import {
@@ -140,6 +141,7 @@ export class EpiSignComponent implements OnDestroy {
 
   constructor(
     formBuilder: FormBuilder,
+    private _editService: CadmusTextEdService,
     @Inject(CADMUS_TEXT_ED_BINDINGS_TOKEN)
     @Optional()
     private _editorBindings?: CadmusTextEdBindings
@@ -170,10 +172,33 @@ export class EpiSignComponent implements OnDestroy {
     this._disposables.forEach((d) => d.dispose());
   }
 
+  private async applyEdit(selector: string) {
+    if (!this._editor) {
+      return;
+    }
+    const selection = this._editor.getSelection();
+    const text = selection
+      ? this._editor.getModel()!.getValueInRange(selection)
+      : '';
+
+    const result = await this._editService.edit({
+      selector,
+      text: text,
+    });
+
+    this._editor.executeEdits('my-source', [
+      {
+        range: selection!,
+        text: result.text,
+        forceMoveMarkers: true,
+      },
+    ]);
+  }
+
   public onEditorInit(editor: monaco.editor.IEditor) {
     editor.updateOptions({
       minimap: {
-        side: 'left',
+        side: 'right',
       },
       wordWrap: 'on',
       automaticLayout: true,
@@ -190,6 +215,18 @@ export class EpiSignComponent implements OnDestroy {
         this.description.updateValueAndValidity();
       })
     );
+
+    if (this._editorBindings) {
+      Object.keys(this._editorBindings).forEach((key) => {
+        const n = parseInt(key, 10);
+        console.log(
+          'Binding ' + n + ' to ' + this._editorBindings![key as any]
+        );
+        this._editor!.addCommand(n, () => {
+          this.applyEdit(this._editorBindings![key as any]);
+        });
+      });
+    }
   }
 
   private updateForm(sign: EpiSign | undefined | null): void {

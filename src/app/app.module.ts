@@ -62,6 +62,19 @@ import { DocReferencesComponent } from '@myrmidon/cadmus-refs-doc-references';
 import { HistoricalDateComponent } from '@myrmidon/cadmus-refs-historical-date';
 import { AssertedIdsComponent } from '@myrmidon/cadmus-refs-asserted-ids';
 import { FlagsPickerComponent } from '@myrmidon/cadmus-ui-flags-picker';
+import { GEONAMES_USERNAME_TOKEN } from '@myrmidon/cadmus-refs-geonames-lookup';
+import { PROXY_INTERCEPTOR_OPTIONS } from '@myrmidon/cadmus-refs-lookup';
+import {
+  CADMUS_TEXT_ED_BINDINGS_TOKEN,
+  CADMUS_TEXT_ED_SERVICE_OPTIONS_TOKEN,
+  CadmusTextEdService,
+} from '@myrmidon/cadmus-text-ed';
+import {
+  MdBoldCtePlugin,
+  MdItalicCtePlugin,
+  MdLinkCtePlugin,
+} from '@myrmidon/cadmus-text-ed-md';
+import { TxtEmojiCtePlugin } from '@myrmidon/cadmus-text-ed-txt';
 
 // cadmus
 import { CadmusApiModule } from '@myrmidon/cadmus-api';
@@ -197,13 +210,70 @@ import { ITEM_BROWSER_KEYS } from './item-browser-keys';
       provide: 'itemBrowserKeys',
       useValue: ITEM_BROWSER_KEYS,
     },
-    // HTTP interceptor
-    // https://medium.com/@ryanchenkie_40935/angular-authentication-using-the-http-client-and-http-interceptors-2f9d1540eb8
-    // {
-    //   provide: HTTP_INTERCEPTORS,
-    //   useClass: AuthJwtInterceptor,
-    //   multi: true,
-    // },
+    {
+      provide: CadmusTextEdService,
+      useClass: CadmusTextEdService,
+    },
+    // text editor plugins
+    // https://github.com/vedph/cadmus-bricks-shell-v2/blob/master/projects/myrmidon/cadmus-text-ed/README.md
+    MdBoldCtePlugin,
+    MdItalicCtePlugin,
+    TxtEmojiCtePlugin,
+    MdLinkCtePlugin,
+    {
+      provide: CADMUS_TEXT_ED_SERVICE_OPTIONS_TOKEN,
+      useFactory: (
+        mdBoldCtePlugin: MdBoldCtePlugin,
+        mdItalicCtePlugin: MdItalicCtePlugin,
+        txtEmojiCtePlugin: TxtEmojiCtePlugin,
+        mdLinkCtePlugin: MdLinkCtePlugin
+      ) => {
+        return {
+          plugins: [
+            mdBoldCtePlugin,
+            mdItalicCtePlugin,
+            txtEmojiCtePlugin,
+            mdLinkCtePlugin,
+          ],
+        };
+      },
+      deps: [
+        MdBoldCtePlugin,
+        MdItalicCtePlugin,
+        TxtEmojiCtePlugin,
+        MdLinkCtePlugin,
+      ],
+    },
+    // monaco bindings for plugins
+    // 2080 = monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB;
+    // 2087 = monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyI;
+    // 2083 = monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE;
+    // 2090 = monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyL;
+    {
+      provide: CADMUS_TEXT_ED_BINDINGS_TOKEN,
+      useValue: {
+        2080: 'md.bold', // Ctrl+B
+        2087: 'md.italic', // Ctrl+I
+        2083: 'txt.emoji', // Ctrl+E
+        2090: 'md.link', // Ctrl+L
+      },
+    },
+    // GeoNames lookup (see environment.prod.ts for the username)
+    {
+      provide: GEONAMES_USERNAME_TOKEN,
+      useValue: 'myrmex',
+    },
+    // proxy
+    {
+      provide: PROXY_INTERCEPTOR_OPTIONS,
+      useValue: {
+        proxyUrl: (window as any).__env?.apiUrl + 'proxy',
+        urls: [
+          'http://lookup.dbpedia.org/api/search',
+          'http://lookup.dbpedia.org/api/prefix',
+        ],
+      },
+    },
   ],
 })
 export class AppModule {}

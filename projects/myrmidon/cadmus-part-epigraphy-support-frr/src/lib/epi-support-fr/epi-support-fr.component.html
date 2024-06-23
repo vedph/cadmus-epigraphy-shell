@@ -1,138 +1,144 @@
 <form [formGroup]="form" (submit)="save()">
-  <div class="form-row">
-    <!-- id -->
-    <mat-form-field>
-      <mat-label>ID</mat-label>
-      <input matInput [formControl]="id" />
-      @if ($any(id).errors?.required && (id.dirty || id.touched)) {
-      <mat-error>ID required</mat-error>
-      } @if ($any(id).errors?.maxLength && (id.dirty || id.touched)) {
-      <mat-error>ID too long</mat-error>
-      }
-    </mat-form-field>
+  <div id="container">
+    <div id="general">
+      <div class="form-row">
+        <!-- id -->
+        <mat-form-field>
+          <mat-label>ID</mat-label>
+          <input matInput [formControl]="id" />
+          @if ($any(id).errors?.required && (id.dirty || id.touched)) {
+          <mat-error>ID required</mat-error>
+          } @if ($any(id).errors?.maxLength && (id.dirty || id.touched)) {
+          <mat-error>ID too long</mat-error>
+          }
+        </mat-form-field>
 
-    <!-- shelfmark -->
-    <mat-form-field>
-      <mat-label>shelfmark</mat-label>
-      <input matInput [formControl]="shelfmark" />
-      @if ($any(shelfmark).errors?.maxLength && (shelfmark.dirty ||
-      shelfmark.touched)) {
-      <mat-error>shelfmark too long</mat-error>
-      }
-    </mat-form-field>
+        <!-- shelfmark -->
+        <mat-form-field>
+          <mat-label>shelfmark</mat-label>
+          <input matInput [formControl]="shelfmark" />
+          @if ($any(shelfmark).errors?.maxLength && (shelfmark.dirty ||
+          shelfmark.touched)) {
+          <mat-error>shelfmark too long</mat-error>
+          }
+        </mat-form-field>
 
-    <!-- lost -->
-    <mat-checkbox [formControl]="lost">lost</mat-checkbox>
-  </div>
+        <!-- lost -->
+        <mat-checkbox [formControl]="lost">lost</mat-checkbox>
+      </div>
 
-  <!-- bounds -->
-  <fieldset>
-    <legend>bounds</legend>
-    <div class="form-row">
-      <!-- headText-->
-      <mat-form-field>
-        <mat-label>head text</mat-label>
-        <input matInput [formControl]="headText" />
-        @if ($any(headText).errors?.maxLength && (headText.dirty ||
-        headText.touched)) {
-        <mat-error>head text too long</mat-error>
-        }
-      </mat-form-field>
+      <!-- bounds -->
+      <fieldset>
+        <legend>bounds</legend>
+        <div class="form-row">
+          <!-- headText-->
+          <mat-form-field>
+            <mat-label>head text</mat-label>
+            <input matInput [formControl]="headText" />
+            @if ($any(headText).errors?.maxLength && (headText.dirty ||
+            headText.touched)) {
+            <mat-error>head text too long</mat-error>
+            }
+          </mat-form-field>
 
-      <!-- headTextLoc -->
-      <mat-form-field>
-        <mat-label>loc.</mat-label>
-        <input matInput [formControl]="headTextLoc" />
-        @if ($any(headTextLoc).errors?.maxLength && (headTextLoc.dirty ||
-        headTextLoc.touched)) {
-        <mat-error>loc. too long</mat-error>
-        }
-      </mat-form-field>
+          <!-- headTextLoc -->
+          <mat-form-field>
+            <mat-label>loc.</mat-label>
+            <input matInput [formControl]="headTextLoc" />
+            @if ($any(headTextLoc).errors?.maxLength && (headTextLoc.dirty ||
+            headTextLoc.touched)) {
+            <mat-error>loc. too long</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <!-- tailText -->
+          <mat-form-field>
+            <mat-label>tail text</mat-label>
+            <input matInput [formControl]="tailText" />
+            @if ($any(tailText).errors?.maxLength && (tailText.dirty ||
+            tailText.touched)) {
+            <mat-error>tail text too long</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- tailTextLoc -->
+          <mat-form-field>
+            <mat-label>loc.</mat-label>
+            <input matInput [formControl]="tailTextLoc" />
+            @if ($any(tailTextLoc).errors?.maxLength && (tailTextLoc.dirty ||
+            tailTextLoc.touched)) {
+            <mat-error>loc. too long</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </fieldset>
     </div>
 
-    <div class="form-row">
-      <!-- tailText -->
-      <mat-form-field>
-        <mat-label>tail text</mat-label>
-        <input matInput [formControl]="tailText" />
-        @if ($any(tailText).errors?.maxLength && (tailText.dirty ||
-        tailText.touched)) {
-        <mat-error>tail text too long</mat-error>
-        }
-      </mat-form-field>
+    <!-- placement -->
+    <div id="placement">
+      <fieldset>
+        <legend>placement</legend>
+        <div class="form-row">
+          <!-- row -->
+          <mat-form-field class="nr">
+            <mat-label>row</mat-label>
+            <input matInput type="number" [formControl]="row" />
+          </mat-form-field>
 
-      <!-- tailTextLoc -->
-      <mat-form-field>
-        <mat-label>loc.</mat-label>
-        <input matInput [formControl]="tailTextLoc" />
-        @if ($any(tailTextLoc).errors?.maxLength && (tailTextLoc.dirty ||
-        tailTextLoc.touched)) {
-        <mat-error>loc. too long</mat-error>
-        }
-      </mat-form-field>
-    </div>
-  </fieldset>
+          <!-- rowSpan -->
+          <mat-form-field class="nr">
+            <mat-label>row span</mat-label>
+            <input matInput type="number" [formControl]="rowSpan" />
+          </mat-form-field>
+        </div>
 
-  <!-- size -->
-  <div>
-    <cadmus-mat-physical-size
-      [tagEntries]="tagEntries"
-      [unitEntries]="unitEntries"
-      [dimTagEntries]="dimTagEntries"
-      [size]="size.value"
-      (sizeChange)="onSizeChange($event)"
-    />
-  </div>
+        <div class="form-row">
+          <!-- column -->
+          <mat-form-field class="nr">
+            <mat-label>column</mat-label>
+            <input matInput type="number" [formControl]="column" />
+          </mat-form-field>
 
-  <!-- placement -->
-  <fieldset>
-    <legend>placement</legend>
-    <div class="form-row">
-      <!-- row -->
-      <mat-form-field class="nr">
-        <mat-label>row</mat-label>
-        <input matInput type="number" [formControl]="row" />
-      </mat-form-field>
-
-      <!-- rowSpan -->
-      <mat-form-field class="nr">
-        <mat-label>row span</mat-label>
-        <input matInput type="number" [formControl]="rowSpan" />
-      </mat-form-field>
+          <!-- columnSpan -->
+          <mat-form-field class="nr">
+            <mat-label>column span</mat-label>
+            <input matInput type="number" [formControl]="columnSpan" />
+          </mat-form-field>
+        </div>
+      </fieldset>
     </div>
 
-    <div class="form-row">
-      <!-- column -->
-      <mat-form-field class="nr">
-        <mat-label>column</mat-label>
-        <input matInput type="number" [formControl]="column" />
-      </mat-form-field>
-
-      <!-- columnSpan -->
-      <mat-form-field class="nr">
-        <mat-label>column span</mat-label>
-        <input matInput type="number" [formControl]="columnSpan" />
-      </mat-form-field>
+    <!-- size -->
+    <div id="size">
+      <cadmus-mat-physical-size
+        [tagEntries]="tagEntries"
+        [unitEntries]="unitEntries"
+        [dimTagEntries]="dimTagEntries"
+        [size]="size.value"
+        (sizeChange)="onSizeChange($event)"
+      />
     </div>
-  </fieldset>
 
-  <!-- buttons -->
-  <div>
-    <button
-      type="button"
-      mat-icon-button
-      matTooltip="Discard changes"
-      (click)="cancel()"
-    >
-      <mat-icon class="mat-warn">clear</mat-icon>
-    </button>
-    <button
-      type="submit"
-      mat-icon-button
-      matTooltip="Accept changes"
-      [disabled]="form.invalid || form.pristine"
-    >
-      <mat-icon class="mat-primary">check_circle</mat-icon>
-    </button>
+    <!-- buttons -->
+    <div id="toolbar">
+      <button
+        type="button"
+        mat-icon-button
+        matTooltip="Discard changes"
+        (click)="cancel()"
+      >
+        <mat-icon class="mat-warn">clear</mat-icon>
+      </button>
+      <button
+        type="submit"
+        mat-icon-button
+        matTooltip="Accept changes"
+        [disabled]="form.invalid || form.pristine"
+      >
+        <mat-icon class="mat-primary">check_circle</mat-icon>
+      </button>
+    </div>
   </div>
 </form>
