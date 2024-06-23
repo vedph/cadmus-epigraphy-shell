@@ -9,6 +9,7 @@
     "test": "ng test",
     "build-sup": "ng build @myrmidon/cadmus-part-epigraphy-support",
     "build-wri": "ng build @myrmidon/cadmus-part-epigraphy-writing",
+    "build-sig": "ng build @myrmidon/cadmus-part-epigraphy-signs",
     "build-for": "ng build @myrmidon/cadmus-part-epigraphy-formula-patterns",
     "build-lig": "ng build @myrmidon/cadmus-fr-epigraphy-ligatures",
     "build-pg": "ng build @myrmidon/cadmus-part-epigraphy-pg",
