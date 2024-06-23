@@ -26,6 +26,8 @@ import { EPI_SUPPORT_PART_TYPEID } from '@myrmidon/cadmus-part-epigraphy-support
 import { EPI_WRITING_PART_TYPEID } from '@myrmidon/cadmus-part-epigraphy-writing';
 import { EPI_LIGATURES_FRAGMENT_TYPEID } from '@myrmidon/cadmus-fr-epigraphy-ligatures';
 import { EPI_FORMULA_PATTERNS_PART_TYPEID } from '@myrmidon/cadmus-part-epigraphy-formula-patterns';
+import { EPI_SUPPORT_FRR_PART_TYPEID } from 'projects/myrmidon/cadmus-part-epigraphy-support-frr/src/public-api';
+import { EPI_SIGNS_PART_TYPEID } from 'projects/myrmidon/cadmus-part-epigraphy-signs/src/public-api';
 
 const GENERAL = 'general';
 const PHILOLOGY = 'philology';
@@ -85,7 +87,13 @@ export const PART_EDITOR_KEYS: PartEditorKeys = {
   [EPI_SUPPORT_PART_TYPEID]: {
     part: EPIGRAPHY,
   },
+  [EPI_SUPPORT_FRR_PART_TYPEID]: {
+    part: EPIGRAPHY,
+  },
   [EPI_WRITING_PART_TYPEID]: {
+    part: EPIGRAPHY,
+  },
+  [EPI_SIGNS_PART_TYPEID]: {
     part: EPIGRAPHY,
   },
   [EPI_FORMULA_PATTERNS_PART_TYPEID]: {

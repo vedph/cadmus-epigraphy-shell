@@ -30,8 +30,18 @@ import {
   EPI_SIGNS_PART_TYPEID,
   EpiSignsPartFeatureComponent,
 } from '@myrmidon/cadmus-part-epigraphy-signs';
+import {
+  EPI_SUPPORT_FRR_PART_TYPEID,
+  EpiSupportFrrPartFeatureComponent,
+} from '@myrmidon/cadmus-part-epigraphy-support-frr';
 
 export const RouterModuleForChild = RouterModule.forChild([
+  {
+    path: `${EPI_SUPPORT_FRR_PART_TYPEID}/:pid`,
+    pathMatch: 'full',
+    component: EpiSupportFrrPartFeatureComponent,
+    canDeactivate: [PendingChangesGuard],
+  },
   {
     path: `${EPI_SUPPORT_PART_TYPEID}/:pid`,
     pathMatch: 'full',
