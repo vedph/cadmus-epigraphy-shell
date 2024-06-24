@@ -241,6 +241,7 @@ export class EpiSignComponent implements OnDestroy {
       this._flagAdapter.setSlotChecks('features', sign.features || [])
     );
     this.description.setValue(sign.description || null);
+    this._editorModel?.setValue(sign.description || '');
     this.measurements.setValue(sign.measurements || []);
 
     this.form.markAsPristine();

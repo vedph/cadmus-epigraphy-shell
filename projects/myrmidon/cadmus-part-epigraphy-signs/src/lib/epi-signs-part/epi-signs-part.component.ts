@@ -15,7 +15,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { NgToolsModule, NgToolsValidators } from '@myrmidon/ng-tools';
@@ -54,7 +53,6 @@ import { EpiSignComponent } from '../epi-sign/epi-sign.component';
     MatIconModule,
     MatInputModule,
     MatSelectModule,
-    MatTabsModule,
     MatTooltipModule,
     NgToolsModule,
     CadmusUiModule,
@@ -69,7 +67,6 @@ export class EpiSignsPartComponent
 {
   private _editedIndex: number;
 
-  public tabIndex: number;
   public edited: EpiSign | undefined;
 
   // epi-signs-measure-names
@@ -90,7 +87,6 @@ export class EpiSignsPartComponent
   ) {
     super(authService, formBuilder);
     this._editedIndex = -1;
-    this.tabIndex = 0;
     // form
     this.signs = formBuilder.control([], {
       // at least 1 entry
@@ -174,17 +170,11 @@ export class EpiSignsPartComponent
   public editSign(entry: EpiSign, index: number): void {
     this._editedIndex = index;
     this.edited = entry;
-    setTimeout(() => {
-      this.tabIndex = 1;
-    });
   }
 
   public closeSign(): void {
     this._editedIndex = -1;
     this.edited = undefined;
-    setTimeout(() => {
-      this.tabIndex = 0;
-    });
   }
 
   public saveSign(sign: EpiSign): void {
