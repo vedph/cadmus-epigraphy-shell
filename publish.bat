@@ -15,7 +15,17 @@ call npm publish --access=public
 cd ..\..\..
 pause
 
+cd .\dist\myrmidon\cadmus-part-epigraphy-signs
+call npm publish --access=public
+cd ..\..\..
+pause
+
 cd .\dist\myrmidon\cadmus-part-epigraphy-support
+call npm publish --access=public
+cd ..\..\..
+pause
+
+cd .\dist\myrmidon\cadmus-part-epigraphy-support-frr
 call npm publish --access=public
 cd ..\..\..
 pause
