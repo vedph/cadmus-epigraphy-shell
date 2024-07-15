@@ -35,9 +35,11 @@
           [allowResize]="true"
           [presets]="gridPresets"
           [location]="location.value"
+          (locationChange)="onLocationChange($event)"
         />
 
         <!-- mappings -->
+        <br />
         <div>
           <div>
             <button type="button" mat-flat-button (click)="addMapping()">
