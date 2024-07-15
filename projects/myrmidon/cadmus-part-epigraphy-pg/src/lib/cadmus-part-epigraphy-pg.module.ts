@@ -34,6 +34,7 @@ import {
   EPI_SUPPORT_FRR_PART_TYPEID,
   EpiSupportFrrPartFeatureComponent,
 } from '@myrmidon/cadmus-part-epigraphy-support-frr';
+import { NgeMonacoModule } from '@cisstech/nge/monaco';
 
 export const RouterModuleForChild = RouterModule.forChild([
   {
@@ -81,6 +82,7 @@ export const RouterModuleForChild = RouterModule.forChild([
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    NgeMonacoModule,
     // Cadmus
     RouterModuleForChild,
     CadmusCoreModule,

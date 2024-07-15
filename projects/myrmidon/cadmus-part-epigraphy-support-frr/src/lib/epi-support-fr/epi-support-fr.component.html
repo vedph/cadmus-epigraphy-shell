@@ -31,40 +31,72 @@
       <fieldset>
         <legend>location</legend>
         <cadmus-physical-grid-location
+          [allowCustomSize]="true"
+          [allowResize]="true"
           [presets]="gridPresets"
           [location]="location.value"
         />
-      </fieldset>
-    </div>
 
-    <!-- placement -->
-    <div id="placement">
-      <fieldset>
-        <legend>placement</legend>
-        <div class="form-row">
-          <!-- row -->
-          <mat-form-field class="nr">
-            <mat-label>row</mat-label>
-            <input matInput type="number" [formControl]="row" />
-          </mat-form-field>
+        <!-- mappings -->
+        <div>
+          <div>
+            <button type="button" mat-flat-button (click)="addMapping()">
+              <mat-icon>add</mat-icon> mapping
+            </button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>location</th>
+                <th>head</th>
+                <th>tail</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (m of mappings.value; track m; let i = $index) {
+              <tr>
+                <td class="fit-width">
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Remove mapping"
+                    (click)="deleteMapping(i)"
+                  >
+                    <mat-icon class="mat-warn">clear</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Edit mapping"
+                    (click)="editMapping(i)"
+                  >
+                    <mat-icon class="mat-primary">edit</mat-icon>
+                  </button>
+                </td>
+                <td>{{ m.location }}</td>
+                <td>{{ m.headText }}</td>
+                <td>{{ m.tailText }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
 
-          <!-- rowSpan -->
-          <mat-form-field class="nr">
-            <mat-label>row span</mat-label>
-            <input matInput type="number" [formControl]="rowSpan" />
-          </mat-form-field>
+          <!-- mapping editor -->
+          <mat-expansion-panel
+            [disabled]="!editedMapping"
+            [expanded]="editedMapping"
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title> mapping </mat-panel-title>
+            </mat-expansion-panel-header>
 
-          <!-- column -->
-          <mat-form-field class="nr">
-            <mat-label>column</mat-label>
-            <input matInput type="number" [formControl]="column" />
-          </mat-form-field>
-
-          <!-- columnSpan -->
-          <mat-form-field class="nr">
-            <mat-label>column span</mat-label>
-            <input matInput type="number" [formControl]="columnSpan" />
-          </mat-form-field>
+            <cadmus-epi-support-fr-cell-mapping
+              [mapping]="editedMapping"
+              (mappingCancel)="closeMapping()"
+              (mappingChange)="onMappingChange($event)"
+            />
+          </mat-expansion-panel>
         </div>
       </fieldset>
     </div>
@@ -85,7 +117,7 @@
       <button
         type="button"
         mat-icon-button
-        matTooltip="Discard changes"
+        matTooltip="Discard fragment"
         (click)="cancel()"
       >
         <mat-icon class="mat-warn">clear</mat-icon>
@@ -93,7 +125,7 @@
       <button
         type="submit"
         mat-icon-button
-        matTooltip="Accept changes"
+        matTooltip="Save fragment"
         [disabled]="form.invalid || form.pristine"
       >
         <mat-icon class="mat-primary">check_circle</mat-icon>

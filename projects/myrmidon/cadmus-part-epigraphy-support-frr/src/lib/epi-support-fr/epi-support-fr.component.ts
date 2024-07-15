@@ -29,6 +29,7 @@ import {
 import { ThesaurusEntry } from '@myrmidon/cadmus-core';
 
 import { EpiSupportFr, EpiSupportFrCellMapping } from '../epi-support-frr-part';
+import { EpiSupportFrCellMappingComponent } from '../epi-support-fr-cell-mapping/epi-support-fr-cell-mapping.component';
 
 @Component({
   selector: 'cadmus-epi-support-fr',
@@ -46,6 +47,7 @@ import { EpiSupportFr, EpiSupportFrCellMapping } from '../epi-support-frr-part';
     PhysicalSizeComponent,
     ExcelColumnPipe,
     PhysicalGridLocationComponent,
+    EpiSupportFrCellMappingComponent,
   ],
   templateUrl: './epi-support-fr.component.html',
   styleUrl: './epi-support-fr.component.scss',
@@ -98,15 +100,15 @@ export class EpiSupportFrComponent {
   public shelfmark: FormControl<string | null>;
   public lost: FormControl<boolean>;
   public size: FormControl<PhysicalSize | null>;
-  public location: FormControl<string>;
-  public rowCount: FormControl<number>;
-  public columnCount: FormControl<number>;
+  public location: FormControl<PhysicalGridLocation | null>;
   public mappings: FormControl<EpiSupportFrCellMapping[]>;
   public note: FormControl<string | null>;
   public form: FormGroup;
 
   public gridPresets?: string[];
-  public gridLocation?: PhysicalGridLocation;
+
+  public editedIndex = -1;
+  public editedMapping?: EpiSupportFrCellMapping;
 
   constructor(
     formBuilder: FormBuilder,
@@ -122,21 +124,8 @@ export class EpiSupportFrComponent {
     });
     this.lost = formBuilder.control<boolean>(false, { nonNullable: true });
     this.size = formBuilder.control<PhysicalSize | null>(null);
-    this.location = formBuilder.control<string>('', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.maxLength(500)],
-    });
-    this.rowCount = formBuilder.control<number>(0, {
-      nonNullable: true,
-      validators: [
-        Validators.required,
-        Validators.min(0),
-        Validators.max(1000),
-      ],
-    });
-    this.columnCount = formBuilder.control<number>(0, {
-      nonNullable: true,
-      validators: [Validators.required, Validators.min(0), Validators.max(100)],
+    this.location = formBuilder.control<PhysicalGridLocation | null>(null, {
+      validators: Validators.required,
     });
     this.mappings = formBuilder.control<EpiSupportFrCellMapping[]>([], {
       nonNullable: true,
@@ -153,8 +142,6 @@ export class EpiSupportFrComponent {
       location: this.location,
       mappings: this.mappings,
       note: this.note,
-      rowCount: this.rowCount,
-      columnCount: this.columnCount,
     });
   }
 
@@ -168,19 +155,14 @@ export class EpiSupportFrComponent {
     this.shelfmark.setValue(fr.shelfmark || null);
     this.lost.setValue(fr.isLost || false);
     this.size.setValue(fr.size || null);
-    this.location.setValue(fr.location || '');
-    this.rowCount.setValue(fr.rowCount || 0);
-    this.columnCount.setValue(fr.columnCount || 0);
+    const location: PhysicalGridLocation = {
+      rows: fr.rowCount || 0,
+      columns: fr.columnCount || 0,
+      coords: this._gridService.parsePhysicalGridCoords(fr.location) || [],
+    };
+    this.location.setValue(location);
     this.mappings.setValue(fr.cellMappings || []);
     this.note.setValue(fr.note || null);
-
-    this.gridLocation = {
-      rows: this.rowCount.value,
-      columns: this.columnCount.value,
-      coords:
-        this._gridService.parsePhysicalGridCoords(this.location.value) || [],
-    };
-
     this.form.markAsPristine();
   }
 
@@ -190,9 +172,16 @@ export class EpiSupportFrComponent {
       shelfmark: this.shelfmark.value?.trim(),
       isLost: this.lost.value || undefined,
       size: this.size.value || undefined,
-      location: this.location.value?.trim(),
-      rowCount: this.rowCount.value || undefined,
-      columnCount: this.columnCount.value || undefined,
+      rowCount: this.location.value?.rows || 0,
+      columnCount: this.location.value?.columns || 0,
+      location: this.location.value
+        ? this._gridService.physicalGridCoordsToString(
+            this.location.value?.coords
+          )
+        : '',
+      cellMappings: this.mappings.value?.length
+        ? this.mappings.value
+        : undefined,
       note: this.note.value?.trim() || undefined,
     };
   }
@@ -204,13 +193,51 @@ export class EpiSupportFrComponent {
   }
 
   public onLocationChange(location: PhysicalGridLocation): void {
-    this.location.setValue(
-      location.coords
-        .map((c) => `${this._excelColumnPipe.transform(c.column)}${c.row}`)
-        .join(' ')
-    );
+    this.location.setValue(location);
     this.location.markAsDirty();
     this.location.updateValueAndValidity();
+  }
+
+  public addMapping(): void {
+    this.editedMapping = {
+      location: '',
+    };
+    this.editedIndex = -1;
+  }
+
+  public editMapping(index: number): void {
+    this.editedIndex = index;
+    this.editedMapping = this.mappings.value[index];
+  }
+
+  public closeMapping(): void {
+    this.editedIndex = -1;
+    this.editedMapping = undefined;
+  }
+
+  public deleteMapping(index: number): void {
+    if (this.editedIndex === index) {
+      this.closeMapping();
+    }
+    const mappings = [...this.mappings.value];
+    mappings.splice(index, 1);
+    this.mappings.setValue(mappings);
+    this.mappings.markAsDirty();
+    this.mappings.updateValueAndValidity();
+  }
+
+  public onMappingChange(mapping: EpiSupportFrCellMapping): void {
+    const mappings = [...this.mappings.value];
+    if (this.editedIndex === -1) {
+      mappings.push(mapping);
+    } else {
+      mappings[this.editedIndex] = mapping;
+    }
+    this.mappings.setValue(mappings);
+    this.mappings.markAsDirty();
+    this.mappings.updateValueAndValidity();
+
+    this.closeMapping();
   }
 
   public cancel(): void {
