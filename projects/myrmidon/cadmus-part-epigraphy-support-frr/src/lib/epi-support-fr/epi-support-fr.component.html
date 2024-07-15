@@ -27,52 +27,13 @@
         <mat-checkbox [formControl]="lost">lost</mat-checkbox>
       </div>
 
-      <!-- bounds -->
+      <!-- location -->
       <fieldset>
-        <legend>bounds</legend>
-        <div class="form-row">
-          <!-- headText-->
-          <mat-form-field>
-            <mat-label>head text</mat-label>
-            <input matInput [formControl]="headText" />
-            @if ($any(headText).errors?.maxLength && (headText.dirty ||
-            headText.touched)) {
-            <mat-error>head text too long</mat-error>
-            }
-          </mat-form-field>
-
-          <!-- headTextLoc -->
-          <mat-form-field>
-            <mat-label>loc.</mat-label>
-            <input matInput [formControl]="headTextLoc" />
-            @if ($any(headTextLoc).errors?.maxLength && (headTextLoc.dirty ||
-            headTextLoc.touched)) {
-            <mat-error>loc. too long</mat-error>
-            }
-          </mat-form-field>
-        </div>
-
-        <div class="form-row">
-          <!-- tailText -->
-          <mat-form-field>
-            <mat-label>tail text</mat-label>
-            <input matInput [formControl]="tailText" />
-            @if ($any(tailText).errors?.maxLength && (tailText.dirty ||
-            tailText.touched)) {
-            <mat-error>tail text too long</mat-error>
-            }
-          </mat-form-field>
-
-          <!-- tailTextLoc -->
-          <mat-form-field>
-            <mat-label>loc.</mat-label>
-            <input matInput [formControl]="tailTextLoc" />
-            @if ($any(tailTextLoc).errors?.maxLength && (tailTextLoc.dirty ||
-            tailTextLoc.touched)) {
-            <mat-error>loc. too long</mat-error>
-            }
-          </mat-form-field>
-        </div>
+        <legend>location</legend>
+        <cadmus-physical-grid-location
+          [presets]="gridPresets"
+          [location]="location.value"
+        />
       </fieldset>
     </div>
 

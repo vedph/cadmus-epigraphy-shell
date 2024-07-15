@@ -16,10 +16,19 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-import { PhysicalSize, PhysicalSizeComponent } from '@myrmidon/cadmus-mat-physical-size';
+import {
+  PhysicalSize,
+  PhysicalSizeComponent,
+} from '@myrmidon/cadmus-mat-physical-size';
+import {
+  ExcelColumnPipe,
+  PhysicalGridCoordsService,
+  PhysicalGridLocation,
+  PhysicalGridLocationComponent,
+} from '@myrmidon/cadmus-mat-physical-grid';
 import { ThesaurusEntry } from '@myrmidon/cadmus-core';
 
-import { EpiSupportFr } from '../epi-support-frr-part';
+import { EpiSupportFr, EpiSupportFrCellMapping } from '../epi-support-frr-part';
 
 @Component({
   selector: 'cadmus-epi-support-fr',
@@ -34,13 +43,17 @@ import { EpiSupportFr } from '../epi-support-frr-part';
     MatIconModule,
     MatInputModule,
     MatTooltipModule,
-    PhysicalSizeComponent
+    PhysicalSizeComponent,
+    ExcelColumnPipe,
+    PhysicalGridLocationComponent,
   ],
   templateUrl: './epi-support-fr.component.html',
   styleUrl: './epi-support-fr.component.scss',
 })
 export class EpiSupportFrComponent {
+  private readonly _excelColumnPipe: ExcelColumnPipe = new ExcelColumnPipe();
   private _fragment?: EpiSupportFr;
+  private _gridPresetEntries?: ThesaurusEntry[];
 
   @Input()
   public get fragment(): EpiSupportFr | undefined | null {
@@ -65,6 +78,16 @@ export class EpiSupportFrComponent {
   @Input()
   public dimTagEntries?: ThesaurusEntry[];
 
+  // physical-grid-presets
+  @Input()
+  public get gridPresetEntries(): ThesaurusEntry[] | undefined {
+    return this._gridPresetEntries;
+  }
+  public set gridPresetEntries(value: ThesaurusEntry[] | undefined) {
+    this._gridPresetEntries = value;
+    this.gridPresets = value?.map((e) => e.value);
+  }
+
   @Output()
   public readonly fragmentChange: EventEmitter<EpiSupportFr> =
     new EventEmitter<EpiSupportFr>();
@@ -74,19 +97,21 @@ export class EpiSupportFrComponent {
   public id: FormControl<string>;
   public shelfmark: FormControl<string | null>;
   public lost: FormControl<boolean>;
-  public headText: FormControl<string | null>;
-  public headTextLoc: FormControl<string | null>;
-  public tailText: FormControl<string | null>;
-  public tailTextLoc: FormControl<string | null>;
   public size: FormControl<PhysicalSize | null>;
+  public location: FormControl<string>;
+  public rowCount: FormControl<number>;
+  public columnCount: FormControl<number>;
+  public mappings: FormControl<EpiSupportFrCellMapping[]>;
   public note: FormControl<string | null>;
-  public row: FormControl<number>;
-  public column: FormControl<number>;
-  public rowSpan: FormControl<number>;
-  public columnSpan: FormControl<number>;
   public form: FormGroup;
 
-  constructor(formBuilder: FormBuilder) {
+  public gridPresets?: string[];
+  public gridLocation?: PhysicalGridLocation;
+
+  constructor(
+    formBuilder: FormBuilder,
+    private _gridService: PhysicalGridCoordsService
+  ) {
     // form
     this.id = formBuilder.control<string>('', {
       nonNullable: true,
@@ -96,61 +121,40 @@ export class EpiSupportFrComponent {
       validators: [Validators.maxLength(100)],
     });
     this.lost = formBuilder.control<boolean>(false, { nonNullable: true });
-    this.headText = formBuilder.control<string | null>(null, {
-      validators: [Validators.maxLength(500)],
-    });
-    this.headTextLoc = formBuilder.control<string | null>(null, {
-      validators: [Validators.maxLength(50)],
-    });
-    this.tailText = formBuilder.control<string | null>(null, {
-      validators: [Validators.maxLength(500)],
-    });
-    this.tailTextLoc = formBuilder.control<string | null>(null, {
-      validators: [Validators.maxLength(50)],
-    });
     this.size = formBuilder.control<PhysicalSize | null>(null);
+    this.location = formBuilder.control<string>('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.maxLength(500)],
+    });
+    this.rowCount = formBuilder.control<number>(0, {
+      nonNullable: true,
+      validators: [
+        Validators.required,
+        Validators.min(0),
+        Validators.max(1000),
+      ],
+    });
+    this.columnCount = formBuilder.control<number>(0, {
+      nonNullable: true,
+      validators: [Validators.required, Validators.min(0), Validators.max(100)],
+    });
+    this.mappings = formBuilder.control<EpiSupportFrCellMapping[]>([], {
+      nonNullable: true,
+    });
     this.note = formBuilder.control<string | null>(null, {
       validators: [Validators.maxLength(1000)],
-    });
-    this.row = formBuilder.control<number>(0, {
-      nonNullable: true,
-      validators: [
-        Validators.required,
-        Validators.min(0),
-        Validators.max(1000),
-      ],
-    });
-    this.column = formBuilder.control<number>(0, {
-      nonNullable: true,
-      validators: [Validators.required, Validators.min(0), Validators.max(100)],
-    });
-    this.rowSpan = formBuilder.control<number>(0, {
-      nonNullable: true,
-      validators: [
-        Validators.required,
-        Validators.min(0),
-        Validators.max(1000),
-      ],
-    });
-    this.columnSpan = formBuilder.control<number>(0, {
-      nonNullable: true,
-      validators: [Validators.required, Validators.min(0), Validators.max(100)],
     });
 
     this.form = formBuilder.group({
       id: this.id,
       shelfmark: this.shelfmark,
       lost: this.lost,
-      headText: this.headText,
-      headTextLoc: this.headTextLoc,
-      tailText: this.tailText,
-      tailTextLoc: this.tailTextLoc,
       size: this.size,
+      location: this.location,
+      mappings: this.mappings,
       note: this.note,
-      row: this.row,
-      column: this.column,
-      rowSpan: this.rowSpan,
-      columnSpan: this.columnSpan,
+      rowCount: this.rowCount,
+      columnCount: this.columnCount,
     });
   }
 
@@ -163,16 +167,19 @@ export class EpiSupportFrComponent {
     this.id.setValue(fr.id);
     this.shelfmark.setValue(fr.shelfmark || null);
     this.lost.setValue(fr.isLost || false);
-    this.headText.setValue(fr.headText || null);
-    this.headTextLoc.setValue(fr.headTextLoc || null);
-    this.tailText.setValue(fr.tailText || null);
-    this.tailTextLoc.setValue(fr.tailTextLoc || null);
     this.size.setValue(fr.size || null);
+    this.location.setValue(fr.location || '');
+    this.rowCount.setValue(fr.rowCount || 0);
+    this.columnCount.setValue(fr.columnCount || 0);
+    this.mappings.setValue(fr.cellMappings || []);
     this.note.setValue(fr.note || null);
-    this.row.setValue(fr.row || 0);
-    this.column.setValue(fr.column || 0);
-    this.rowSpan.setValue(fr.rowSpan || 0);
-    this.columnSpan.setValue(fr.columnSpan || 0);
+
+    this.gridLocation = {
+      rows: this.rowCount.value,
+      columns: this.columnCount.value,
+      coords:
+        this._gridService.parsePhysicalGridCoords(this.location.value) || [],
+    };
 
     this.form.markAsPristine();
   }
@@ -182,16 +189,11 @@ export class EpiSupportFrComponent {
       id: this.id.value?.trim(),
       shelfmark: this.shelfmark.value?.trim(),
       isLost: this.lost.value || undefined,
-      headText: this.headText.value?.trim() || undefined,
-      headTextLoc: this.headTextLoc.value?.trim() || undefined,
-      tailText: this.tailText.value?.trim() || undefined,
-      tailTextLoc: this.tailTextLoc.value?.trim() || undefined,
       size: this.size.value || undefined,
+      location: this.location.value?.trim(),
+      rowCount: this.rowCount.value || undefined,
+      columnCount: this.columnCount.value || undefined,
       note: this.note.value?.trim() || undefined,
-      row: this.row.value || undefined,
-      column: this.column.value || undefined,
-      rowSpan: this.rowSpan.value || undefined,
-      columnSpan: this.columnSpan.value || undefined,
     };
   }
 
@@ -199,6 +201,16 @@ export class EpiSupportFrComponent {
     this.size.setValue(size);
     this.size.markAsDirty();
     this.size.updateValueAndValidity();
+  }
+
+  public onLocationChange(location: PhysicalGridLocation): void {
+    this.location.setValue(
+      location.coords
+        .map((c) => `${this._excelColumnPipe.transform(c.column)}${c.row}`)
+        .join(' ')
+    );
+    this.location.markAsDirty();
+    this.location.updateValueAndValidity();
   }
 
   public cancel(): void {

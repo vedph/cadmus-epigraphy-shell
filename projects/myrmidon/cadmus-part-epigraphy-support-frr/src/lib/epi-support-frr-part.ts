@@ -2,6 +2,17 @@ import { Part } from '@myrmidon/cadmus-core';
 import { PhysicalSize } from '@myrmidon/cadmus-mat-physical-size';
 
 /**
+ * A cell to text mapping for an epigraphic support fragment.
+ */
+export interface EpiSupportFrCellMapping {
+  location: string;
+  headText?: string;
+  headTextLoc?: string;
+  tailText?: string;
+  tailTextLoc?: string;
+}
+
+/**
  * A fragment of an epigraphic support.
  */
 export interface EpiSupportFr {
@@ -9,14 +20,10 @@ export interface EpiSupportFr {
   shelfmark?: string;
   isLost?: boolean;
   size?: PhysicalSize;
-  row?: number;
-  column?: number;
-  rowSpan?: number;
-  columnSpan?: number;
-  headText?: string;
-  headTextLoc?: string;
-  tailText?: string;
-  tailTextLoc?: string;
+  rowCount?: number;
+  columnCount?: number;
+  location?: string;
+  cellMappings?: EpiSupportFrCellMapping[];
   note?: string;
 }
 
@@ -158,29 +165,38 @@ export const EpiSupportFrr_PART_SCHEMA = {
               },
             },
           },
-          row: {
+          rowCount: {
             type: 'integer',
           },
-          column: {
+          columnCount: {
             type: 'integer',
           },
-          rowSpan: {
-            type: 'integer',
-          },
-          columnSpan: {
-            type: 'integer',
-          },
-          headText: {
+          location: {
             type: 'string',
           },
-          headTextLoc: {
-            type: 'string',
-          },
-          tailText: {
-            type: 'string',
-          },
-          tailTextLoc: {
-            type: 'string',
+          cellMappings: {
+            type: 'array',
+            items: {
+              type: 'object',
+              required: ['location'],
+              properties: {
+                location: {
+                  type: 'string',
+                },
+                headText: {
+                  type: 'string',
+                },
+                headTextLoc: {
+                  type: 'string',
+                },
+                tailText: {
+                  type: 'string',
+                },
+                tailTextLoc: {
+                  type: 'string',
+                },
+              },
+            },
           },
           note: {
             type: 'string',
