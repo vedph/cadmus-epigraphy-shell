@@ -17,6 +17,7 @@ Cadmus epigraphic components development shell.
 
 ## History
 
+- 2024-09-16: updated Angular and packages.
 - 2024-07-15: refactored fr part and editor (`@myrmidon/cadmus-part-epigraphy-support-frr@0.0.3`).
 - 2024-06-23: added new parts.
 - 2024-06-22: updated Angular and packages.

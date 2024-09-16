@@ -32,7 +32,8 @@
               "hidden": false,
               "vendor": true
             },
-            "browser": "src/main.ts"
+            "browser": "src/main.ts",
+            "allowedCommonJsDependencies": ["leaflet", "diff-match-patch"]
           },
           "configurations": {
             "production": {

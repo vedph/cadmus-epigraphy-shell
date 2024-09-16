@@ -54,7 +54,7 @@
     @if (user) {
     <div fxLayout="row" fxLayoutAlign="start center">
       <!-- indicators -->
-      <img [src]="getGravatarUrl(user.email, 32)" alt="{{ user.userName }}" />
+      <img [src]="user.email | gravatar : 32" alt="{{ user.userName }}" />
       @if (user && user.roles.includes('admin')) {
       <mat-icon class="small-icon" title="admin">build</mat-icon>
       } @if (user && !user.emailConfirmed) {
