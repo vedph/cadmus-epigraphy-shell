@@ -218,10 +218,9 @@
           </div>
           <!-- note -->
           <div>
-            <mat-form-field>
+            <mat-form-field class="long-text">
               <textarea
                 rows="3"
-                class="long-text"
                 matInput
                 placeholder="note"
                 [formControl]="note"
@@ -237,6 +236,7 @@
             <mat-checkbox [formControl]="hasField">field</mat-checkbox>
           </div>
           <!-- fieldSize -->
+          @if (hasField.value) {
           <div>
             <fieldset>
               <legend>field size</legend>
@@ -249,12 +249,14 @@
               />
             </fieldset>
           </div>
+          }
 
           <!-- hasMirror -->
           <div>
             <mat-checkbox [formControl]="hasMirror">mirror</mat-checkbox>
           </div>
           <!-- mirrorSize -->
+          @if (hasMirror.value) {
           <div>
             <fieldset>
               <legend>mirror size</legend>
@@ -267,6 +269,7 @@
               />
             </fieldset>
           </div>
+          }
 
           <div>
             <!-- hasFrame -->
@@ -274,10 +277,9 @@
             <!-- frame -->
             @if (hasFrame.value) {
             <div>
-              <mat-form-field>
+              <mat-form-field class="long-text">
                 <textarea
                   rows="3"
-                  class="long-text"
                   matInput
                   placeholder="frame"
                   [formControl]="frame"

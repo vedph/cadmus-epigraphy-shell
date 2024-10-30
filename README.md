@@ -22,6 +22,7 @@ Cadmus epigraphic components development shell.
 - 2024-10-30:
   - ⚠️ renamed support and writing part into old to allow for new models for them. Affected libraries bump to 4.0.0.
   - added new support, writing, and technique parts.
+  - updated peer dependencies.
 - 2024-09-16: updated Angular and packages.
 - 2024-07-15: refactored fr part and editor (`@myrmidon/cadmus-part-epigraphy-support-frr@0.0.3`).
 - 2024-06-23: added new parts.

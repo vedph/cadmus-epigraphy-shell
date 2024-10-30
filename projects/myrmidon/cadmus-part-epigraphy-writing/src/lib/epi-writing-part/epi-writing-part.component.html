@@ -110,10 +110,10 @@
       }
 
       <!-- note -->
-      <div>
-        <mat-form-field>
+      <div style="margin-top: 8px">
+        <mat-form-field class="long-text">
           <mat-label>note</mat-label>
-          <input matInput [formControl]="note" />
+          <textarea rows="3" matInput [formControl]="note"></textarea>
           @if ($any(note).errors?.maxLength && (note.dirty || note.touched)) {
           <mat-error>note too long</mat-error>
           }
