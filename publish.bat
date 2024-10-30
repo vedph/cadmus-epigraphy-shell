@@ -30,6 +30,11 @@ call npm publish --access=public
 cd ..\..\..
 pause
 
+cd .\dist\myrmidon\cadmus-part-epigraphy-technique
+call npm publish --access=public
+cd ..\..\..
+pause
+
 cd .\dist\myrmidon\cadmus-part-epigraphy-writing
 call npm publish --access=public
 cd ..\..\..

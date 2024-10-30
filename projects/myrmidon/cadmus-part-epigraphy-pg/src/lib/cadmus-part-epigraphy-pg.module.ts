@@ -43,6 +43,10 @@ import {
   EpiSupportFrrPartFeatureComponent,
 } from '@myrmidon/cadmus-part-epigraphy-support-frr';
 import { NgeMonacoModule } from '@cisstech/nge/monaco';
+import {
+  EPI_TECHNIQUE_PART_TYPEID,
+  EpiTechniquePartFeatureComponent,
+} from '@myrmidon/cadmus-part-epigraphy-technique';
 
 export const RouterModuleForChild = RouterModule.forChild([
   {
@@ -85,6 +89,12 @@ export const RouterModuleForChild = RouterModule.forChild([
     path: `${EPI_FORMULA_PATTERNS_PART_TYPEID}/:pid`,
     pathMatch: 'full',
     component: EpiFormulaPatternsPartFeatureComponent,
+    canDeactivate: [PendingChangesGuard],
+  },
+  {
+    path: `${EPI_TECHNIQUE_PART_TYPEID}/:pid`,
+    pathMatch: 'full',
+    component: EpiTechniquePartFeatureComponent,
     canDeactivate: [PendingChangesGuard],
   },
   // fragments

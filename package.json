@@ -13,8 +13,9 @@
     "build-sig": "ng build @myrmidon/cadmus-part-epigraphy-signs",
     "build-for": "ng build @myrmidon/cadmus-part-epigraphy-formula-patterns",
     "build-lig": "ng build @myrmidon/cadmus-fr-epigraphy-ligatures",
+    "build-tec": "ng build @myrmidon/cadmus-part-epigraphy-technique",
     "build-pg": "ng build @myrmidon/cadmus-part-epigraphy-pg",
-    "build-lib": "npm run build-sup && npm run build-wri && npm run build-for && npm run build-lig && npm run build-suf && npm run build-sig && npm run build-pg"
+    "build-lib": "npm run build-sup && npm run build-wri && npm run build-for && npm run build-lig && npm run build-suf && npm run build-sig && npm run build-tec && npm run build-pg"
   },
   "private": true,
   "dependencies": {
