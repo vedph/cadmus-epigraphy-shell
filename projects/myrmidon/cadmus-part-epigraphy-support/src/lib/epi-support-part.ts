@@ -1,19 +1,29 @@
 import { Part } from '@myrmidon/cadmus-core';
 import { PhysicalSize } from '@myrmidon/cadmus-mat-physical-size';
+import { DecoratedCount } from '@myrmidon/cadmus-refs-decorated-counts';
 
 /**
- * The EpiSupport part model.
+ * The EpiSupportPart part model.
  */
 export interface EpiSupportPart extends Part {
   material: string;
   originalFn?: string;
   currentFn?: string;
+  originalType?: string;
+  currentType?: string;
   objectType?: string;
-  supportType?: string;
   indoor?: boolean;
-  size?: PhysicalSize;
-  state?: string;
-  lastSeen?: Date;
+  supportSize?: PhysicalSize;
+  hasField?: boolean;
+  fieldSize?: PhysicalSize;
+  hasMirror?: boolean;
+  mirrorSize?: PhysicalSize;
+  hasFrame?: boolean;
+  frame?: string;
+  counts?: DecoratedCount[];
+  features?: string[];
+  hasDamnatio?: boolean;
+  note?: string;
 }
 
 /**
@@ -22,12 +32,15 @@ export interface EpiSupportPart extends Part {
 export const EPI_SUPPORT_PART_TYPEID = 'it.vedph.epigraphy.support';
 
 /**
- * JSON schema for the EpiSupport part.
+ * JSON schema for the EpiSupportPart part.
  * You can use the JSON schema tool at https://jsonschema.net/.
  */
-export const Epi_SUPPORT_PART_SCHEMA = {
+export const EPI_SUPPORT_PART_SCHEMA = {
   $schema: 'http://json-schema.org/draft-07/schema#',
-  $id: 'www.vedph.it/cadmus/parts/epigraphy/' + EPI_SUPPORT_PART_TYPEID + '.json',
+  $id:
+    'www.vedph.it/cadmus/parts/epigraphy/' +
+    EPI_SUPPORT_PART_TYPEID +
+    '.json',
   type: 'object',
   title: 'EpiSupportPart',
   required: [
@@ -38,9 +51,6 @@ export const Epi_SUPPORT_PART_SCHEMA = {
     'creatorId',
     'timeModified',
     'userId',
-    'currentFn',
-    'objectType',
-    'supportType',
     'material',
   ],
   properties: {
@@ -74,25 +84,28 @@ export const Epi_SUPPORT_PART_SCHEMA = {
       type: ['string', 'null'],
       pattern: '^([a-z][-0-9a-z._]*)?$',
     },
+    material: {
+      type: 'string',
+    },
     originalFn: {
       type: 'string',
     },
     currentFn: {
       type: 'string',
     },
+    originalType: {
+      type: 'string',
+    },
+    currentType: {
+      type: 'string',
+    },
     objectType: {
       type: 'string',
     },
-    supportType: {
-      type: 'string',
-    },
-    isIndoor: {
+    indoor: {
       type: 'boolean',
     },
-    material: {
-      type: 'string',
-    },
-    size: {
+    supportSize: {
       type: 'object',
       required: ['w'],
       properties: {
@@ -149,11 +162,162 @@ export const Epi_SUPPORT_PART_SCHEMA = {
         },
       },
     },
-    state: {
+    hasField: {
+      type: 'boolean',
+    },
+    fieldSize: {
+      type: 'object',
+      required: ['w'],
+      properties: {
+        tag: {
+          type: 'string',
+        },
+        w: {
+          type: 'object',
+          required: ['value', 'unit'],
+          properties: {
+            tag: {
+              type: 'string',
+            },
+            value: {
+              type: 'number',
+            },
+            unit: {
+              type: 'string',
+            },
+          },
+        },
+        h: {
+          type: 'object',
+          required: ['value', 'unit'],
+          properties: {
+            tag: {
+              type: 'string',
+            },
+            value: {
+              type: 'number',
+            },
+            unit: {
+              type: 'string',
+            },
+          },
+        },
+        d: {
+          type: 'object',
+          required: ['value', 'unit'],
+          properties: {
+            tag: {
+              type: 'string',
+            },
+            value: {
+              type: 'number',
+            },
+            unit: {
+              type: 'string',
+            },
+          },
+        },
+        note: {
+          type: 'string',
+        },
+      },
+    },
+    hasMirror: {
+      type: 'boolean',
+    },
+    mirrorSize: {
+      type: 'object',
+      required: ['w'],
+      properties: {
+        tag: {
+          type: 'string',
+        },
+        w: {
+          type: 'object',
+          required: ['value', 'unit'],
+          properties: {
+            tag: {
+              type: 'string',
+            },
+            value: {
+              type: 'number',
+            },
+            unit: {
+              type: 'string',
+            },
+          },
+        },
+        h: {
+          type: 'object',
+          required: ['value', 'unit'],
+          properties: {
+            tag: {
+              type: 'string',
+            },
+            value: {
+              type: 'number',
+            },
+            unit: {
+              type: 'string',
+            },
+          },
+        },
+        d: {
+          type: 'object',
+          required: ['value', 'unit'],
+          properties: {
+            tag: {
+              type: 'string',
+            },
+            value: {
+              type: 'number',
+            },
+            unit: {
+              type: 'string',
+            },
+          },
+        },
+        note: {
+          type: 'string',
+        },
+      },
+    },
+    hasFrame: {
+      type: 'boolean',
+    },
+    frame: {
       type: 'string',
     },
-    lastSeen: {
-      type: 'date',
+    counts: {
+      type: 'array',
+      items: {
+        anyOf: [
+          {
+            type: 'object',
+            required: ['count'],
+            properties: {
+              count: {
+                type: 'string',
+              },
+              note: {
+                type: 'string',
+              },
+            },
+          },
+        ],
+      },
+    },
+    features: {
+      type: 'array',
+      items: {
+        type: 'string',
+      },
+    },
+    hasDamnatio: {
+      type: 'boolean',
+    },
+    note: {
+      type: 'string',
     },
   },
 };

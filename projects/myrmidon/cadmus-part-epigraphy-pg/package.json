@@ -1,6 +1,6 @@
 {
   "name": "@myrmidon/cadmus-part-epigraphy-pg",
-  "version": "3.1.1",
+  "version": "4.0.0",
   "description": "Cadmus - epigraphic components wrapper.",
   "keywords": [
     "Cadmus",

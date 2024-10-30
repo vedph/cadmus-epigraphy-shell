@@ -8,7 +8,7 @@ describe('EpiWritingPartFeatureComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ EpiWritingPartFeatureComponent ]
+      imports: [EpiWritingPartFeatureComponent]
     })
     .compileComponents();
 

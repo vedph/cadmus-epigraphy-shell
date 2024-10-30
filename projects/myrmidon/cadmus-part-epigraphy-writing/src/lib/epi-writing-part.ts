@@ -1,22 +1,14 @@
 import { Part } from '@myrmidon/cadmus-core';
-import { DecoratedCount } from '@myrmidon/cadmus-refs-decorated-counts';
 
 /**
  * The EpiWriting part model.
  */
 export interface EpiWritingPart extends Part {
-  system: string;
-  type: string;
-  technique?: string;
-  tool?: string;
-  frameType?: string;
-  counts?: DecoratedCount[];
-  figType?: string;
-  figFeatures?: string[];
-  scriptFeatures?: string[];
-  languages: string[];
-  hasPoetry?: boolean;
-  metres?: string[];
+  system?: string;
+  script: string;
+  casing?: string;
+  features?: string[];
+  note?: string;
 }
 
 /**
@@ -30,7 +22,8 @@ export const EPI_WRITING_PART_TYPEID = 'it.vedph.epigraphy.writing';
  */
 export const EPI_WRITING_PART_SCHEMA = {
   $schema: 'http://json-schema.org/draft-07/schema#',
-  $id: 'www.vedph.it/cadmus/parts/epigraphy/' + EPI_WRITING_PART_TYPEID + '.json',
+  $id:
+    'www.vedph.it/cadmus/parts/epigraphy/' + EPI_WRITING_PART_TYPEID + '.json',
   type: 'object',
   title: 'EpiWritingPart',
   required: [
@@ -41,9 +34,7 @@ export const EPI_WRITING_PART_SCHEMA = {
     'creatorId',
     'timeModified',
     'userId',
-    'system',
-    'type',
-    'languages',
+    'script',
   ],
   properties: {
     timeCreated: {
@@ -79,74 +70,20 @@ export const EPI_WRITING_PART_SCHEMA = {
     system: {
       type: 'string',
     },
-    type: {
+    script: {
       type: 'string',
     },
-    languages: {
+    casing: {
+      type: 'string',
+    },
+    features: {
       type: 'array',
       items: {
-        anyOf: [
-          {
-            type: 'string',
-          },
-        ],
+        type: 'string',
       },
     },
-    counts: {
-      type: 'array',
-      items: {
-        type: 'object',
-        required: ['id', 'value'],
-        properties: {
-          id: {
-            type: 'string',
-          },
-          value: {
-            type: 'string',
-          },
-          tag: {
-            type: 'string',
-          },
-          note: {
-            type: 'string',
-          },
-        },
-      },
-    },
-    hasPoetry: {
-      type: 'boolean',
-    },
-    technique: {
+    note: {
       type: 'string',
-    },
-    tool: {
-      type: 'string',
-    },
-    figType: {
-      type: 'string',
-    },
-    scriptFeatures: {
-      type: 'array',
-      items: {
-        anyOf: [
-          {
-            type: 'string',
-          },
-        ],
-      },
-    },
-    frameType: {
-      type: 'string',
-    },
-  },
-  metres: {
-    type: 'array',
-    items: {
-      anyOf: [
-        {
-          type: 'string',
-        },
-      ],
     },
   },
 };

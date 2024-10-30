@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
-import { EditPartFeatureBase, PartEditorService } from '@myrmidon/cadmus-state';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ItemService, ThesaurusService } from '@myrmidon/cadmus-api';
+import { EditPartFeatureBase, PartEditorService } from '@myrmidon/cadmus-state';
 
 @Component({
   selector: 'cadmus-epi-support-part-feature',
   templateUrl: './epi-support-part-feature.component.html',
-  styleUrls: ['./epi-support-part-feature.component.css'],
+  styleUrl: './epi-support-part-feature.component.scss',
 })
 export class EpiSupportPartFeatureComponent
   extends EditPartFeatureBase
@@ -34,14 +33,17 @@ export class EpiSupportPartFeatureComponent
 
   protected override getReqThesauriIds(): string[] {
     return [
-      'epi-support-functions',
-      'epi-support-object-types',
-      'epi-support-types',
       'epi-support-materials',
-      'epi-support-states',
+      'epi-support-functions',
+      'epi-support-types',
+      'epi-support-object-types',
+      'epi-support-count-types',
+      'epi-support-features',
       'physical-size-units',
       'physical-size-tags',
       'physical-size-dim-tags',
+      'decorated-count-ids',
+      'decorated-count-tags',
     ];
   }
 }

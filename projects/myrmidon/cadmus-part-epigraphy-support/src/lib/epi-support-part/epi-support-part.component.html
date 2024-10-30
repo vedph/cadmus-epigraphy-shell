@@ -7,206 +7,313 @@
       <mat-card-title>Epigraphic Support Part</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <div class="form-row">
-        <!-- material (bound) -->
-        @if (supMatEntries?.length) {
-        <mat-form-field>
-          <mat-label>material</mat-label>
-          <mat-select [formControl]="material">
-            @for (e of supMatEntries; track e.id) {
-            <mat-option [value]="e.id">{{ e.value }}</mat-option>
+      <mat-tab-group>
+        <!-- GENERAL -->
+        <mat-tab label="general">
+          <!-- material -->
+          <div class="form-row">
+            <!-- material (bound) -->
+            @if (matEntries?.length) {
+            <mat-form-field>
+              <mat-label>material</mat-label>
+              <mat-select [formControl]="material">
+                @for (e of matEntries; track e.id) {
+                <mat-option [value]="e.id">{{ e.value }}</mat-option>
+                }
+              </mat-select>
+              @if ( $any(material).errors?.required && (material.dirty ||
+              material.touched) ) {
+              <mat-error>material required</mat-error>
+              }
+            </mat-form-field>
             }
-          </mat-select>
-          @if ( $any(material).errors?.required && (material.dirty ||
-          material.touched) ) {
-          <mat-error>material required</mat-error>
-          }
-        </mat-form-field>
-        }
-        <!-- material (free) -->
-        @if (!supMatEntries?.length) {
-        <mat-form-field>
-          <mat-label>material</mat-label>
-          <input matInput [formControl]="material" />
-          @if ( $any(material).errors?.required && (material.dirty ||
-          material.touched) ) {
-          <mat-error>material required</mat-error>
-          } @if ( $any(material).errors?.maxLength && (material.dirty ||
-          material.touched) ) {
-          <mat-error>material too long</mat-error>
-          }
-        </mat-form-field>
-        }
-      </div>
-
-      <div class="form-row">
-        <!-- originalFn (bound) -->
-        @if (fnEntries?.length) {
-        <mat-form-field>
-          <mat-label>original fn.</mat-label>
-          <mat-select [formControl]="originalFn">
-            @for (e of fnEntries; track e.id) {
-            <mat-option [value]="e.id">{{ e.value }}</mat-option>
+            <!-- material (free) -->
+            @if (!matEntries?.length) {
+            <mat-form-field>
+              <mat-label>material</mat-label>
+              <input matInput [formControl]="material" />
+              @if ( $any(material).errors?.required && (material.dirty ||
+              material.touched) ) {
+              <mat-error>material required</mat-error>
+              } @if ( $any(material).errors?.maxLength && (material.dirty ||
+              material.touched) ) {
+              <mat-error>material too long</mat-error>
+              }
+            </mat-form-field>
             }
-          </mat-select>
-          @if ( $any(originalFn).errors?.required && (originalFn.dirty ||
-          originalFn.touched) ) {
-          <mat-error>original fn. required</mat-error>
-          }
-        </mat-form-field>
-        }
-        <!-- originalFn (free) -->
-        @if (!fnEntries?.length) {
-        <mat-form-field>
-          <mat-label>original fn.</mat-label>
-          <input matInput [formControl]="originalFn" />
-          @if ( $any(originalFn).errors?.required && (originalFn.dirty ||
-          originalFn.touched) ) {
-          <mat-error>original fn. required</mat-error>
-          } @if ( $any(originalFn).errors?.maxLength && (originalFn.dirty ||
-          originalFn.touched) ) {
-          <mat-error>original fn. too long</mat-error>
-          }
-        </mat-form-field>
-        }
-
-        <!-- currentFn (bound) -->
-        @if (fnEntries?.length) {
-        <mat-form-field>
-          <mat-label>current fn.</mat-label>
-          <mat-select [formControl]="currentFn">
-            @for (e of fnEntries; track e.id) {
-            <mat-option [value]="e.id">{{ e.value }}</mat-option>
+          </div>
+          <!-- functions -->
+          <div class="form-row">
+            <!-- originalFn (bound) -->
+            @if (fnEntries?.length) {
+            <mat-form-field>
+              <mat-label>original fn.</mat-label>
+              <mat-select [formControl]="originalFn">
+                @for (e of fnEntries; track e.id) {
+                <mat-option [value]="e.id">{{ e.value }}</mat-option>
+                }
+              </mat-select>
+              @if ( $any(originalFn).errors?.required && (originalFn.dirty ||
+              originalFn.touched) ) {
+              <mat-error>original fn. required</mat-error>
+              }
+            </mat-form-field>
             }
-          </mat-select>
-          @if ( $any(currentFn).errors?.required && (currentFn.dirty ||
-          currentFn.touched) ) {
-          <mat-error>current fn. required</mat-error>
-          }
-        </mat-form-field>
-        }
-        <!-- currentFn (free) -->
-        @if (!fnEntries?.length) {
-        <mat-form-field>
-          <mat-label>current fn.</mat-label>
-          <input matInput [formControl]="currentFn" />
-          @if ( $any(currentFn).errors?.required && (currentFn.dirty ||
-          currentFn.touched) ) {
-          <mat-error>current fn. required</mat-error>
-          } @if ( $any(currentFn).errors?.maxLength && (currentFn.dirty ||
-          currentFn.touched) ) {
-          <mat-error>current fn. too long</mat-error>
-          }
-        </mat-form-field>
-        }
-      </div>
-
-      <div class="form-row">
-        <!-- objectType (bound) -->
-        @if (supTypeEntries?.length) {
-        <mat-form-field>
-          <mat-label>object type</mat-label>
-          <mat-select [formControl]="objectType">
-            @for (e of supTypeEntries; track e.id) {
-            <mat-option [value]="e.id">{{ e.value }}</mat-option>
+            <!-- originalFn (free) -->
+            @if (!fnEntries?.length) {
+            <mat-form-field>
+              <mat-label>original fn.</mat-label>
+              <input matInput [formControl]="originalFn" />
+              @if ( $any(originalFn).errors?.required && (originalFn.dirty ||
+              originalFn.touched) ) {
+              <mat-error>original fn. required</mat-error>
+              } @if ( $any(originalFn).errors?.maxLength && (originalFn.dirty ||
+              originalFn.touched) ) {
+              <mat-error>original fn. too long</mat-error>
+              }
+            </mat-form-field>
             }
-          </mat-select>
-          @if ( $any(objectType).errors?.required && (objectType.dirty ||
-          objectType.touched) ) {
-          <mat-error>object type required</mat-error>
-          }
-        </mat-form-field>
-        }
-        <!-- objectType (free) -->
-        @if (!supTypeEntries?.length) {
-        <mat-form-field>
-          <mat-label>object type</mat-label>
-          <input matInput [formControl]="objectType" />
-          @if ( $any(objectType).errors?.required && (objectType.dirty ||
-          objectType.touched) ) {
-          <mat-error>object type required</mat-error>
-          } @if ( $any(objectType).errors?.maxLength && (objectType.dirty ||
-          objectType.touched) ) {
-          <mat-error>object type too long</mat-error>
-          }
-        </mat-form-field>
-        }
 
-        <!-- supportType (bound) -->
-        @if (supTypeEntries?.length) {
-        <mat-form-field>
-          <mat-label>support type</mat-label>
-          <mat-select [formControl]="supportType">
-            @for (e of supTypeEntries; track e.id) {
-            <mat-option [value]="e.id">{{ e.value }}</mat-option>
+            <!-- currentFn (bound) -->
+            @if (fnEntries?.length) {
+            <mat-form-field>
+              <mat-label>current fn.</mat-label>
+              <mat-select [formControl]="currentFn">
+                @for (e of fnEntries; track e.id) {
+                <mat-option [value]="e.id">{{ e.value }}</mat-option>
+                }
+              </mat-select>
+              @if ( $any(currentFn).errors?.required && (currentFn.dirty ||
+              currentFn.touched) ) {
+              <mat-error>current fn. required</mat-error>
+              }
+            </mat-form-field>
             }
-          </mat-select>
-          @if ( $any(supportType).errors?.required && (supportType.dirty ||
-          supportType.touched) ) {
-          <mat-error>support type required</mat-error>
+            <!-- currentFn (free) -->
+            @if (!fnEntries?.length) {
+            <mat-form-field>
+              <mat-label>current fn.</mat-label>
+              <input matInput [formControl]="currentFn" />
+              @if ( $any(currentFn).errors?.required && (currentFn.dirty ||
+              currentFn.touched) ) {
+              <mat-error>current fn. required</mat-error>
+              } @if ( $any(currentFn).errors?.maxLength && (currentFn.dirty ||
+              currentFn.touched) ) {
+              <mat-error>current fn. too long</mat-error>
+              }
+            </mat-form-field>
+            }
+          </div>
+          <!-- types -->
+          <div class="form-row">
+            <!-- originalType (bound) -->
+            @if (typeEntries?.length) {
+            <mat-form-field>
+              <mat-label>originalType</mat-label>
+              <mat-select [formControl]="originalType">
+                <mat-option *ngFor="let e of typeEntries" [value]="e.id">{{
+                  e.value
+                }}</mat-option>
+              </mat-select>
+              @if ($any(originalType).errors?.required && (originalType.dirty ||
+              originalType.touched)) {
+              <mat-error>originalType required</mat-error>
+              }
+            </mat-form-field>
+            } @else {
+            <!-- originalType (free) -->
+            <mat-form-field>
+              <mat-label>original type</mat-label>
+              <input matInput [formControl]="originalType" />
+              @if ($any(originalType).errors?.required && (originalType.dirty ||
+              originalType.touched)) {
+              <mat-error>original type required</mat-error>
+              } @if ($any(originalType).errors?.maxLength && (originalType.dirty
+              || originalType.touched)) {
+              <mat-error>original type too long</mat-error>
+              }
+            </mat-form-field>
+            }
+            <!-- currentType (bound) -->
+            @if (typeEntries?.length) {
+            <mat-form-field>
+              <mat-label>current type</mat-label>
+              <mat-select [formControl]="currentType">
+                <mat-option *ngFor="let e of typeEntries" [value]="e.id">{{
+                  e.value
+                }}</mat-option>
+              </mat-select>
+              @if ($any(currentType).errors?.required && (currentType.dirty ||
+              currentType.touched)) {
+              <mat-error>current type required</mat-error>
+              }
+            </mat-form-field>
+            } @else {
+            <!-- currentType (free) -->
+            <mat-form-field>
+              <mat-label>current type</mat-label>
+              <input matInput [formControl]="currentType" />
+              @if ($any(currentType).errors?.required && (currentType.dirty ||
+              currentType.touched)) {
+              <mat-error>current type required</mat-error>
+              } @if ($any(currentType).errors?.maxLength && (currentType.dirty
+              || currentType.touched)) {
+              <mat-error>current type too long</mat-error>
+              }
+            </mat-form-field>
+            }
+          </div>
+          <div>
+            <!-- objectType (bound) -->
+            @if (objTypeEntries?.length) {
+            <mat-form-field>
+              <mat-label>object type</mat-label>
+              <mat-select [formControl]="objectType">
+                <mat-option *ngFor="let e of objTypeEntries" [value]="e.id">{{
+                  e.value
+                }}</mat-option>
+              </mat-select>
+              @if ($any(objectType).errors?.required && (objectType.dirty ||
+              objectType.touched)) {
+              <mat-error>objectType required</mat-error>
+              }
+            </mat-form-field>
+            } @else {
+            <!-- objectType (free) -->
+            <mat-form-field>
+              <mat-label>objectType</mat-label>
+              <input matInput [formControl]="objectType" />
+              @if ($any(objectType).errors?.required && (objectType.dirty ||
+              objectType.touched)) {
+              <mat-error>objectType required</mat-error>
+              } @if ($any(objectType).errors?.maxLength && (objectType.dirty ||
+              objectType.touched)) {
+              <mat-error>objectType too long</mat-error>
+              }
+            </mat-form-field>
+            }
+            <!-- indoor -->
+            <mat-checkbox [formControl]="indoor">indoor</mat-checkbox>
+            <!-- hasSupportSize -->
+            <mat-checkbox [formControl]="hasSupportSize"
+              >support size</mat-checkbox
+            >
+          </div>
+          <!-- supportSize -->
+          @if (hasSupportSize.value) {
+          <fieldset>
+            <legend>support size</legend>
+            <cadmus-mat-physical-size
+              [tagEntries]="szTagEntries"
+              [unitEntries]="szUnitEntries"
+              [dimTagEntries]="szDimTagEntries"
+              [size]="supportSize.value"
+              (sizeChange)="onSupportSizeChange($event)"
+            />
+          </fieldset>
           }
-        </mat-form-field>
-        }
-        <!-- supportType (free) -->
-        @if (!supTypeEntries?.length) {
-        <mat-form-field>
-          <mat-label>support type</mat-label>
-          <input matInput [formControl]="supportType" />
-          @if ( $any(supportType).errors?.required && (supportType.dirty ||
-          supportType.touched) ) {
-          <mat-error>support type required</mat-error>
-          } @if ( $any(supportType).errors?.maxLength && (supportType.dirty ||
-          supportType.touched) ) {
-          <mat-error>support type too long</mat-error>
+          <!-- hasDamnatio -->
+          <div>
+            <mat-checkbox [formControl]="hasDamnatio">damnatio</mat-checkbox>
+          </div>
+          <!-- note -->
+          <div>
+            <mat-form-field>
+              <textarea
+                rows="3"
+                class="long-text"
+                matInput
+                placeholder="note"
+                [formControl]="note"
+              ></textarea>
+            </mat-form-field>
+          </div>
+        </mat-tab>
+
+        <!-- LAYOUT -->
+        <mat-tab label="layout">
+          <!-- hasField -->
+          <div>
+            <mat-checkbox [formControl]="hasField">field</mat-checkbox>
+          </div>
+          <!-- fieldSize -->
+          <div>
+            <fieldset>
+              <legend>field size</legend>
+              <cadmus-mat-physical-size
+                [tagEntries]="szTagEntries"
+                [unitEntries]="szUnitEntries"
+                [dimTagEntries]="szDimTagEntries"
+                [size]="fieldSize.value"
+                (sizeChange)="onFieldSizeChange($event)"
+              />
+            </fieldset>
+          </div>
+
+          <!-- hasMirror -->
+          <div>
+            <mat-checkbox [formControl]="hasMirror">mirror</mat-checkbox>
+          </div>
+          <!-- mirrorSize -->
+          <div>
+            <fieldset>
+              <legend>mirror size</legend>
+              <cadmus-mat-physical-size
+                [tagEntries]="szTagEntries"
+                [unitEntries]="szUnitEntries"
+                [dimTagEntries]="szDimTagEntries"
+                [size]="mirrorSize.value"
+                (sizeChange)="onMirrorSizeChange($event)"
+              />
+            </fieldset>
+          </div>
+
+          <div>
+            <!-- hasFrame -->
+            <mat-checkbox [formControl]="hasFrame">frame</mat-checkbox>
+            <!-- frame -->
+            @if (hasFrame.value) {
+            <div>
+              <mat-form-field>
+                <textarea
+                  rows="3"
+                  class="long-text"
+                  matInput
+                  placeholder="frame"
+                  [formControl]="frame"
+                ></textarea>
+              </mat-form-field>
+            </div>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- FEATURES -->
+        @if (countIdEntries?.length || featEntries?.length) {
+        <mat-tab label="features">
+          <!-- counts -->
+          @if (countIdEntries?.length) {
+          <div>
+            <cadmus-refs-decorated-counts
+              [idEntries]="countIdEntries"
+              [tagEntries]="countTagEntries"
+              [counts]="counts.value"
+              (countsChange)="onCountsChange($event)"
+            />
+          </div>
           }
-        </mat-form-field>
-        }
-
-        <!-- isIndoor -->
-        <mat-checkbox [formControl]="indoor">indoor</mat-checkbox>
-      </div>
-
-      <!-- size -->
-      <div>
-        <mat-checkbox [formControl]="hasSize">has size</mat-checkbox>
-        @if (hasSize.value) {
-        <fieldset>
-          <legend>size</legend>
-          <cadmus-mat-physical-size
-            [tagEntries]="szTagEntries"
-            [unitEntries]="szUnitEntries"
-            [dimTagEntries]="szDimTagEntries"
-            [size]="initialSize"
-            (sizeChange)="onSizeChange($event)"
-          ></cadmus-mat-physical-size>
-        </fieldset>
-        }
-      </div>
-
-      <div>
-        <!-- state -->
-        <mat-form-field class="long-text">
-          <mat-label>state</mat-label>
-          <textarea rows="2" matInput [formControl]="state"></textarea>
-          @if ( $any(state).errors?.maxLength && (state.dirty || state.touched)
-          ) {
-          <mat-error>state too long</mat-error>
+          <!-- features -->
+          @if (featEntries?.length) {
+          <div>
+            <cadmus-ui-flags-picker
+              [flags]="featFlags$ | async"
+              (flagsChange)="onFeatFlagsChange($event)"
+            />
+          </div>
           }
-        </mat-form-field>
-      </div>
-
-      <div class="form-row">
-        <!-- lastSeen -->
-        <mat-form-field>
-          <mat-label>last seen</mat-label>
-          <input matInput [matDatepicker]="picker" [formControl]="lastSeen" />
-          <mat-datepicker-toggle
-            matSuffix
-            [for]="picker"
-          ></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-      </div>
+        </mat-tab>
+        }
+      </mat-tab-group>
     </mat-card-content>
     <mat-card-actions>
       <cadmus-close-save-buttons

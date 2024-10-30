@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, ActivatedRoute } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { ItemService, ThesaurusService } from '@myrmidon/cadmus-api';
 import { EditPartFeatureBase, PartEditorService } from '@myrmidon/cadmus-state';
+import { ItemService, ThesaurusService } from '@myrmidon/cadmus-api';
 
 @Component({
-  selector: 'cadmus-epi-writing-part-feature',
-  templateUrl: './epi-writing-part-feature.component.html',
-  styleUrl: './epi-writing-part-feature.component.scss',
+  selector: 'cadmus-epi-writing-old-part-feature',
+  templateUrl: './epi-writing-old-part-feature.component.html',
+  styleUrls: ['./epi-writing-old-part-feature.component.css'],
 })
-export class EpiWritingPartFeatureComponent
+export class EpiWritingOldPartFeatureComponent
   extends EditPartFeatureBase
   implements OnInit
 {
@@ -35,9 +35,17 @@ export class EpiWritingPartFeatureComponent
   protected override getReqThesauriIds(): string[] {
     return [
       'epi-writing-systems',
-      'epi-writing-scripts',
-      'epi-writing-casings',
-      'epi-writing-features',
+      'epi-writing-types',
+      'epi-writing-languages',
+      'epi-writing-techniques',
+      'epi-writing-tools',
+      'epi-writing-fig-types',
+      'epi-writing-fig-features',
+      'epi-writing-script-features',
+      'epi-writing-frame-types',
+      'epi-writing-metres',
+      'decorated-count-ids',
+      'decorated-count-tags',
     ];
   }
 }

@@ -22,12 +22,16 @@ import { PartEditorKeys } from '@myrmidon/cadmus-core';
 import { ASSERTED_LOCATIONS_PART_TYPEID } from '@myrmidon/cadmus-part-geo-asserted-locations';
 import { ASSERTED_TOPONYMS_PART_TYPEID } from '@myrmidon/cadmus-part-geo-asserted-toponyms';
 
-import { EPI_SUPPORT_PART_TYPEID } from '@myrmidon/cadmus-part-epigraphy-support';
-import { EPI_WRITING_PART_TYPEID } from '@myrmidon/cadmus-part-epigraphy-writing';
-import { EPI_LIGATURES_FRAGMENT_TYPEID } from '@myrmidon/cadmus-fr-epigraphy-ligatures';
-import { EPI_FORMULA_PATTERNS_PART_TYPEID } from '@myrmidon/cadmus-part-epigraphy-formula-patterns';
+import { EPI_SUPPORT_OLD_PART_TYPEID } from 'projects/myrmidon/cadmus-part-epigraphy-support/src/public-api';
+import {
+  EPI_WRITING_OLD_PART_TYPEID,
+  EPI_WRITING_PART_TYPEID,
+} from 'projects/myrmidon/cadmus-part-epigraphy-writing/src/public-api';
+import { EPI_LIGATURES_FRAGMENT_TYPEID } from 'projects/myrmidon/cadmus-fr-epigraphy-ligatures/src/public-api';
+import { EPI_FORMULA_PATTERNS_PART_TYPEID } from 'projects/myrmidon/cadmus-part-epigraphy-formula-patterns/src/public-api';
 import { EPI_SUPPORT_FRR_PART_TYPEID } from 'projects/myrmidon/cadmus-part-epigraphy-support-frr/src/public-api';
 import { EPI_SIGNS_PART_TYPEID } from 'projects/myrmidon/cadmus-part-epigraphy-signs/src/public-api';
+import { EPI_SUPPORT_PART_TYPEID } from 'projects/myrmidon/cadmus-part-epigraphy-support/src/public-api';
 
 const GENERAL = 'general';
 const PHILOLOGY = 'philology';
@@ -87,10 +91,16 @@ export const PART_EDITOR_KEYS: PartEditorKeys = {
   [EPI_SUPPORT_PART_TYPEID]: {
     part: EPIGRAPHY,
   },
+  [EPI_SUPPORT_OLD_PART_TYPEID]: {
+    part: EPIGRAPHY,
+  },
   [EPI_SUPPORT_FRR_PART_TYPEID]: {
     part: EPIGRAPHY,
   },
   [EPI_WRITING_PART_TYPEID]: {
+    part: EPIGRAPHY,
+  },
+  [EPI_WRITING_OLD_PART_TYPEID]: {
     part: EPIGRAPHY,
   },
   [EPI_SIGNS_PART_TYPEID]: {

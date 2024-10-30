@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, ActivatedRoute } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { ItemService, ThesaurusService } from '@myrmidon/cadmus-api';
 import { EditPartFeatureBase, PartEditorService } from '@myrmidon/cadmus-state';
+import { ItemService, ThesaurusService } from '@myrmidon/cadmus-api';
 
 @Component({
-  selector: 'cadmus-epi-writing-part-feature',
-  templateUrl: './epi-writing-part-feature.component.html',
-  styleUrl: './epi-writing-part-feature.component.scss',
+  selector: 'cadmus-epi-support-old-part-feature',
+  templateUrl: './epi-support-old-part-feature.component.html',
+  styleUrls: ['./epi-support-old-part-feature.component.css'],
 })
-export class EpiWritingPartFeatureComponent
+export class EpiSupportOldPartFeatureComponent
   extends EditPartFeatureBase
   implements OnInit
 {
@@ -34,10 +34,14 @@ export class EpiWritingPartFeatureComponent
 
   protected override getReqThesauriIds(): string[] {
     return [
-      'epi-writing-systems',
-      'epi-writing-scripts',
-      'epi-writing-casings',
-      'epi-writing-features',
+      'epi-support-functions',
+      'epi-support-object-types',
+      'epi-support-types',
+      'epi-support-materials',
+      'epi-support-states',
+      'physical-size-units',
+      'physical-size-tags',
+      'physical-size-dim-tags',
     ];
   }
 }
