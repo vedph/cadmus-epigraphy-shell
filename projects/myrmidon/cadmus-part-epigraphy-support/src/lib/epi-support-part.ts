@@ -12,6 +12,7 @@ export interface EpiSupportPart extends Part {
   originalType?: string;
   currentType?: string;
   objectType?: string;
+  inSitu?: boolean;
   indoor?: boolean;
   supportSize?: PhysicalSize;
   hasField?: boolean;
@@ -101,6 +102,9 @@ export const EPI_SUPPORT_PART_SCHEMA = {
     },
     objectType: {
       type: 'string',
+    },
+    inSitu: {
+      type: 'boolean',
     },
     indoor: {
       type: 'boolean',

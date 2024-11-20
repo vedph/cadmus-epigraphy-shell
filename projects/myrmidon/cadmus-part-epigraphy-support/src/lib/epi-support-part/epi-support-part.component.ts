@@ -50,6 +50,7 @@ export class EpiSupportPartComponent
   public originalType: FormControl<string | null>;
   public currentType: FormControl<string | null>;
   public objectType: FormControl<string | null>;
+  public inSitu: FormControl<boolean>;
   public indoor: FormControl<boolean>;
   public hasSupportSize: FormControl<boolean>;
   public supportSize: FormControl<PhysicalSize | null>;
@@ -133,6 +134,7 @@ export class EpiSupportPartComponent
     this.objectType = formBuilder.control<string | null>(null, {
       validators: [Validators.maxLength(50)],
     });
+    this.inSitu = formBuilder.control<boolean>(false, { nonNullable: true });
     this.indoor = formBuilder.control<boolean>(false, { nonNullable: true });
     this.hasSupportSize = formBuilder.control<boolean>(false, {
       nonNullable: true,
@@ -170,6 +172,7 @@ export class EpiSupportPartComponent
       originalType: this.originalType,
       currentType: this.currentType,
       objectType: this.objectType,
+      inSitu: this.inSitu,
       indoor: this.indoor,
       hasSupportSize: this.hasSupportSize,
       supportSize: this.supportSize,
@@ -267,6 +270,7 @@ export class EpiSupportPartComponent
     this.originalType.setValue(part.originalType || null);
     this.currentType.setValue(part.currentType || null);
     this.objectType.setValue(part.objectType || null);
+    this.inSitu.setValue(part.inSitu || false);
     this.indoor.setValue(part.indoor || false);
     this.hasSupportSize.setValue(!!part.supportSize);
     this.supportSize.setValue(part.supportSize || null);
@@ -336,6 +340,7 @@ export class EpiSupportPartComponent
     part.originalType = this.originalType.value?.trim();
     part.currentType = this.currentType.value?.trim();
     part.objectType = this.objectType.value?.trim();
+    part.inSitu = this.inSitu.value;
     part.indoor = this.indoor.value;
     part.supportSize =
       this.hasSupportSize.value && this.supportSize.value

@@ -17,6 +17,7 @@ Cadmus epigraphic components development shell.
 
 ## History
 
+- 2024-11-20: added `inSitu` to support part.
 - 2024-11-18: updated Angular and packages.
 - 2024-11-10: updated Angular and packages.
 
