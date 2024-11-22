@@ -18,7 +18,6 @@ import { EpiSupportFrCellMapping } from '../epi-support-frr-part';
 
 @Component({
   selector: 'cadmus-epi-support-fr-cell-mapping',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

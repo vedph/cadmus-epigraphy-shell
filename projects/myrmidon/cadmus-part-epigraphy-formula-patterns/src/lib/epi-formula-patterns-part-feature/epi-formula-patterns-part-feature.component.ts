@@ -9,6 +9,7 @@ import { ItemService, ThesaurusService } from '@myrmidon/cadmus-api';
   selector: 'cadmus-epi-formula-patterns-part-feature',
   templateUrl: './epi-formula-patterns-part-feature.component.html',
   styleUrls: ['./epi-formula-patterns-part-feature.component.css'],
+  standalone: false,
 })
 export class EpiFormulaPatternsPartFeatureComponent
   extends EditPartFeatureBase

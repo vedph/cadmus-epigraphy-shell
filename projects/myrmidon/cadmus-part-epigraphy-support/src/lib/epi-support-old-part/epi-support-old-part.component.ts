@@ -12,7 +12,10 @@ import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
 import { PhysicalSize } from '@myrmidon/cadmus-mat-physical-size';
 import { EditedObject, ModelEditorComponentBase } from '@myrmidon/cadmus-ui';
 
-import { EpiSupportOldPart, EPI_SUPPORT_OLD_PART_TYPEID } from '../epi-support-old-part';
+import {
+  EpiSupportOldPart,
+  EPI_SUPPORT_OLD_PART_TYPEID,
+} from '../epi-support-old-part';
 
 /**
  * EpiSupport part editor component.
@@ -24,6 +27,7 @@ import { EpiSupportOldPart, EPI_SUPPORT_OLD_PART_TYPEID } from '../epi-support-o
   selector: 'cadmus-epi-support-old-part',
   templateUrl: './epi-support-old-part.component.html',
   styleUrls: ['./epi-support-old-part.component.css'],
+  standalone: false,
 })
 export class EpiSupportOldPartComponent
   extends ModelEditorComponentBase<EpiSupportOldPart>
@@ -205,7 +209,9 @@ export class EpiSupportOldPartComponent
   }
 
   protected getValue(): EpiSupportOldPart {
-    let part = this.getEditedPart(EPI_SUPPORT_OLD_PART_TYPEID) as EpiSupportOldPart;
+    let part = this.getEditedPart(
+      EPI_SUPPORT_OLD_PART_TYPEID
+    ) as EpiSupportOldPart;
 
     part.material = this.material.value?.trim();
     part.originalFn = this.originalFn.value?.trim();

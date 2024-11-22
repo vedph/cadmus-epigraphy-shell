@@ -30,6 +30,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   selector: 'cadmus-epi-ligatures-fragment',
   templateUrl: './epi-ligatures-fragment.component.html',
   styleUrls: ['./epi-ligatures-fragment.component.css'],
+  standalone: false,
 })
 export class EpiLigaturesFragmentComponent
   extends ModelEditorComponentBase<EpiLigaturesFragment>

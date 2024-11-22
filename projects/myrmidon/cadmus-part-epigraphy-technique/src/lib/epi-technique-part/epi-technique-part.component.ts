@@ -50,7 +50,6 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
  */
 @Component({
   selector: 'cadmus-epi-technique-part',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,

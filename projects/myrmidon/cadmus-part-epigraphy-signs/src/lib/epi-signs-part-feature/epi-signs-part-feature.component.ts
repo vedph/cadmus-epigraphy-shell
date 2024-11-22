@@ -9,11 +9,10 @@ import { EpiSignsPartComponent } from '../epi-signs-part/epi-signs-part.componen
 import { CadmusUiPgModule } from '@myrmidon/cadmus-ui-pg';
 
 @Component({
-  selector: 'cadmus-epi-signs-part-feature',
-  standalone: true,
-  imports: [EpiSignsPartComponent, CadmusUiPgModule],
-  templateUrl: './epi-signs-part-feature.component.html',
-  styleUrl: './epi-signs-part-feature.component.scss',
+    selector: 'cadmus-epi-signs-part-feature',
+    imports: [EpiSignsPartComponent, CadmusUiPgModule],
+    templateUrl: './epi-signs-part-feature.component.html',
+    styleUrl: './epi-signs-part-feature.component.scss'
 })
 export class EpiSignsPartFeatureComponent
   extends EditPartFeatureBase

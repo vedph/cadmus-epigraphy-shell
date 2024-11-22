@@ -11,7 +11,6 @@ import { EpiSupportFrrPartComponent } from '../epi-support-frr-part/epi-support-
 
 @Component({
   selector: 'cadmus-epi-support-frr-part-feature',
-  standalone: true,
   imports: [CommonModule, CadmusUiPgModule, EpiSupportFrrPartComponent],
   templateUrl: './epi-support-frr-part-feature.component.html',
   styleUrl: './epi-support-frr-part-feature.component.scss',

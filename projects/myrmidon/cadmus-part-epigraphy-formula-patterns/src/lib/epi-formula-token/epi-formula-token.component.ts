@@ -18,6 +18,7 @@ import { EpiFormulaToken } from '../epi-formula-patterns-part';
   selector: 'cadmus-epi-formula-token',
   templateUrl: './epi-formula-token.component.html',
   styleUrls: ['./epi-formula-token.component.css'],
+  standalone: false,
 })
 export class EpiFormulaTokenComponent {
   private _token: EpiFormulaToken | undefined;

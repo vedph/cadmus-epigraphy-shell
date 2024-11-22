@@ -4,6 +4,7 @@ import { EpiFormulaToken } from './epi-formula-patterns-part';
 
 @Pipe({
   name: 'epiFormulaToken',
+  standalone: false,
 })
 export class EpiFormulaTokenPipe implements PipeTransform {
   transform(value: EpiFormulaToken | undefined | null): unknown {

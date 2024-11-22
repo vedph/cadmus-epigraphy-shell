@@ -34,6 +34,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   selector: 'cadmus-epi-writing-part',
   templateUrl: './epi-writing-part.component.html',
   styleUrl: './epi-writing-part.component.scss',
+  standalone: false,
 })
 export class EpiWritingPartComponent
   extends ModelEditorComponentBase<EpiWritingPart>

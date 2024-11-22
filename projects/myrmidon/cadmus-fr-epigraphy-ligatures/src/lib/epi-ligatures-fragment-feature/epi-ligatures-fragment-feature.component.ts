@@ -12,6 +12,7 @@ import {
   selector: 'cadmus-epi-ligatures-fragment-feature',
   templateUrl: './epi-ligatures-fragment-feature.component.html',
   styleUrls: ['./epi-ligatures-fragment-feature.component.css'],
+  standalone: false,
 })
 export class EpiLigaturesFragmentFeatureComponent
   extends EditFragmentFeatureBase

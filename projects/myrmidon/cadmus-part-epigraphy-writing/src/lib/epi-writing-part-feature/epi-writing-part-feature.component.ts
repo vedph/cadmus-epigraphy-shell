@@ -9,6 +9,7 @@ import { EditPartFeatureBase, PartEditorService } from '@myrmidon/cadmus-state';
   selector: 'cadmus-epi-writing-part-feature',
   templateUrl: './epi-writing-part-feature.component.html',
   styleUrl: './epi-writing-part-feature.component.scss',
+  standalone: false,
 })
 export class EpiWritingPartFeatureComponent
   extends EditPartFeatureBase

@@ -40,26 +40,25 @@ import { EpiSignComponent } from '../epi-sign/epi-sign.component';
  * epi-signs-features (all optional).
  */
 @Component({
-  selector: 'cadmus-epi-signs-part',
-  standalone: true,
-  imports: [
-    CommonModule,
-    CommonModule,
-    ReactiveFormsModule,
-    MatButtonModule,
-    MatCardModule,
-    MatExpansionModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatSelectModule,
-    MatTooltipModule,
-    NgToolsModule,
-    CadmusUiModule,
-    EpiSignComponent,
-  ],
-  templateUrl: './epi-signs-part.component.html',
-  styleUrl: './epi-signs-part.component.scss',
+    selector: 'cadmus-epi-signs-part',
+    imports: [
+        CommonModule,
+        CommonModule,
+        ReactiveFormsModule,
+        MatButtonModule,
+        MatCardModule,
+        MatExpansionModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatSelectModule,
+        MatTooltipModule,
+        NgToolsModule,
+        CadmusUiModule,
+        EpiSignComponent,
+    ],
+    templateUrl: './epi-signs-part.component.html',
+    styleUrl: './epi-signs-part.component.scss'
 })
 export class EpiSignsPartComponent
   extends ModelEditorComponentBase<EpiSignsPart>

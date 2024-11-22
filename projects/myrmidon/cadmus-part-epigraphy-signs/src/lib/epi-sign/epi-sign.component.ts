@@ -55,25 +55,24 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
  * Epigraphic sign editor component.
  */
 @Component({
-  selector: 'cadmus-epi-sign',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatButtonModule,
-    MatExpansionModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatSelectModule,
-    MatTooltipModule,
-    NgeMonacoModule,
-    FlagsPickerComponent,
-    PhysicalMeasurementSetComponent,
-  ],
-  templateUrl: './epi-sign.component.html',
-  styleUrl: './epi-sign.component.scss',
-  providers: [CadmusTextEdService],
+    selector: 'cadmus-epi-sign',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatButtonModule,
+        MatExpansionModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatSelectModule,
+        MatTooltipModule,
+        NgeMonacoModule,
+        FlagsPickerComponent,
+        PhysicalMeasurementSetComponent,
+    ],
+    templateUrl: './epi-sign.component.html',
+    styleUrl: './epi-sign.component.scss',
+    providers: [CadmusTextEdService]
 })
 export class EpiSignComponent implements OnDestroy {
   private _sign?: EpiSign;

@@ -28,6 +28,7 @@ import {
   selector: 'cadmus-epi-formula-patterns-part',
   templateUrl: './epi-formula-patterns-part.component.html',
   styleUrls: ['./epi-formula-patterns-part.component.css'],
+  standalone: false,
 })
 export class EpiFormulaPatternsPartComponent
   extends ModelEditorComponentBase<EpiFormulaPatternsPart>

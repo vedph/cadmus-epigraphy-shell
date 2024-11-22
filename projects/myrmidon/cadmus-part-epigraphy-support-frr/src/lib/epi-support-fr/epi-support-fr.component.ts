@@ -33,7 +33,6 @@ import { EpiSupportFrCellMappingComponent } from '../epi-support-fr-cell-mapping
 
 @Component({
   selector: 'cadmus-epi-support-fr',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -45,7 +44,6 @@ import { EpiSupportFrCellMappingComponent } from '../epi-support-fr-cell-mapping
     MatInputModule,
     MatTooltipModule,
     PhysicalSizeComponent,
-    ExcelColumnPipe,
     PhysicalGridLocationComponent,
     EpiSupportFrCellMappingComponent,
   ],

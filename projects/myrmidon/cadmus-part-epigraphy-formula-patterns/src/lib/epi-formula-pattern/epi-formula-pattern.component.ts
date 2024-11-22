@@ -23,6 +23,7 @@ import { ThesaurusEntry } from '@myrmidon/cadmus-core';
   selector: 'cadmus-epi-formula-pattern',
   templateUrl: './epi-formula-pattern.component.html',
   styleUrls: ['./epi-formula-pattern.component.css'],
+  standalone: false,
 })
 export class EpiFormulaPatternComponent {
   private _pattern: EpiFormulaPattern | undefined;

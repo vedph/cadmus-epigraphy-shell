@@ -9,6 +9,7 @@ import { ItemService, ThesaurusService } from '@myrmidon/cadmus-api';
   selector: 'cadmus-epi-writing-old-part-feature',
   templateUrl: './epi-writing-old-part-feature.component.html',
   styleUrls: ['./epi-writing-old-part-feature.component.css'],
+  standalone: false,
 })
 export class EpiWritingOldPartFeatureComponent
   extends EditPartFeatureBase

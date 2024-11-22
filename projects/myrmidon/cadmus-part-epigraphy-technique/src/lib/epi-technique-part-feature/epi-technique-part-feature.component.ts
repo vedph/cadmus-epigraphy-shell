@@ -10,7 +10,6 @@ import { EpiTechniquePartComponent } from '../epi-technique-part/epi-technique-p
 
 @Component({
   selector: 'cadmus-epi-technique-part-feature',
-  standalone: true,
   imports: [CadmusUiPgModule, EpiTechniquePartComponent],
   templateUrl: './epi-technique-part-feature.component.html',
   styleUrl: './epi-technique-part-feature.component.scss',

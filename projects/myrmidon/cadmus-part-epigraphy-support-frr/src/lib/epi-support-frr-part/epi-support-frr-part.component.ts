@@ -41,7 +41,6 @@ import { EpiSupportFrComponent } from '../epi-support-fr/epi-support-fr.componen
  */
 @Component({
   selector: 'cadmus-epi-support-frr-part',
-  standalone: true,
   imports: [
     CommonModule,
     CommonModule,

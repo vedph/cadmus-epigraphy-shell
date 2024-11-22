@@ -18,7 +18,10 @@ import { Flag, FlagsPickerAdapter } from '@myrmidon/cadmus-ui-flags-picker';
 import { NgToolsValidators } from '@myrmidon/ng-tools';
 import { Observable } from 'rxjs';
 
-import { EpiWritingOldPart, EPI_WRITING_OLD_PART_TYPEID } from '../epi-writing-old-part';
+import {
+  EpiWritingOldPart,
+  EPI_WRITING_OLD_PART_TYPEID,
+} from '../epi-writing-old-part';
 
 function entryToFlag(entry: ThesaurusEntry): Flag {
   return {
@@ -39,6 +42,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   selector: 'cadmus-epi-writing-old-part',
   templateUrl: './epi-writing-old-part.component.html',
   styleUrls: ['./epi-writing-old-part.component.css'],
+  standalone: false,
 })
 export class EpiWritingOldPartComponent
   extends ModelEditorComponentBase<EpiWritingOldPart>
@@ -319,7 +323,9 @@ export class EpiWritingOldPartComponent
   }
 
   protected getValue(): EpiWritingOldPart {
-    let part = this.getEditedPart(EPI_WRITING_OLD_PART_TYPEID) as EpiWritingOldPart;
+    let part = this.getEditedPart(
+      EPI_WRITING_OLD_PART_TYPEID
+    ) as EpiWritingOldPart;
     part.system = this.system.value.trim();
     part.type = this.type.value.trim();
     part.technique = this.technique.value?.trim();

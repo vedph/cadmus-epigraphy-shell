@@ -36,6 +36,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   selector: 'cadmus-epi-support-part',
   templateUrl: './epi-support-part.component.html',
   styleUrls: ['./epi-support-part.component.scss'],
+  standalone: false,
 })
 export class EpiSupportPartComponent
   extends ModelEditorComponentBase<EpiSupportPart>
