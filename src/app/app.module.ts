@@ -49,13 +49,21 @@ import { NgeMonacoModule } from '@cisstech/nge/monaco';
 import { NgeMarkdownModule } from '@cisstech/nge/markdown';
 
 // myrmidon
-import { EnvServiceProvider, NgToolsModule } from '@myrmidon/ng-tools';
-import { NgMatToolsModule } from '@myrmidon/ng-mat-tools';
 import {
-  AuthJwtLoginModule,
+  EllipsisPipe,
+  EnvServiceProvider,
+  FlatLookupPipe,
+  SafeHtmlPipe,
+} from '@myrmidon/ngx-tools';
+import {
   authJwtInterceptor,
+  AuthJwtLoginComponent,
+  GravatarPipe,
 } from '@myrmidon/auth-jwt-login';
-import { AuthJwtAdminModule } from '@myrmidon/auth-jwt-admin';
+import {
+  AuthJwtRegistrationComponent,
+  UserListComponent,
+} from '@myrmidon/auth-jwt-admin';
 
 // cadmus bricks
 import { DocReferencesComponent } from '@myrmidon/cadmus-refs-doc-references';
@@ -160,10 +168,13 @@ import { ITEM_BROWSER_KEYS } from './item-browser-keys';
     NgeMonacoModule.forRoot({}),
     NgeMarkdownModule,
     // myrmidon
-    NgToolsModule,
-    NgMatToolsModule,
-    AuthJwtLoginModule,
-    AuthJwtAdminModule,
+    EllipsisPipe,
+    FlatLookupPipe,
+    SafeHtmlPipe,
+    AuthJwtLoginComponent,
+    AuthJwtRegistrationComponent,
+    UserListComponent,
+    GravatarPipe,
     // cadmus bricks
     DocReferencesComponent,
     HistoricalDateComponent,

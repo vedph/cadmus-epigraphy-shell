@@ -15,7 +15,7 @@ import {
   renderLabelFromLastColon,
 } from '@myrmidon/cadmus-ui';
 import { Flag, FlagsPickerAdapter } from '@myrmidon/cadmus-ui-flags-picker';
-import { NgToolsValidators } from '@myrmidon/ng-tools';
+import { NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { Observable } from 'rxjs';
 
 import {
@@ -171,7 +171,7 @@ export class EpiWritingOldPartComponent
     this.figFeatures = formBuilder.control([], { nonNullable: true });
     this.scriptFeatures = formBuilder.control([], { nonNullable: true });
     this.languages = formBuilder.control([], {
-      validators: NgToolsValidators.strictMinLengthValidator(1),
+      validators: NgxToolsValidators.strictMinLengthValidator(1),
       nonNullable: true,
     });
     this.hasPoetry = formBuilder.control(false, { nonNullable: true });

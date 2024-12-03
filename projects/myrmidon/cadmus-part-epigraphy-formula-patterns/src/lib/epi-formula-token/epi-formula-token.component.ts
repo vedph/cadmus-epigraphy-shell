@@ -7,7 +7,7 @@ import {
 } from '@angular/forms';
 import { ThesaurusEntry } from '@myrmidon/cadmus-core';
 import { renderLabelFromLastColon } from '@myrmidon/cadmus-ui';
-import { NgToolsValidators } from '@myrmidon/ng-tools';
+import { NgxToolsValidators } from '@myrmidon/ngx-tools';
 
 import { EpiFormulaToken } from '../epi-formula-patterns-part';
 
@@ -57,7 +57,7 @@ export class EpiFormulaTokenComponent {
     this.optional = formBuilder.control(false, { nonNullable: true });
     this.placeholder = formBuilder.control(false, { nonNullable: true });
     this.tags = formBuilder.control([], {
-      validators: NgToolsValidators.strictMinLengthValidator(1),
+      validators: NgxToolsValidators.strictMinLengthValidator(1),
       nonNullable: true,
     });
     this.values = formBuilder.control('', {

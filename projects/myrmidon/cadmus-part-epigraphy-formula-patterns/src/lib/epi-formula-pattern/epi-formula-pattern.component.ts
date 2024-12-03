@@ -7,8 +7,8 @@ import {
 } from '@angular/forms';
 import { take } from 'rxjs';
 
-import { DialogService } from '@myrmidon/ng-mat-tools';
-import { NgToolsValidators } from '@myrmidon/ng-tools';
+import { DialogService } from '@myrmidon/ngx-mat-tools';
+import { NgxToolsValidators } from '@myrmidon/ngx-tools';
 
 import {
   EpiFormulaPattern,
@@ -75,7 +75,7 @@ export class EpiFormulaPatternComponent {
     });
     this.tag = formBuilder.control(null, Validators.maxLength(50));
     this.tokens = formBuilder.control([], {
-      validators: NgToolsValidators.strictMinLengthValidator(1),
+      validators: NgxToolsValidators.strictMinLengthValidator(1),
       nonNullable: true,
     });
     this.form = formBuilder.group({

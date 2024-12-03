@@ -18,8 +18,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { NgToolsModule, NgToolsValidators } from '@myrmidon/ng-tools';
-import { DialogService } from '@myrmidon/ng-mat-tools';
+import { NgxToolsValidators } from '@myrmidon/ngx-tools';
+import { DialogService } from '@myrmidon/ngx-mat-tools';
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import {
   CadmusUiModule,
@@ -54,7 +54,6 @@ import { EpiSupportFrComponent } from '../epi-support-fr/epi-support-fr.componen
     MatSelectModule,
     MatTabsModule,
     MatTooltipModule,
-    NgToolsModule,
     CadmusUiModule,
     PhysicalSizePipe,
     EpiSupportFrComponent,
@@ -93,7 +92,7 @@ export class EpiSupportFrrPartComponent
     // form
     this.fragments = formBuilder.control([], {
       // at least 1 entry
-      validators: NgToolsValidators.strictMinLengthValidator(1),
+      validators: NgxToolsValidators.strictMinLengthValidator(1),
       nonNullable: true,
     });
   }

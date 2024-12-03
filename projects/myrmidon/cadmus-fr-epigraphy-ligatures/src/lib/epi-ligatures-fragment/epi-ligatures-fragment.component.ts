@@ -11,7 +11,7 @@ import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
 import { EditedObject, ModelEditorComponentBase } from '@myrmidon/cadmus-ui';
 import { Flag, FlagsPickerAdapter } from '@myrmidon/cadmus-ui-flags-picker';
-import { NgToolsValidators } from '@myrmidon/ng-tools';
+import { NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { Observable } from 'rxjs';
 import { EpiLigaturesFragment } from '../epi-ligatures-fragment';
 
@@ -67,7 +67,7 @@ export class EpiLigaturesFragmentComponent
     this.typeFlags$ = this._flagAdapter.selectFlags('types');
     // form
     this.types = formBuilder.control([], {
-      validators: NgToolsValidators.strictMinLengthValidator(1),
+      validators: NgxToolsValidators.strictMinLengthValidator(1),
       nonNullable: true,
     });
     this.eid = formBuilder.control(null, Validators.maxLength(500));

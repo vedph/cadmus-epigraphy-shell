@@ -17,8 +17,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { NgToolsModule, NgToolsValidators } from '@myrmidon/ng-tools';
-import { DialogService } from '@myrmidon/ng-mat-tools';
+import { EllipsisPipe, NgxToolsValidators } from '@myrmidon/ngx-tools';
+import { DialogService } from '@myrmidon/ngx-mat-tools';
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import {
   CadmusUiModule,
@@ -53,8 +53,8 @@ import { EpiSignComponent } from '../epi-sign/epi-sign.component';
         MatInputModule,
         MatSelectModule,
         MatTooltipModule,
-        NgToolsModule,
         CadmusUiModule,
+        EllipsisPipe,
         EpiSignComponent,
     ],
     templateUrl: './epi-signs-part.component.html',
@@ -89,7 +89,7 @@ export class EpiSignsPartComponent
     // form
     this.signs = formBuilder.control([], {
       // at least 1 entry
-      validators: NgToolsValidators.strictMinLengthValidator(1),
+      validators: NgxToolsValidators.strictMinLengthValidator(1),
       nonNullable: true,
     });
   }

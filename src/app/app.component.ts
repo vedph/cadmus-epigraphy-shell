@@ -5,7 +5,7 @@ import { take } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
 import { AuthJwtService, User } from '@myrmidon/auth-jwt-login';
-import { EnvService, RamStorageService } from '@myrmidon/ng-tools';
+import { EnvService, RamStorageService } from '@myrmidon/ngx-tools';
 import { AppRepository } from '@myrmidon/cadmus-state';
 import { ASSERTED_COMPOSITE_ID_CONFIGS_KEY } from '@myrmidon/cadmus-refs-asserted-ids';
 import { RefLookupConfig } from '@myrmidon/cadmus-refs-lookup';
