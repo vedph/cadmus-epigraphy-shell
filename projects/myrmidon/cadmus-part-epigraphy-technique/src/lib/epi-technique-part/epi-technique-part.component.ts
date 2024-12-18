@@ -30,7 +30,7 @@ import {
   FlagsPickerComponent,
 } from '@myrmidon/cadmus-ui-flags-picker';
 import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
-import { EditedObject, ModelEditorComponentBase } from '@myrmidon/cadmus-ui';
+import { CadmusUiModule, EditedObject, ModelEditorComponentBase } from '@myrmidon/cadmus-ui';
 
 import {
   EPI_TECHNIQUE_PART_TYPEID,
@@ -66,6 +66,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     MatTabsModule,
     MatTooltipModule,
     FlagsPickerComponent,
+    CadmusUiModule,
   ],
   templateUrl: './epi-technique-part.component.html',
   styleUrl: './epi-technique-part.component.scss',

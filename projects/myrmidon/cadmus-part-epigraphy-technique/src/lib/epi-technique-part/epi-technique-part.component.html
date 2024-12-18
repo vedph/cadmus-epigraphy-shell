@@ -1,32 +1,51 @@
-<div id="container">
-  @if (techEntries?.length) {
-  <div>
-    <fieldset>
-      <legend>techniques</legend>
-      <cadmus-ui-flags-picker
-        [flags]="techFlags$ | async"
-        (flagsChange)="onTechFlagsChange($event)"
-      />
-    </fieldset>
-  </div>
-  } @if (toolEntries?.length) {
-  <div>
-    <fieldset>
-      <legend>tools</legend>
-      <cadmus-ui-flags-picker
-        [flags]="toolFlags$ | async"
-        (flagsChange)="onToolFlagsChange($event)"
-      />
-    </fieldset>
-  </div>
-  }
-  <div>
-    <mat-form-field class="long-text">
-      <mat-label>note</mat-label>
-      <input matInput [formControl]="note" />
-      @if ($any(note).errors?.maxLength && (note.dirty || note.touched)) {
-      <mat-error>note too long</mat-error>
-      }
-    </mat-form-field>
-  </div>
-</div>
+<form [formGroup]="form" (submit)="save()">
+  <mat-card>
+    <mat-card-header>
+      <div mat-card-avatar>
+        <mat-icon>picture_in_picture</mat-icon>
+      </div>
+      <mat-card-title>Epigraphic Technique Part</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div id="container">
+        @if (techEntries?.length) {
+        <div>
+          <fieldset>
+            <legend>techniques</legend>
+            <cadmus-ui-flags-picker
+              [flags]="techFlags$ | async"
+              (flagsChange)="onTechFlagsChange($event)"
+            />
+          </fieldset>
+        </div>
+        } @if (toolEntries?.length) {
+        <div>
+          <fieldset>
+            <legend>tools</legend>
+            <cadmus-ui-flags-picker
+              [flags]="toolFlags$ | async"
+              (flagsChange)="onToolFlagsChange($event)"
+            />
+          </fieldset>
+        </div>
+        }
+        <div>
+          <mat-form-field class="long-text">
+            <mat-label>note</mat-label>
+            <input matInput [formControl]="note" />
+            @if ($any(note).errors?.maxLength && (note.dirty || note.touched)) {
+            <mat-error>note too long</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <cadmus-close-save-buttons
+        [form]="form"
+        [noSave]="userLevel < 2"
+        (closeRequest)="close()"
+      ></cadmus-close-save-buttons>
+    </mat-card-actions>
+  </mat-card>
+</form>

@@ -17,6 +17,12 @@ Cadmus epigraphic components development shell.
 
 ## History
 
+### 6.0.1
+
+- 2024-12-18:
+  - fix to technique part.
+  - M3 styles.
+
 ### 6.0.0
 
 - 2024-12-03: ⚠️ upgraded to new core dependencies.
