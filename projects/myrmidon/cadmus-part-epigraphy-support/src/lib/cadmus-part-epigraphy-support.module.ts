@@ -27,7 +27,7 @@ import { RouterModule } from '@angular/router';
 
 // bricks
 import { DecoratedCountsComponent } from '@myrmidon/cadmus-refs-decorated-counts';
-import { FlagsPickerComponent } from '@myrmidon/cadmus-ui-flags-picker';
+import { FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
 import {
   PhysicalSizeComponent,
   PhysicalSizePipe,
@@ -39,24 +39,12 @@ import { CadmusStateModule } from '@myrmidon/cadmus-state';
 import { CadmusUiModule } from '@myrmidon/cadmus-ui';
 import { CadmusUiPgModule } from '@myrmidon/cadmus-ui-pg';
 
-import { EpiSupportOldPartComponent } from './epi-support-old-part/epi-support-old-part.component';
-import { EpiSupportOldPartFeatureComponent } from './epi-support-old-part-feature/epi-support-old-part-feature.component';
 import { EpiSupportPartComponent } from './epi-support-part/epi-support-part.component';
 import { EpiSupportPartFeatureComponent } from './epi-support-part-feature/epi-support-part-feature.component';
 
 @NgModule({
-  declarations: [
-    EpiSupportPartComponent,
-    EpiSupportPartFeatureComponent,
-    EpiSupportOldPartComponent,
-    EpiSupportOldPartFeatureComponent,
-  ],
-  exports: [
-    EpiSupportPartComponent,
-    EpiSupportPartFeatureComponent,
-    EpiSupportOldPartComponent,
-    EpiSupportOldPartFeatureComponent,
-  ],
+  declarations: [EpiSupportPartComponent, EpiSupportPartFeatureComponent],
+  exports: [EpiSupportPartComponent, EpiSupportPartFeatureComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -83,7 +71,7 @@ import { EpiSupportPartFeatureComponent } from './epi-support-part-feature/epi-s
     CadmusCoreModule,
     CadmusStateModule,
     CadmusUiModule,
-    FlagsPickerComponent,
+    FlagSetComponent,
     PhysicalSizeComponent,
     PhysicalSizePipe,
     DecoratedCountsComponent,

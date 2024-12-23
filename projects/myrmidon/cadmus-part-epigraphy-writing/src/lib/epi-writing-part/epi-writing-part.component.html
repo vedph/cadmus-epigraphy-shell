@@ -101,9 +101,10 @@
       <div>
         <fieldset>
           <legend>features</legend>
-          <cadmus-ui-flags-picker
-            [flags]="featFlags$ | async"
-            (flagsChange)="onFeatFlagsChange($event)"
+          <cadmus-ui-flag-set
+            [flags]="featFlags"
+            [checkedIds]="features.value"
+            (checkedIdsChange)="onFeatIdsChange($event)"
           />
         </fieldset>
       </div>

@@ -7,14 +7,15 @@ import {
 } from '@angular/forms';
 import { take } from 'rxjs';
 
-import { DialogService } from '@myrmidon/ngx-mat-tools';
 import { NgxToolsValidators } from '@myrmidon/ngx-tools';
+import { DialogService } from '@myrmidon/ngx-mat-tools';
+
+import { ThesaurusEntry } from '@myrmidon/cadmus-core';
 
 import {
   EpiFormulaPattern,
   EpiFormulaToken,
 } from '../epi-formula-patterns-part';
-import { ThesaurusEntry } from '@myrmidon/cadmus-core';
 
 /**
  * Epigraphic formula pattern editor.

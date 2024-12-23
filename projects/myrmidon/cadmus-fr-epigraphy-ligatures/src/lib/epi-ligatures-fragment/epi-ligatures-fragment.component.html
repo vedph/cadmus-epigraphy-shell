@@ -10,13 +10,11 @@
     <mat-card-content>
       <!-- types -->
       <div>
-        <cadmus-ui-flags-picker
-          [flags]="typeFlags$ | async"
-          [numbering]="true"
-          [toolbar]="true"
-          (flagsChange)="onTypeFlagsChange($event)"
-        >
-        </cadmus-ui-flags-picker>
+        <cadmus-ui-flag-set
+          [flags]="typeFlags"
+          [checkedIds]="types.value"
+          (checkedIdsChange)="onTypeIdsChange($event)"
+        />
       </div>
 
       <div class="form-row">

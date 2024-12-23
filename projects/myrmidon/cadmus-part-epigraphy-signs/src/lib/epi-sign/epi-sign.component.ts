@@ -15,7 +15,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -36,11 +35,7 @@ import {
   CadmusTextEdService,
 } from '@myrmidon/cadmus-text-ed';
 import { ThesaurusEntry } from '@myrmidon/cadmus-core';
-import {
-  Flag,
-  FlagsPickerAdapter,
-  FlagsPickerComponent,
-} from '@myrmidon/cadmus-ui-flags-picker';
+import { Flag, FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
 
 import { EpiSign } from '../epi-signs-part';
 
@@ -55,35 +50,33 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
  * Epigraphic sign editor component.
  */
 @Component({
-    selector: 'cadmus-epi-sign',
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        MatButtonModule,
-        MatExpansionModule,
-        MatFormFieldModule,
-        MatIconModule,
-        MatInputModule,
-        MatSelectModule,
-        MatTooltipModule,
-        NgeMonacoModule,
-        FlagsPickerComponent,
-        PhysicalMeasurementSetComponent,
-    ],
-    templateUrl: './epi-sign.component.html',
-    styleUrl: './epi-sign.component.scss',
-    providers: [CadmusTextEdService]
+  selector: 'cadmus-epi-sign',
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatSelectModule,
+    MatTooltipModule,
+    NgeMonacoModule,
+    FlagSetComponent,
+    PhysicalMeasurementSetComponent,
+  ],
+  templateUrl: './epi-sign.component.html',
+  styleUrl: './epi-sign.component.scss',
+  providers: [CadmusTextEdService],
 })
 export class EpiSignComponent implements OnDestroy {
   private _sign?: EpiSign;
   private _editorModel?: monaco.editor.ITextModel;
   private _editor?: monaco.editor.IStandaloneCodeEditor;
   private readonly _disposables: monaco.IDisposable[] = [];
-  private readonly _flagAdapter: FlagsPickerAdapter;
   // flags
   private _featEntries?: ThesaurusEntry[];
-
-  public featFlags$: Observable<Flag[]>;
+  public featFlags: Flag[] = [];
 
   /**
    * The sign being edited.
@@ -121,10 +114,7 @@ export class EpiSignComponent implements OnDestroy {
       return;
     }
     this._featEntries = value || [];
-    this._flagAdapter.setSlotFlags(
-      'features',
-      this._featEntries.map(entryToFlag)
-    );
+    this.featFlags = this._featEntries.map(entryToFlag);
   }
 
   @Output()
@@ -134,7 +124,7 @@ export class EpiSignComponent implements OnDestroy {
   public readonly signCancel: EventEmitter<void> = new EventEmitter<void>();
 
   public id: FormControl<string>;
-  public features: FormControl<Flag[]>;
+  public features: FormControl<string[]>;
   public description: FormControl<string | null>;
   public measurements: FormControl<PhysicalMeasurement[]>;
   public form: FormGroup;
@@ -146,9 +136,6 @@ export class EpiSignComponent implements OnDestroy {
     @Optional()
     private _editorBindings?: CadmusTextEdBindings
   ) {
-    // flags
-    this._flagAdapter = new FlagsPickerAdapter();
-    this.featFlags$ = this._flagAdapter.selectFlags('features');
     // form
     this.id = formBuilder.control('', {
       nonNullable: true,
@@ -236,9 +223,7 @@ export class EpiSignComponent implements OnDestroy {
     }
 
     this.id.setValue(sign.id || '');
-    this.features.setValue(
-      this._flagAdapter.setSlotChecks('features', sign.features || [])
-    );
+    this.features.setValue(sign.features || []);
     this.description.setValue(sign.description || null);
     this._editorModel?.setValue(sign.description || '');
     this.measurements.setValue(sign.measurements || []);
@@ -249,7 +234,7 @@ export class EpiSignComponent implements OnDestroy {
   private getSign(): EpiSign {
     return {
       id: this.id.value.trim(),
-      features: this._flagAdapter.getOptionalCheckedFlagIds('features'),
+      features: this.features.value.length ? this.features.value : undefined,
       description: this.description.value?.trim(),
       measurements: this.measurements.value.length
         ? this.measurements.value
@@ -257,9 +242,8 @@ export class EpiSignComponent implements OnDestroy {
     };
   }
 
-  public onFeatFlagsChange(flags: Flag[]): void {
-    this._flagAdapter.setSlotFlags('features', flags, true);
-    this.features.setValue(flags);
+  public onFeatIdsChange(ids: string[]): void {
+    this.features.setValue(ids);
     this.features.markAsDirty();
     this.features.updateValueAndValidity();
   }

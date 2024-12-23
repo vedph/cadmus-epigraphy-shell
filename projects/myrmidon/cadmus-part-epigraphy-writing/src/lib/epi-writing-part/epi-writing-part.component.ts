@@ -12,11 +12,9 @@ import {
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
 import { EditedObject, ModelEditorComponentBase } from '@myrmidon/cadmus-ui';
-
-import { Flag, FlagsPickerAdapter } from '@myrmidon/cadmus-ui-flags-picker';
+import { Flag } from '@myrmidon/cadmus-ui-flag-set';
 
 import { EPI_WRITING_PART_TYPEID, EpiWritingPart } from '../epi-writing-part';
-import { Observable } from 'rxjs';
 
 function entryToFlag(entry: ThesaurusEntry): Flag {
   return {
@@ -40,13 +38,12 @@ export class EpiWritingPartComponent
   extends ModelEditorComponentBase<EpiWritingPart>
   implements OnInit
 {
-  private readonly _flagAdapter: FlagsPickerAdapter;
   private _featEntries?: ThesaurusEntry[];
 
   public system: FormControl<string | null>;
   public script: FormControl<string>;
   public casing: FormControl<string | null>;
-  public features: FormControl<Flag[]>;
+  public features: FormControl<string[]>;
   public note: FormControl<string | null>;
 
   // thesauri entries
@@ -66,19 +63,13 @@ export class EpiWritingPartComponent
       return;
     }
     this._featEntries = value || [];
-    this._flagAdapter.setSlotFlags(
-      'features',
-      this._featEntries.map(entryToFlag)
-    );
+    this.featFlags = this._featEntries.map(entryToFlag);
   }
   // flags
-  public featFlags$: Observable<Flag[]>;
+  public featFlags: Flag[] = [];
 
   constructor(authService: AuthJwtService, formBuilder: FormBuilder) {
     super(authService, formBuilder);
-    // flags
-    this._flagAdapter = new FlagsPickerAdapter();
-    this.featFlags$ = this._flagAdapter.selectFlags('features');
     // form
     this.system = formBuilder.control(null, Validators.maxLength(50));
     this.script = formBuilder.control('', {
@@ -139,9 +130,7 @@ export class EpiWritingPartComponent
     this.system.setValue(part.system || null);
     this.script.setValue(part.script || '');
     this.casing.setValue(part.casing || null);
-    this.features.setValue(
-      this._flagAdapter.setSlotChecks('features', part.features || [])
-    );
+    this.features.setValue(part.features || []);
     this.note.setValue(part.note || null);
 
     this.form.markAsPristine();
@@ -157,9 +146,8 @@ export class EpiWritingPartComponent
     this.updateForm(data?.value);
   }
 
-  public onFeatFlagsChange(flags: Flag[]): void {
-    this._flagAdapter.setSlotFlags('features', flags, true);
-    this.features.setValue(flags);
+  public onFeatIdsChange(ids: string[]): void {
+    this.features.setValue(ids);
     this.features.markAsDirty();
     this.features.updateValueAndValidity();
   }
@@ -169,7 +157,9 @@ export class EpiWritingPartComponent
     part.system = this.system.value?.trim() || undefined;
     part.script = this.script.value?.trim() || '';
     part.casing = this.casing.value?.trim() || undefined;
-    part.features = this._flagAdapter.getOptionalCheckedFlagIds('features');
+    part.features = this.features.value?.length
+      ? this.features.value
+      : undefined;
     part.note = this.note.value?.trim() || undefined;
 
     return part;

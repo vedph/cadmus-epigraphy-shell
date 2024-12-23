@@ -8,7 +8,6 @@ import {
   UntypedFormGroup,
   Validators,
 } from '@angular/forms';
-import { Observable } from 'rxjs';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -24,13 +23,14 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
-import {
-  Flag,
-  FlagsPickerAdapter,
-  FlagsPickerComponent,
-} from '@myrmidon/cadmus-ui-flags-picker';
+import { Flag, FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
+
 import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
-import { CadmusUiModule, EditedObject, ModelEditorComponentBase } from '@myrmidon/cadmus-ui';
+import {
+  CadmusUiModule,
+  EditedObject,
+  ModelEditorComponentBase,
+} from '@myrmidon/cadmus-ui';
 
 import {
   EPI_TECHNIQUE_PART_TYPEID,
@@ -65,7 +65,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     MatSnackBarModule,
     MatTabsModule,
     MatTooltipModule,
-    FlagsPickerComponent,
+    FlagSetComponent,
     CadmusUiModule,
   ],
   templateUrl: './epi-technique-part.component.html',
@@ -75,17 +75,16 @@ export class EpiTechniquePartComponent
   extends ModelEditorComponentBase<EpiTechniquePart>
   implements OnInit
 {
-  private readonly _flagAdapter: FlagsPickerAdapter;
   private _techEntries?: ThesaurusEntry[];
   private _toolEntries?: ThesaurusEntry[];
 
-  public techniques: FormControl<Flag[]>;
-  public tools: FormControl<Flag[]>;
+  public techniques: FormControl<string[]>;
+  public tools: FormControl<string[]>;
   public note: FormControl<string | null>;
 
   // flags
-  public techFlags$: Observable<Flag[]>;
-  public toolFlags$: Observable<Flag[]>;
+  public techFlags: Flag[] = [];
+  public toolFlags: Flag[] = [];
 
   // epi-technique-types
   @Input()
@@ -97,10 +96,7 @@ export class EpiTechniquePartComponent
       return;
     }
     this._techEntries = value || [];
-    this._flagAdapter.setSlotFlags(
-      'techniques',
-      this._techEntries.map(entryToFlag)
-    );
+    this.techFlags = this._techEntries.map(entryToFlag);
   }
 
   // epi-technique-tools
@@ -113,15 +109,11 @@ export class EpiTechniquePartComponent
       return;
     }
     this._toolEntries = value || [];
-    this._flagAdapter.setSlotFlags('tools', this._toolEntries.map(entryToFlag));
+    this.toolFlags = this._toolEntries.map(entryToFlag);
   }
 
   constructor(authService: AuthJwtService, formBuilder: FormBuilder) {
     super(authService, formBuilder);
-    // flags
-    this._flagAdapter = new FlagsPickerAdapter();
-    this.techFlags$ = this._flagAdapter.selectFlags('techniques');
-    this.toolFlags$ = this._flagAdapter.selectFlags('tools');
     // form
     this.techniques = formBuilder.control([], { nonNullable: true });
     this.tools = formBuilder.control([], { nonNullable: true });
@@ -163,27 +155,21 @@ export class EpiTechniquePartComponent
       return;
     }
 
-    this.techniques.setValue(
-      this._flagAdapter.setSlotChecks('techniques', part.techniques || [])
-    );
-    this.tools.setValue(
-      this._flagAdapter.setSlotChecks('tools', part.tools || [])
-    );
+    this.techniques.setValue(part.techniques || []);
+    this.tools.setValue(part.tools || []);
     this.note.setValue(part.note || null);
 
     this.form.markAsPristine();
   }
 
-  public onTechFlagsChange(flags: Flag[]): void {
-    this._flagAdapter.setSlotFlags('techniques', flags, true);
-    this.techniques.setValue(flags);
+  public onTechIdsChange(ids: string[]): void {
+    this.techniques.setValue(ids);
     this.techniques.markAsDirty();
     this.techniques.updateValueAndValidity();
   }
 
-  public onToolFlagsChange(flags: Flag[]): void {
-    this._flagAdapter.setSlotFlags('tools', flags, true);
-    this.tools.setValue(flags);
+  public onToolIdsChange(ids: string[]): void {
+    this.tools.setValue(ids);
     this.tools.markAsDirty();
     this.tools.updateValueAndValidity();
   }
@@ -203,8 +189,10 @@ export class EpiTechniquePartComponent
       EPI_TECHNIQUE_PART_TYPEID
     ) as EpiTechniquePart;
 
-    part.techniques = this._flagAdapter.getOptionalCheckedFlagIds('techniques');
-    part.tools = this._flagAdapter.getOptionalCheckedFlagIds('tools');
+    part.techniques = this.techniques.value.length
+      ? this.techniques.value
+      : undefined;
+    part.tools = this.tools.value.length ? this.tools.value : undefined;
     part.note = this.note.value?.trim() || undefined;
 
     return part;

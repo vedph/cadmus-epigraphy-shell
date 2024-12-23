@@ -1,6 +1,6 @@
 {
   "name": "@myrmidon/cadmus-fr-epigraphy-ligatures",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "description": "Cadmus - epigraphic ligatures fragment components.",
   "keywords": [
     "Cadmus",
@@ -17,9 +17,9 @@
   "peerDependencies": {
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0",
-    "@myrmidon/cadmus-mat-physical-size": "^7.0.0",
-    "@myrmidon/cadmus-refs-decorated-counts": "^6.0.0",
-    "@myrmidon/cadmus-ui-flags-picker": "^6.0.0"
+    "@myrmidon/cadmus-mat-physical-size": "^8.0.0",
+    "@myrmidon/cadmus-refs-decorated-counts": "^8.0.0",
+    "@myrmidon/cadmus-ui-flag-set": "^8.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

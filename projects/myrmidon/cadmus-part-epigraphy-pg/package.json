@@ -1,6 +1,6 @@
 {
   "name": "@myrmidon/cadmus-part-epigraphy-pg",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "description": "Cadmus - epigraphic components wrapper.",
   "keywords": [
     "Cadmus",
@@ -17,10 +17,10 @@
   "peerDependencies": {
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0",
-    "@myrmidon/cadmus-core": "^10.0.0",
-    "@myrmidon/cadmus-state": "^10.0.0",
-    "@myrmidon/cadmus-ui": "^10.0.0",
-    "@myrmidon/cadmus-ui-pg": "^10.0.0",
+    "@myrmidon/cadmus-core": "^10.1.0",
+    "@myrmidon/cadmus-state": "^10.2.0",
+    "@myrmidon/cadmus-ui": "^10.2.0",
+    "@myrmidon/cadmus-ui-pg": "^10.2.0",
     "@myrmidon/cadmus-part-epigraphy-support": "^6.0.0",
     "@myrmidon/cadmus-part-epigraphy-support-frr": "^6.0.0",
     "@myrmidon/cadmus-part-epigraphy-writing": "^6.0.0",

@@ -3,11 +3,11 @@
   <cadmus-decorated-token-text
     [baseText]="data?.baseText || ''"
     [locations]="frLoc ? [frLoc] : []"
-  ></cadmus-decorated-token-text>
+  />
 </div>
 <cadmus-epi-ligatures-fragment
   [data]="$any(data)"
   (dataChange)="save($event)"
   (editorClose)="close()"
   (dirtyChange)="onDirtyChange($event)"
-></cadmus-epi-ligatures-fragment>
+/>

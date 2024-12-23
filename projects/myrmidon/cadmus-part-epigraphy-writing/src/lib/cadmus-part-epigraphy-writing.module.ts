@@ -31,7 +31,7 @@ import {
   PhysicalSizePipe,
 } from '@myrmidon/cadmus-mat-physical-size';
 import { DecoratedCountsComponent } from '@myrmidon/cadmus-refs-decorated-counts';
-import { FlagsPickerComponent } from '@myrmidon/cadmus-ui-flags-picker';
+import { FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
 
 // cadmus
 import { CadmusCoreModule } from '@myrmidon/cadmus-core';
@@ -39,24 +39,12 @@ import { CadmusStateModule } from '@myrmidon/cadmus-state';
 import { CadmusUiModule } from '@myrmidon/cadmus-ui';
 import { CadmusUiPgModule } from '@myrmidon/cadmus-ui-pg';
 
-import { EpiWritingOldPartComponent } from './epi-writing-old-part/epi-writing-old-part.component';
-import { EpiWritingOldPartFeatureComponent } from './epi-writing-old-part-feature/epi-writing-old-part-feature.component';
 import { EpiWritingPartComponent } from './epi-writing-part/epi-writing-part.component';
 import { EpiWritingPartFeatureComponent } from './epi-writing-part-feature/epi-writing-part-feature.component';
 
 @NgModule({
-  declarations: [
-    EpiWritingPartComponent,
-    EpiWritingPartFeatureComponent,
-    EpiWritingOldPartComponent,
-    EpiWritingOldPartFeatureComponent,
-  ],
-  exports: [
-    EpiWritingPartComponent,
-    EpiWritingPartFeatureComponent,
-    EpiWritingOldPartComponent,
-    EpiWritingOldPartFeatureComponent,
-  ],
+  declarations: [EpiWritingPartComponent, EpiWritingPartFeatureComponent],
+  exports: [EpiWritingPartComponent, EpiWritingPartFeatureComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -85,7 +73,7 @@ import { EpiWritingPartFeatureComponent } from './epi-writing-part-feature/epi-w
     CadmusUiModule,
     PhysicalSizeComponent,
     PhysicalSizePipe,
-    FlagsPickerComponent,
+    FlagSetComponent,
     DecoratedCountsComponent,
     CadmusUiPgModule,
   ],

@@ -6,7 +6,6 @@ import {
   FormGroup,
   UntypedFormGroup,
 } from '@angular/forms';
-import { Observable } from 'rxjs';
 
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
@@ -14,7 +13,7 @@ import { EditedObject, ModelEditorComponentBase } from '@myrmidon/cadmus-ui';
 
 import { PhysicalSize } from '@myrmidon/cadmus-mat-physical-size';
 import { DecoratedCount } from '@myrmidon/cadmus-refs-decorated-counts';
-import { Flag, FlagsPickerAdapter } from '@myrmidon/cadmus-ui-flags-picker';
+import { Flag } from '@myrmidon/cadmus-ui-flag-set';
 
 import { EpiSupportPart, EPI_SUPPORT_PART_TYPEID } from '../epi-support-part';
 
@@ -42,7 +41,6 @@ export class EpiSupportPartComponent
   extends ModelEditorComponentBase<EpiSupportPart>
   implements OnInit
 {
-  private readonly _flagAdapter: FlagsPickerAdapter;
   private _featEntries?: ThesaurusEntry[];
 
   public material: FormControl<string>;
@@ -62,12 +60,12 @@ export class EpiSupportPartComponent
   public hasFrame: FormControl<boolean>;
   public frame: FormControl<string | null>;
   public counts: FormControl<DecoratedCount[]>;
-  public features: FormControl<Flag[]>;
+  public features: FormControl<string[]>;
   public hasDamnatio: FormControl<boolean>;
   public note: FormControl<string | null>;
 
   // flags
-  public featFlags$: Observable<Flag[]>;
+  public featFlags: Flag[] = [];
 
   // epi-support-materials
   public matEntries?: ThesaurusEntry[];
@@ -90,10 +88,7 @@ export class EpiSupportPartComponent
       return;
     }
     this._featEntries = value || [];
-    this._flagAdapter.setSlotFlags(
-      'features',
-      this._featEntries.map(entryToFlag)
-    );
+    this.featFlags = this._featEntries.map(entryToFlag);
   }
 
   // size:
@@ -112,9 +107,6 @@ export class EpiSupportPartComponent
 
   constructor(authService: AuthJwtService, formBuilder: FormBuilder) {
     super(authService, formBuilder);
-    // flags
-    this._flagAdapter = new FlagsPickerAdapter();
-    this.featFlags$ = this._flagAdapter.selectFlags('features');
     // form
     this.material = formBuilder.control<string>('', {
       nonNullable: true,
@@ -152,7 +144,7 @@ export class EpiSupportPartComponent
     this.counts = formBuilder.control<DecoratedCount[]>([], {
       nonNullable: true,
     });
-    this.features = formBuilder.control<Flag[]>([], { nonNullable: true });
+    this.features = formBuilder.control<string[]>([], { nonNullable: true });
     this.hasDamnatio = formBuilder.control<boolean>(false, {
       nonNullable: true,
     });
@@ -282,18 +274,15 @@ export class EpiSupportPartComponent
     this.hasFrame.setValue(!!part.frame);
     this.frame.setValue(part.frame || null);
     this.counts.setValue(part.counts || []);
-    this.features.setValue(
-      this._flagAdapter.setSlotChecks('features', part.features || [])
-    );
+    this.features.setValue(part.features || []);
     this.hasDamnatio.setValue(!!part.hasDamnatio);
     this.note.setValue(part.note || null);
 
     this.form.markAsPristine();
   }
 
-  public onFeatFlagsChange(flags: Flag[]): void {
-    this._flagAdapter.setSlotFlags('features', flags, true);
-    this.features.setValue(flags);
+  public onFeatIdsChange(ids: string[]): void {
+    this.features.setValue(ids);
     this.features.markAsDirty();
     this.features.updateValueAndValidity();
   }
@@ -360,7 +349,7 @@ export class EpiSupportPartComponent
     part.hasFrame = this.hasFrame.value;
     part.frame = this.frame.value?.trim() || undefined;
     part.counts = this.counts.value || undefined;
-    part.features = this._flagAdapter.getOptionalCheckedFlagIds('features');
+    part.features = this.features.value || undefined;
     part.hasDamnatio = this.hasDamnatio.value;
     part.note = this.note.value?.trim() || undefined;
 

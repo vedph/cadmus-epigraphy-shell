@@ -13,10 +13,11 @@
   <!-- features -->
   <fieldset>
     <legend>features</legend>
-    <cadmus-ui-flags-picker
-      [flags]="featFlags$ | async"
-      (flagsChange)="onFeatFlagsChange($event)"
-    ></cadmus-ui-flags-picker>
+    <cadmus-ui-flag-set
+      [flags]="featFlags"
+      [checkedIds]="features.value"
+      (checkedIdsChange)="onFeatIdsChange($event)"
+    />
   </fieldset>
 
   <!-- description -->
@@ -30,10 +31,10 @@
   <!-- measurements -->
   <fieldset>
     <legend>measurements</legend>
-    <cadmus-physical-measurement-set
+    <cadmus-mat-physical-measurement-set
       [allowCustomName]="true"
       [nameEntries]="measNameEntries"
-      [unitEntries]="measUnitEntries"
+      [unitEntries]="measUnitEntries || []"
       [dimTagEntries]="measDimTagEntries"
       [measurements]="measurements.value"
       (measurementsChange)="onMeasurementsChange($event)"

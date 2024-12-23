@@ -51,7 +51,6 @@ import { NgeMarkdownModule } from '@cisstech/nge/markdown';
 // myrmidon
 import {
   EllipsisPipe,
-  EnvServiceProvider,
   FlatLookupPipe,
   SafeHtmlPipe,
 } from '@myrmidon/ngx-tools';
@@ -69,7 +68,7 @@ import {
 import { DocReferencesComponent } from '@myrmidon/cadmus-refs-doc-references';
 import { HistoricalDateComponent } from '@myrmidon/cadmus-refs-historical-date';
 import { AssertedIdsComponent } from '@myrmidon/cadmus-refs-asserted-ids';
-import { FlagsPickerComponent } from '@myrmidon/cadmus-ui-flags-picker';
+import { FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
 import { GEONAMES_USERNAME_TOKEN } from '@myrmidon/cadmus-refs-geonames-lookup';
 import { PROXY_INTERCEPTOR_OPTIONS } from '@myrmidon/cadmus-refs-lookup';
 import {
@@ -179,7 +178,7 @@ import { ITEM_BROWSER_KEYS } from './item-browser-keys';
     DocReferencesComponent,
     HistoricalDateComponent,
     AssertedIdsComponent,
-    FlagsPickerComponent,
+    FlagSetComponent,
     // cadmus
     CadmusApiModule,
     CadmusCoreModule,
@@ -201,8 +200,6 @@ import { ITEM_BROWSER_KEYS } from './item-browser-keys';
       withInterceptors([authJwtInterceptor]),
       withJsonpSupport()
     ),
-    // environment service
-    EnvServiceProvider,
     // parts and fragments type IDs to editor group keys mappings
     // https://github.com/nrwl/nx/issues/208#issuecomment-384102058
     // inject like: @Inject('partEditorKeys') partEditorKeys: PartEditorKeys

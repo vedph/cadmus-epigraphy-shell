@@ -12,9 +12,10 @@
         <div>
           <fieldset>
             <legend>techniques</legend>
-            <cadmus-ui-flags-picker
-              [flags]="techFlags$ | async"
-              (flagsChange)="onTechFlagsChange($event)"
+            <cadmus-ui-flag-set
+              [flags]="techFlags"
+              [checkedIds]="techniques.value"
+              (checkedIdsChange)="onTechIdsChange($event)"
             />
           </fieldset>
         </div>
@@ -22,9 +23,10 @@
         <div>
           <fieldset>
             <legend>tools</legend>
-            <cadmus-ui-flags-picker
-              [flags]="toolFlags$ | async"
-              (flagsChange)="onToolFlagsChange($event)"
+            <cadmus-ui-flag-set
+              [flags]="toolFlags"
+              [checkedIds]="tools.value"
+              (checkedIdsChange)="onToolIdsChange($event)"
             />
           </fieldset>
         </div>

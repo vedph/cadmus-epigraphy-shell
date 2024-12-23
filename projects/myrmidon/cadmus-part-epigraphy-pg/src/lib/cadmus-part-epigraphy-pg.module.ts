@@ -15,16 +15,8 @@ import {
   EPI_SUPPORT_PART_TYPEID,
 } from '@myrmidon/cadmus-part-epigraphy-support';
 import {
-  EpiSupportOldPartFeatureComponent,
-  EPI_SUPPORT_OLD_PART_TYPEID,
-} from '@myrmidon/cadmus-part-epigraphy-support';
-import {
   EpiWritingPartFeatureComponent,
   EPI_WRITING_PART_TYPEID,
-} from '@myrmidon/cadmus-part-epigraphy-writing';
-import {
-  EpiWritingOldPartFeatureComponent,
-  EPI_WRITING_OLD_PART_TYPEID,
 } from '@myrmidon/cadmus-part-epigraphy-writing';
 import {
   EpiLigaturesFragmentFeatureComponent,
@@ -62,21 +54,9 @@ export const RouterModuleForChild = RouterModule.forChild([
     canDeactivate: [PendingChangesGuard],
   },
   {
-    path: `${EPI_SUPPORT_OLD_PART_TYPEID}/:pid`,
-    pathMatch: 'full',
-    component: EpiSupportOldPartFeatureComponent,
-    canDeactivate: [PendingChangesGuard],
-  },
-  {
     path: `${EPI_WRITING_PART_TYPEID}/:pid`,
     pathMatch: 'full',
     component: EpiWritingPartFeatureComponent,
-    canDeactivate: [PendingChangesGuard],
-  },
-  {
-    path: `${EPI_WRITING_OLD_PART_TYPEID}/:pid`,
-    pathMatch: 'full',
-    component: EpiWritingOldPartFeatureComponent,
     canDeactivate: [PendingChangesGuard],
   },
   {

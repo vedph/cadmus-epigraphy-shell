@@ -34,8 +34,8 @@
           [allowCustomSize]="true"
           [allowResize]="true"
           [presets]="gridPresets"
-          [location]="location.value"
-          (locationChange)="onLocationChange($event)"
+          [location]="location.value || undefined"
+          (locationChange)="onLocationChange($event!)"
         />
 
         <!-- mappings -->
@@ -109,8 +109,8 @@
         [tagEntries]="tagEntries"
         [unitEntries]="unitEntries"
         [dimTagEntries]="dimTagEntries"
-        [size]="size.value"
-        (sizeChange)="onSizeChange($event)"
+        [size]="size.value || undefined"
+        (sizeChange)="onSizeChange($event!)"
       />
     </div>
 

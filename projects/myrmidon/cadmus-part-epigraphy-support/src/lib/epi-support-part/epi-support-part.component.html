@@ -209,8 +209,8 @@
               [tagEntries]="szTagEntries"
               [unitEntries]="szUnitEntries"
               [dimTagEntries]="szDimTagEntries"
-              [size]="supportSize.value"
-              (sizeChange)="onSupportSizeChange($event)"
+              [size]="supportSize.value || undefined"
+              (sizeChange)="onSupportSizeChange($event!)"
             />
           </fieldset>
           }
@@ -246,8 +246,8 @@
                 [tagEntries]="szTagEntries"
                 [unitEntries]="szUnitEntries"
                 [dimTagEntries]="szDimTagEntries"
-                [size]="fieldSize.value"
-                (sizeChange)="onFieldSizeChange($event)"
+                [size]="fieldSize.value || undefined"
+                (sizeChange)="onFieldSizeChange($event!)"
               />
             </fieldset>
           </div>
@@ -266,8 +266,8 @@
                 [tagEntries]="szTagEntries"
                 [unitEntries]="szUnitEntries"
                 [dimTagEntries]="szDimTagEntries"
-                [size]="mirrorSize.value"
-                (sizeChange)="onMirrorSizeChange($event)"
+                [size]="mirrorSize.value || undefined"
+                (sizeChange)="onMirrorSizeChange($event!)"
               />
             </fieldset>
           </div>
@@ -302,16 +302,17 @@
               [idEntries]="countIdEntries"
               [tagEntries]="countTagEntries"
               [counts]="counts.value"
-              (countsChange)="onCountsChange($event)"
+              (countsChange)="onCountsChange($event!)"
             />
           </div>
           }
           <!-- features -->
           @if (featEntries?.length) {
           <div>
-            <cadmus-ui-flags-picker
-              [flags]="featFlags$ | async"
-              (flagsChange)="onFeatFlagsChange($event)"
+            <cadmus-ui-flag-set
+              [flags]="featFlags"
+              [checkedIds]="features.value"
+              (checkedIdsChange)="onFeatIdsChange($event)"
             />
           </div>
           }
