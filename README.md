@@ -17,6 +17,8 @@ Cadmus epigraphic components development shell.
 
 ## History
 
+### 6.1.0
+
 - 2024-12-23:
   - ⚠️ upgraded to [bricks V3](https://github.com/vedph/cadmus-bricks-shell-v3).
   - removed legacy code.
