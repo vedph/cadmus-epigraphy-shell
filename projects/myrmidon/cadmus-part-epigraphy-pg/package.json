@@ -1,6 +1,6 @@
 {
   "name": "@myrmidon/cadmus-part-epigraphy-pg",
-  "version": "6.1.0",
+  "version": "6.1.1",
   "description": "Cadmus - epigraphic components wrapper.",
   "keywords": [
     "Cadmus",
@@ -21,12 +21,12 @@
     "@myrmidon/cadmus-state": "^10.2.0",
     "@myrmidon/cadmus-ui": "^10.2.0",
     "@myrmidon/cadmus-ui-pg": "^10.2.0",
-    "@myrmidon/cadmus-part-epigraphy-support": "^6.0.0",
-    "@myrmidon/cadmus-part-epigraphy-support-frr": "^6.0.0",
-    "@myrmidon/cadmus-part-epigraphy-writing": "^6.0.0",
-    "@myrmidon/cadmus-part-epigraphy-signs": "^6.0.0",
-    "@myrmidon/cadmus-fr-epigraphy-ligatures": "^6.0.0",
-    "@myrmidon/cadmus-part-epigraphy-formula-patterns": "^6.0.0"
+    "@myrmidon/cadmus-part-epigraphy-support": "^6.1.1",
+    "@myrmidon/cadmus-part-epigraphy-support-frr": "^6.1.1",
+    "@myrmidon/cadmus-part-epigraphy-writing": "^6.1.0",
+    "@myrmidon/cadmus-part-epigraphy-signs": "^6.1.1",
+    "@myrmidon/cadmus-fr-epigraphy-ligatures": "^6.1.1",
+    "@myrmidon/cadmus-part-epigraphy-formula-patterns": "^6.1.1"
   },
   "dependencies": {
     "tslib": "^2.3.0"

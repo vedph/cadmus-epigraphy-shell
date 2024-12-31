@@ -1,6 +1,6 @@
 {
   "name": "@myrmidon/cadmus-part-epigraphy-support",
-  "version": "6.1.0",
+  "version": "6.1.1",
   "description": "Cadmus - epigraphic support components.",
   "keywords": [
     "Cadmus",
@@ -18,7 +18,7 @@
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0",
     "@myrmidon/cadmus-refs-decorated-counts": "^8.0.0",
-    "@myrmidon/cadmus-ui-flag-set": "^8.0.0",
+    "@myrmidon/cadmus-ui-flag-set": "^8.0.1",
     "@myrmidon/cadmus-mat-physical-size": "^8.0.0",
     "@myrmidon/cadmus-core": "^10.1.0",
     "@myrmidon/cadmus-state": "^10.2.0",

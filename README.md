@@ -17,6 +17,8 @@ Cadmus epigraphic components development shell.
 
 ## History
 
+- 2024-12-31: updated packages and peer dependencies.
+
 ### 6.1.0
 
 - 2024-12-23:

@@ -19,7 +19,7 @@
     "@angular/core": "^19.0.0",
     "@cisstech/nge": "^18.0.4",
     "@myrmidon/cadmus-mat-physical-size": "^8.0.0",
-    "@myrmidon/cadmus-ui-flag-set": "^8.0.0",
+    "@myrmidon/cadmus-ui-flag-set": "^8.0.1",
     "@myrmidon/cadmus-core": "^10.1.0",
     "@myrmidon/cadmus-state": "^10.2.0",
     "@myrmidon/cadmus-ui": "^10.2.0",
