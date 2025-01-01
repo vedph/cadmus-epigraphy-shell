@@ -17,6 +17,11 @@ Cadmus epigraphic components development shell.
 
 ## History
 
+### 7.0.0
+
+- 2025-01-01:
+  - ⚠️ standalone components.
+  - removed legacy `color` directives.
 - 2024-12-31: updated packages and peer dependencies.
 
 ### 6.1.0

@@ -1,13 +1,33 @@
 import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { AuthJwtService, Credentials } from '@myrmidon/auth-jwt-login';
+import {
+  AuthJwtService,
+  Credentials,
+  AuthJwtLoginComponent,
+} from '@myrmidon/auth-jwt-login';
+import {
+  MatCard,
+  MatCardTitle,
+  MatCardHeader,
+  MatCardAvatar,
+  MatCardContent,
+} from '@angular/material/card';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-login-page',
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.css'],
-  standalone: false,
+  imports: [
+    MatCard,
+    MatCardTitle,
+    MatCardHeader,
+    MatCardAvatar,
+    MatIcon,
+    MatCardContent,
+    AuthJwtLoginComponent,
+  ],
 })
 export class LoginPageComponent {
   constructor(

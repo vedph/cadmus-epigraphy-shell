@@ -8,8 +8,8 @@ describe('EpigraphyFormulaPatternsPartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ EpiFormulaPatternsPartComponent ]
-    })
+    imports: [EpiFormulaPatternsPartComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(EpiFormulaPatternsPartComponent);

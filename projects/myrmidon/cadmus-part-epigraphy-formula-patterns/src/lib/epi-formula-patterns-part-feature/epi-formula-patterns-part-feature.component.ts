@@ -4,12 +4,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { EditPartFeatureBase, PartEditorService } from '@myrmidon/cadmus-state';
 import { ItemService, ThesaurusService } from '@myrmidon/cadmus-api';
+import { CadmusUiPgModule } from '@myrmidon/cadmus-ui-pg';
+import { EpiFormulaPatternsPartComponent } from '../epi-formula-patterns-part/epi-formula-patterns-part.component';
 
 @Component({
   selector: 'cadmus-epi-formula-patterns-part-feature',
   templateUrl: './epi-formula-patterns-part-feature.component.html',
   styleUrls: ['./epi-formula-patterns-part-feature.component.css'],
-  standalone: false,
+  imports: [CadmusUiPgModule, EpiFormulaPatternsPartComponent],
 })
 export class EpiFormulaPatternsPartFeatureComponent
   extends EditPartFeatureBase

@@ -11,7 +11,6 @@
         <button
           type="button"
           mat-flat-button
-          color="primary"
           class="mat-primary"
           (click)="addPattern()"
         >
@@ -28,7 +27,6 @@
               <button
                 type="button"
                 mat-icon-button
-                color="primary"
                 matTooltip="Edit this pattern"
                 (click)="editPattern(pattern, i)"
               >
@@ -55,11 +53,10 @@
               <button
                 type="button"
                 mat-icon-button
-                color="warn"
                 matTooltip="Delete this pattern"
                 (click)="deletePattern(i)"
               >
-                <mat-icon class="mat-primary">remove_circle</mat-icon>
+                <mat-icon class="mat-warn">remove_circle</mat-icon>
               </button>
             </td>
             <td>
@@ -88,7 +85,7 @@
           [pattern]="edited"
           (editorClose)="closePattern()"
           (patternChange)="savePattern($event)"
-        ></cadmus-epi-formula-pattern>
+        />
       </mat-expansion-panel>
     </mat-card-content>
     <mat-card-actions>
@@ -96,7 +93,7 @@
         [form]="form"
         [noSave]="userLevel < 2"
         (closeRequest)="close()"
-      ></cadmus-close-save-buttons>
+      />
     </mat-card-actions>
   </mat-card>
 </form>

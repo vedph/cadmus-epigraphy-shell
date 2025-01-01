@@ -8,8 +8,8 @@ describe('EpiFormulaTokenComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ EpiFormulaTokenComponent ]
-    })
+    imports: [EpiFormulaTokenComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(EpiFormulaTokenComponent);

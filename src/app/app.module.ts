@@ -112,14 +112,7 @@ import { INDEX_LOOKUP_DEFINITIONS } from './index-lookup-definitions';
 import { ITEM_BROWSER_KEYS } from './item-browser-keys';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    LoginPageComponent,
-    ManageUsersPageComponent,
-    RegisterUserPageComponent,
-    ResetPasswordComponent,
-  ],
+  declarations: [AppComponent],
   bootstrap: [AppComponent],
   imports: [
     BrowserAnimationsModule,
@@ -194,6 +187,11 @@ import { ITEM_BROWSER_KEYS } from './item-browser-keys';
     CadmusThesaurusEditorModule,
     CadmusThesaurusListModule,
     CadmusThesaurusUiModule,
+    HomeComponent,
+    LoginPageComponent,
+    ManageUsersPageComponent,
+    RegisterUserPageComponent,
+    ResetPasswordComponent,
   ],
   providers: [
     provideHttpClient(

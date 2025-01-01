@@ -11,7 +11,7 @@
         <button
           type="button"
           mat-flat-button
-          color="primary"
+          class="mat-primary"
           (click)="addSign()"
         >
           <mat-icon>add_circle</mat-icon> Sign
@@ -35,7 +35,6 @@
               <button
                 type="button"
                 mat-icon-button
-                color="primary"
                 matTooltip="Edit this sign"
                 (click)="editSign(sign, i)"
               >
@@ -62,7 +61,6 @@
               <button
                 type="button"
                 mat-icon-button
-                color="warn"
                 matTooltip="Delete this sign"
                 (click)="deleteSign(i)"
               >

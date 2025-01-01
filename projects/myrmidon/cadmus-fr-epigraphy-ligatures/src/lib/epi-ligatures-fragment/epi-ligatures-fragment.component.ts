@@ -5,14 +5,31 @@ import {
   FormGroup,
   UntypedFormGroup,
   Validators,
+  FormsModule,
+  ReactiveFormsModule,
 } from '@angular/forms';
+
+import {
+  MatCard,
+  MatCardHeader,
+  MatCardAvatar,
+  MatCardTitle,
+  MatCardContent,
+  MatCardActions,
+} from '@angular/material/card';
+import { MatIcon } from '@angular/material/icon';
+import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
 
 import { NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
-import { Flag } from '@myrmidon/cadmus-ui-flag-set';
-
+import { Flag, FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
 import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
-import { EditedObject, ModelEditorComponentBase } from '@myrmidon/cadmus-ui';
+import {
+  EditedObject,
+  ModelEditorComponentBase,
+  CadmusUiModule,
+} from '@myrmidon/cadmus-ui';
 
 import { EpiLigaturesFragment } from '../epi-ligatures-fragment';
 
@@ -31,7 +48,23 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   selector: 'cadmus-epi-ligatures-fragment',
   templateUrl: './epi-ligatures-fragment.component.html',
   styleUrls: ['./epi-ligatures-fragment.component.css'],
-  standalone: false,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatCard,
+    MatCardHeader,
+    MatCardAvatar,
+    MatIcon,
+    MatCardTitle,
+    MatCardContent,
+    FlagSetComponent,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatError,
+    MatCardActions,
+    CadmusUiModule,
+  ],
 })
 export class EpiLigaturesFragmentComponent
   extends ModelEditorComponentBase<EpiLigaturesFragment>

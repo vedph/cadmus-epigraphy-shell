@@ -8,8 +8,8 @@ describe('EpiLigaturesFragmentComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ EpiLigaturesFragmentComponent ]
-    })
+    imports: [EpiLigaturesFragmentComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(EpiLigaturesFragmentComponent);

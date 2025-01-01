@@ -17,7 +17,7 @@
         rootLabel="categories"
         [renderLabel]="renderLabel"
         (entryChange)="onEntryChange($event)"
-      ></cadmus-thesaurus-tree>
+      />
       <!-- list -->
       @if (tags.value.length) {
       <table>
@@ -44,12 +44,7 @@
               >
                 <mat-icon>arrow_downward</mat-icon>
               </button>
-              <button
-                type="button"
-                mat-icon-button
-                color="warn"
-                (click)="removeTag(i)"
-              >
+              <button type="button" mat-icon-button (click)="removeTag(i)">
                 <mat-icon class="mat-warn">delete</mat-icon>
               </button>
             </td>
@@ -90,7 +85,6 @@
   <div>
     <button
       type="button"
-      color="warn"
       mat-icon-button
       matTooltip="Discard changes"
       (click)="cancel()"
@@ -99,7 +93,6 @@
     </button>
     <button
       type="submit"
-      color="primary"
       mat-icon-button
       matTooltip="Accept changes"
       [disabled]="form.invalid || form.pristine"

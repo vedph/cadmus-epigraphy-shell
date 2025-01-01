@@ -7,12 +7,33 @@ import {
   Validators,
   FormGroup,
   UntypedFormGroup,
+  FormsModule,
+  ReactiveFormsModule,
 } from '@angular/forms';
+
+import {
+  MatCard,
+  MatCardHeader,
+  MatCardAvatar,
+  MatCardTitle,
+  MatCardContent,
+  MatCardActions,
+} from '@angular/material/card';
+import { MatIcon } from '@angular/material/icon';
+import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
+import { MatSelect } from '@angular/material/select';
+import { NgFor } from '@angular/common';
+import { MatOption } from '@angular/material/core';
+import { MatInput } from '@angular/material/input';
 
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
-import { EditedObject, ModelEditorComponentBase } from '@myrmidon/cadmus-ui';
-import { Flag } from '@myrmidon/cadmus-ui-flag-set';
+import {
+  EditedObject,
+  ModelEditorComponentBase,
+  CadmusUiModule,
+} from '@myrmidon/cadmus-ui';
+import { Flag, FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
 
 import { EPI_WRITING_PART_TYPEID, EpiWritingPart } from '../epi-writing-part';
 
@@ -32,7 +53,26 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   selector: 'cadmus-epi-writing-part',
   templateUrl: './epi-writing-part.component.html',
   styleUrl: './epi-writing-part.component.scss',
-  standalone: false,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatCard,
+    MatCardHeader,
+    MatCardAvatar,
+    MatIcon,
+    MatCardTitle,
+    MatCardContent,
+    MatFormField,
+    MatLabel,
+    MatSelect,
+    NgFor,
+    MatOption,
+    MatError,
+    MatInput,
+    FlagSetComponent,
+    MatCardActions,
+    CadmusUiModule,
+  ],
 })
 export class EpiWritingPartComponent
   extends ModelEditorComponentBase<EpiWritingPart>

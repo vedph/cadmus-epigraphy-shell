@@ -4,13 +4,35 @@ import {
   FormBuilder,
   FormGroup,
   UntypedFormGroup,
+  FormsModule,
+  ReactiveFormsModule,
 } from '@angular/forms';
 import { take } from 'rxjs/operators';
+
+import {
+  MatCard,
+  MatCardHeader,
+  MatCardAvatar,
+  MatCardTitle,
+  MatCardContent,
+  MatCardActions,
+} from '@angular/material/card';
+import { MatIcon } from '@angular/material/icon';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import {
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+} from '@angular/material/expansion';
 
 import { NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
-import { EditedObject, ModelEditorComponentBase } from '@myrmidon/cadmus-ui';
+import {
+  EditedObject,
+  ModelEditorComponentBase,
+  CadmusUiModule,
+} from '@myrmidon/cadmus-ui';
 import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
 
 import {
@@ -18,6 +40,8 @@ import {
   EpiFormulaPatternsPart,
   EPI_FORMULA_PATTERNS_PART_TYPEID,
 } from '../epi-formula-patterns-part';
+import { EpiFormulaPatternComponent } from '../epi-formula-pattern/epi-formula-pattern.component';
+import { EpiFormulaTokenPipe } from '../epi-formula-token.pipe';
 
 /**
  * EpiFormulaPatterns part editor component.
@@ -28,7 +52,25 @@ import {
   selector: 'cadmus-epi-formula-patterns-part',
   templateUrl: './epi-formula-patterns-part.component.html',
   styleUrls: ['./epi-formula-patterns-part.component.css'],
-  standalone: false,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatCard,
+    MatCardHeader,
+    MatCardAvatar,
+    MatIcon,
+    MatCardTitle,
+    MatCardContent,
+    MatButton,
+    MatIconButton,
+    MatTooltip,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    EpiFormulaPatternComponent,
+    MatCardActions,
+    CadmusUiModule,
+    EpiFormulaTokenPipe,
+  ],
 })
 export class EpiFormulaPatternsPartComponent
   extends ModelEditorComponentBase<EpiFormulaPatternsPart>

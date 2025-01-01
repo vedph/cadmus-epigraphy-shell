@@ -4,9 +4,24 @@ import {
   FormControl,
   FormGroup,
   Validators,
+  FormsModule,
+  ReactiveFormsModule,
 } from '@angular/forms';
+
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import {
+  MatFormField,
+  MatHint,
+  MatError,
+  MatLabel,
+} from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+
 import { ThesaurusEntry } from '@myrmidon/cadmus-core';
-import { renderLabelFromLastColon } from '@myrmidon/cadmus-ui';
+import { renderLabelFromLastColon, CadmusUiModule } from '@myrmidon/cadmus-ui';
 import { NgxToolsValidators } from '@myrmidon/ngx-tools';
 
 import { EpiFormulaToken } from '../epi-formula-patterns-part';
@@ -18,7 +33,20 @@ import { EpiFormulaToken } from '../epi-formula-patterns-part';
   selector: 'cadmus-epi-formula-token',
   templateUrl: './epi-formula-token.component.html',
   styleUrls: ['./epi-formula-token.component.css'],
-  standalone: false,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatCheckbox,
+    CadmusUiModule,
+    MatIconButton,
+    MatTooltip,
+    MatIcon,
+    MatFormField,
+    MatInput,
+    MatHint,
+    MatError,
+    MatLabel,
+  ],
 })
 export class EpiFormulaTokenComponent {
   private _token: EpiFormulaToken | undefined;

@@ -5,15 +5,44 @@ import {
   Validators,
   FormGroup,
   UntypedFormGroup,
+  FormsModule,
+  ReactiveFormsModule,
 } from '@angular/forms';
 
-import { AuthJwtService } from '@myrmidon/auth-jwt-login';
-import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
-import { EditedObject, ModelEditorComponentBase } from '@myrmidon/cadmus-ui';
+import {
+  MatCard,
+  MatCardHeader,
+  MatCardAvatar,
+  MatCardTitle,
+  MatCardContent,
+  MatCardActions,
+} from '@angular/material/card';
+import { MatIcon } from '@angular/material/icon';
+import { MatTabGroup, MatTab } from '@angular/material/tabs';
+import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
+import { MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/core';
+import { MatInput } from '@angular/material/input';
+import { NgFor } from '@angular/common';
+import { MatCheckbox } from '@angular/material/checkbox';
 
-import { PhysicalSize } from '@myrmidon/cadmus-mat-physical-size';
-import { DecoratedCount } from '@myrmidon/cadmus-refs-decorated-counts';
-import { Flag } from '@myrmidon/cadmus-ui-flag-set';
+import { AuthJwtService } from '@myrmidon/auth-jwt-login';
+import {
+  PhysicalSize,
+  PhysicalSizeComponent,
+} from '@myrmidon/cadmus-mat-physical-size';
+import {
+  DecoratedCount,
+  DecoratedCountsComponent,
+} from '@myrmidon/cadmus-refs-decorated-counts';
+import { Flag, FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
+
+import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
+import {
+  EditedObject,
+  ModelEditorComponentBase,
+  CadmusUiModule,
+} from '@myrmidon/cadmus-ui';
 
 import { EpiSupportPart, EPI_SUPPORT_PART_TYPEID } from '../epi-support-part';
 
@@ -35,7 +64,31 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   selector: 'cadmus-epi-support-part',
   templateUrl: './epi-support-part.component.html',
   styleUrls: ['./epi-support-part.component.scss'],
-  standalone: false,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatCard,
+    MatCardHeader,
+    MatCardAvatar,
+    MatIcon,
+    MatCardTitle,
+    MatCardContent,
+    MatTabGroup,
+    MatTab,
+    MatFormField,
+    MatLabel,
+    MatSelect,
+    MatOption,
+    MatError,
+    MatInput,
+    NgFor,
+    MatCheckbox,
+    PhysicalSizeComponent,
+    DecoratedCountsComponent,
+    FlagSetComponent,
+    MatCardActions,
+    CadmusUiModule,
+  ],
 })
 export class EpiSupportPartComponent
   extends ModelEditorComponentBase<EpiSupportPart>

@@ -69,7 +69,6 @@
     <button
       type="button"
       mat-flat-button
-      color="primary"
       class="mat-primary"
       (click)="addToken()"
     >
@@ -85,11 +84,10 @@
             <button
               type="button"
               mat-icon-button
-              color="primary"
               matTooltip="Edit this token"
               (click)="editToken(token, i)"
             >
-              <mat-icon>edit</mat-icon>
+              <mat-icon class="mat-primary">edit</mat-icon>
             </button>
             <button
               type="button"
@@ -112,7 +110,6 @@
             <button
               type="button"
               mat-icon-button
-              color="warn"
               matTooltip="Delete this token"
               (click)="deleteToken(i)"
             >
@@ -137,7 +134,7 @@
         [tagEntries]="tokTagEntries"
         (tokenChange)="saveToken($event)"
         (editorClose)="closeToken()"
-      ></cadmus-epi-formula-token>
+      />
     </mat-expansion-panel>
   </fieldset>
 
@@ -145,7 +142,6 @@
   <div>
     <button
       type="button"
-      color="warn"
       mat-icon-button
       matTooltip="Discard changes"
       (click)="cancel()"
@@ -154,7 +150,6 @@
     </button>
     <button
       type="submit"
-      color="primary"
       mat-icon-button
       matTooltip="Accept changes"
       [disabled]="form.invalid || form.pristine"

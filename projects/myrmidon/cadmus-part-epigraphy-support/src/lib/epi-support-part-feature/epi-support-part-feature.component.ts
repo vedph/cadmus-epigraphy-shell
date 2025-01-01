@@ -3,12 +3,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ItemService, ThesaurusService } from '@myrmidon/cadmus-api';
 import { EditPartFeatureBase, PartEditorService } from '@myrmidon/cadmus-state';
+import { CadmusUiPgModule } from '@myrmidon/cadmus-ui-pg';
+import { EpiSupportPartComponent } from '../epi-support-part/epi-support-part.component';
 
 @Component({
-  selector: 'cadmus-epi-support-part-feature',
-  templateUrl: './epi-support-part-feature.component.html',
-  styleUrl: './epi-support-part-feature.component.scss',
-  standalone: false,
+    selector: 'cadmus-epi-support-part-feature',
+    templateUrl: './epi-support-part-feature.component.html',
+    styleUrl: './epi-support-part-feature.component.scss',
+    imports: [CadmusUiPgModule, EpiSupportPartComponent],
 })
 export class EpiSupportPartFeatureComponent
   extends EditPartFeatureBase

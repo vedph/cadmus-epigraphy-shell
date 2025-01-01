@@ -2,10 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 import { EpiFormulaToken } from './epi-formula-patterns-part';
 
-@Pipe({
-  name: 'epiFormulaToken',
-  standalone: false,
-})
+@Pipe({ name: 'epiFormulaToken' })
 export class EpiFormulaTokenPipe implements PipeTransform {
   transform(value: EpiFormulaToken | undefined | null): unknown {
     if (!value) {

@@ -4,8 +4,22 @@ import {
   FormControl,
   FormGroup,
   Validators,
+  FormsModule,
+  ReactiveFormsModule,
 } from '@angular/forms';
 import { take } from 'rxjs';
+
+import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/core';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
+import {
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+} from '@angular/material/expansion';
 
 import { NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
@@ -16,6 +30,8 @@ import {
   EpiFormulaPattern,
   EpiFormulaToken,
 } from '../epi-formula-patterns-part';
+import { EpiFormulaTokenComponent } from '../epi-formula-token/epi-formula-token.component';
+import { EpiFormulaTokenPipe } from '../epi-formula-token.pipe';
 
 /**
  * Epigraphic formula pattern editor.
@@ -24,7 +40,24 @@ import {
   selector: 'cadmus-epi-formula-pattern',
   templateUrl: './epi-formula-pattern.component.html',
   styleUrls: ['./epi-formula-pattern.component.css'],
-  standalone: false,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatError,
+    MatSelect,
+    MatOption,
+    MatButton,
+    MatIcon,
+    MatIconButton,
+    MatTooltip,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    EpiFormulaTokenComponent,
+    EpiFormulaTokenPipe,
+  ],
 })
 export class EpiFormulaPatternComponent {
   private _pattern: EpiFormulaPattern | undefined;
