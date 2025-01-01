@@ -1,22 +1,23 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
 {
   "compileOnSave": false,
   "compilerOptions": {
     "paths": {
       "@myrmidon/cadmus-fr-epigraphy-ligatures": [
-        "dist/myrmidon/cadmus-fr-epigraphy-ligatures"
+        "./dist/myrmidon/cadmus-fr-epigraphy-ligatures"
       ],
       "@myrmidon/cadmus-part-epigraphy-formula-patterns": [
-        "dist/myrmidon/cadmus-part-epigraphy-formula-patterns"
+        "./dist/myrmidon/cadmus-part-epigraphy-formula-patterns"
       ],
       "@myrmidon/cadmus-part-epigraphy-pg": [
-        "dist/myrmidon/cadmus-part-epigraphy-pg"
+        "./dist/myrmidon/cadmus-part-epigraphy-pg"
       ],
       "@myrmidon/cadmus-part-epigraphy-signs": [
         "./dist/myrmidon/cadmus-part-epigraphy-signs"
       ],
       "@myrmidon/cadmus-part-epigraphy-support": [
-        "dist/myrmidon/cadmus-part-epigraphy-support"
+        "./dist/myrmidon/cadmus-part-epigraphy-support"
       ],
       "@myrmidon/cadmus-part-epigraphy-support-frr": [
         "./dist/myrmidon/cadmus-part-epigraphy-support-frr"
@@ -25,30 +26,23 @@
         "./dist/myrmidon/cadmus-part-epigraphy-technique"
       ],
       "@myrmidon/cadmus-part-epigraphy-writing": [
-        "dist/myrmidon/cadmus-part-epigraphy-writing"
+        "./dist/myrmidon/cadmus-part-epigraphy-writing"
       ]
     },
-    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "sourceMap": true,
-    "declaration": false,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
-    "module": "ES2022",
-    "useDefineForClassFields": false,
-    "lib": [
-      "ES2022",
-      "dom"
-    ]
+    "module": "ES2022"
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

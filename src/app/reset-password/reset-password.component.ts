@@ -1,46 +1,39 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import {
   FormGroup,
   FormControl,
   FormBuilder,
   Validators,
-  FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
+
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 import { AuthJwtAccountService } from '@myrmidon/auth-jwt-admin';
-import {
-  MatCard,
-  MatCardHeader,
-  MatCardAvatar,
-  MatCardTitle,
-  MatCardContent,
-  MatCardActions,
-} from '@angular/material/card';
-import { MatIcon } from '@angular/material/icon';
-import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
-import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'cadmus-reset-password',
+  standalone: true,
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.css'],
   imports: [
-    MatCard,
-    MatCardHeader,
-    MatIcon,
-    MatCardAvatar,
-    MatCardTitle,
-    MatCardContent,
-    FormsModule,
+    CommonModule,
     ReactiveFormsModule,
-    MatFormField,
-    MatLabel,
-    MatInput,
-    MatError,
-    MatCardActions,
-    MatButton,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatProgressBarModule,
+    MatTooltipModule,
   ],
 })
 export class ResetPasswordComponent {

@@ -1,6 +1,6 @@
 # Cadmus Epigraphy Shell
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.0.4.
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.6.
 
 Cadmus epigraphic components development shell.
 
@@ -15,6 +15,25 @@ Cadmus epigraphic components development shell.
 2. update version in `env.js` (and Docker files) and `ng build`;
 3. `docker build . -t vedph2020/cadmus-epigraphy-shell:1.0.0 -t vedph2020/cadmus-epigraphy-shell:latest` (replace with the current version).
 
+## Setup
+
+Script which created this workspace:
+
+```sh
+ng new cadmus-epigraphy-shell
+ng add @angular/material
+ng add @angular/localize
+
+ng g library @myrmidon/cadmus-fr-epigraphy-ligatures --prefix cadmus --force
+ng g library @myrmidon/cadmus-part-epigraphy-formula-patterns --prefix cadmus --force
+ng g library @myrmidon/cadmus-part-epigraphy-pg --prefix cadmus --force
+ng g library @myrmidon/cadmus-part-epigraphy-signs --prefix cadmus --force
+ng g library @myrmidon/cadmus-part-epigraphy-support --prefix cadmus --force
+ng g library @myrmidon/cadmus-part-epigraphy-support-frr --prefix cadmus --force
+ng g library @myrmidon/cadmus-part-epigraphy-technique --prefix cadmus --force
+ng g library @myrmidon/cadmus-part-epigraphy-writing --prefix cadmus --force
+```
+
 ## History
 
 ### 7.0.0
@@ -22,6 +41,8 @@ Cadmus epigraphic components development shell.
 - 2025-01-01:
   - ⚠️ standalone components.
   - removed legacy `color` directives.
+  - updated packages.
+  - refactored shell app for modern Angular.
 - 2024-12-31: updated packages and peer dependencies.
 
 ### 6.1.0
