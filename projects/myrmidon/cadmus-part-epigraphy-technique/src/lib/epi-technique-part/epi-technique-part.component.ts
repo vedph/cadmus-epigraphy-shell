@@ -27,7 +27,7 @@ import { Flag, FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
 
 import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
 import {
-  CadmusUiModule,
+  CloseSaveButtonsComponent,
   EditedObject,
   ModelEditorComponentBase,
 } from '@myrmidon/cadmus-ui';
@@ -66,7 +66,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     MatTabsModule,
     MatTooltipModule,
     FlagSetComponent,
-    CadmusUiModule,
+    CloseSaveButtonsComponent,
   ],
   templateUrl: './epi-technique-part.component.html',
   styleUrl: './epi-technique-part.component.scss',

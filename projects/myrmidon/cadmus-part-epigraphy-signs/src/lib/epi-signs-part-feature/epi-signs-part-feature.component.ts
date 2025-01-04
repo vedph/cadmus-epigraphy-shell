@@ -4,15 +4,15 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { ItemService, ThesaurusService } from '@myrmidon/cadmus-api';
 import { EditPartFeatureBase, PartEditorService } from '@myrmidon/cadmus-state';
+import { CurrentItemBarComponent } from '@myrmidon/cadmus-ui-pg';
 
 import { EpiSignsPartComponent } from '../epi-signs-part/epi-signs-part.component';
-import { CadmusUiPgModule } from '@myrmidon/cadmus-ui-pg';
 
 @Component({
-    selector: 'cadmus-epi-signs-part-feature',
-    imports: [EpiSignsPartComponent, CadmusUiPgModule],
-    templateUrl: './epi-signs-part-feature.component.html',
-    styleUrl: './epi-signs-part-feature.component.scss'
+  selector: 'cadmus-epi-signs-part-feature',
+  imports: [CurrentItemBarComponent, EpiSignsPartComponent],
+  templateUrl: './epi-signs-part-feature.component.html',
+  styleUrl: './epi-signs-part-feature.component.scss',
 })
 export class EpiSignsPartFeatureComponent
   extends EditPartFeatureBase

@@ -28,7 +28,7 @@
             </mat-form-field>
             }
             <!-- material (free) -->
-            @if (!matEntries?.length) {
+            @else {
             <mat-form-field>
               <mat-label>material</mat-label>
               <input matInput [formControl]="material" />
@@ -60,7 +60,7 @@
             </mat-form-field>
             }
             <!-- originalFn (free) -->
-            @if (!fnEntries?.length) {
+            @else {
             <mat-form-field>
               <mat-label>original fn.</mat-label>
               <input matInput [formControl]="originalFn" />
@@ -90,7 +90,7 @@
             </mat-form-field>
             }
             <!-- currentFn (free) -->
-            @if (!fnEntries?.length) {
+            @else {
             <mat-form-field>
               <mat-label>current fn.</mat-label>
               <input matInput [formControl]="currentFn" />

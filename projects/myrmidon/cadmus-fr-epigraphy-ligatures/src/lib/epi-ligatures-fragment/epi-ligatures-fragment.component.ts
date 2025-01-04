@@ -28,7 +28,7 @@ import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
 import {
   EditedObject,
   ModelEditorComponentBase,
-  CadmusUiModule,
+  CloseSaveButtonsComponent,
 } from '@myrmidon/cadmus-ui';
 
 import { EpiLigaturesFragment } from '../epi-ligatures-fragment';
@@ -63,7 +63,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     MatInput,
     MatError,
     MatCardActions,
-    CadmusUiModule,
+    CloseSaveButtonsComponent,
   ],
 })
 export class EpiLigaturesFragmentComponent

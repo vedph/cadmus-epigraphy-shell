@@ -21,7 +21,7 @@ import { EllipsisPipe, NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import {
-  CadmusUiModule,
+  CloseSaveButtonsComponent,
   EditedObject,
   ModelEditorComponentBase,
 } from '@myrmidon/cadmus-ui';
@@ -40,25 +40,25 @@ import { EpiSignComponent } from '../epi-sign/epi-sign.component';
  * epi-signs-features (all optional).
  */
 @Component({
-    selector: 'cadmus-epi-signs-part',
-    imports: [
-        CommonModule,
-        CommonModule,
-        ReactiveFormsModule,
-        MatButtonModule,
-        MatCardModule,
-        MatExpansionModule,
-        MatFormFieldModule,
-        MatIconModule,
-        MatInputModule,
-        MatSelectModule,
-        MatTooltipModule,
-        CadmusUiModule,
-        EllipsisPipe,
-        EpiSignComponent,
-    ],
-    templateUrl: './epi-signs-part.component.html',
-    styleUrl: './epi-signs-part.component.scss'
+  selector: 'cadmus-epi-signs-part',
+  imports: [
+    CommonModule,
+    CommonModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatCardModule,
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatSelectModule,
+    MatTooltipModule,
+    EllipsisPipe,
+    EpiSignComponent,
+    CloseSaveButtonsComponent,
+  ],
+  templateUrl: './epi-signs-part.component.html',
+  styleUrl: './epi-signs-part.component.scss',
 })
 export class EpiSignsPartComponent
   extends ModelEditorComponentBase<EpiSignsPart>

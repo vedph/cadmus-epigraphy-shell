@@ -57,7 +57,7 @@
             </thead>
             <tbody>
               @for (m of mappings.value; track m; let i = $index) {
-              <tr>
+              <tr [class.selected]="m === editedMapping">
                 <td class="fit-width">
                   <button
                     type="button"
@@ -85,6 +85,7 @@
           </table>
 
           <!-- mapping editor -->
+          @if (editedMapping) {
           <mat-expansion-panel
             [disabled]="!editedMapping"
             [expanded]="editedMapping"
@@ -99,6 +100,7 @@
               (mappingChange)="onMappingChange($event)"
             />
           </mat-expansion-panel>
+          }
         </div>
       </fieldset>
     </div>

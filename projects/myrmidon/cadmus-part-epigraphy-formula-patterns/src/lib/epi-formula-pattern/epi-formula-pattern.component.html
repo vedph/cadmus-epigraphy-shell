@@ -25,7 +25,7 @@
     </mat-form-field>
     }
     <!-- language (free) -->
-    @if (!langEntries?.length) {
+    @else {
     <mat-form-field>
       <mat-label>language</mat-label>
       <input matInput [formControl]="language" />
@@ -52,7 +52,7 @@
     </mat-form-field>
     }
     <!-- tag (free) -->
-    @if (!tagEntries?.length) {
+    @else {
     <mat-form-field>
       <mat-label>tag</mat-label>
       <input matInput [formControl]="tag" />
@@ -79,8 +79,8 @@
       <tbody>
         @for ( token of tokens.value; track token; let i = $index; let first =
         $first; let last = $last) {
-        <tr>
-          <td>
+        <tr [class.selected]="token === edited">
+          <td class="fit-width">
             <button
               type="button"
               mat-icon-button
@@ -123,8 +123,7 @@
         }
       </tbody>
     </table>
-    }
-
+    } @if (edited) {
     <mat-expansion-panel [disabled]="!edited" [expanded]="edited">
       <mat-expansion-panel-header
         >Token #{{ editedIndex + 1 }}</mat-expansion-panel-header
@@ -136,6 +135,7 @@
         (editorClose)="closeToken()"
       />
     </mat-expansion-panel>
+    }
   </fieldset>
 
   <!-- buttons -->

@@ -7,89 +7,88 @@
       <mat-card-title>Epigraphic Support Fragments Part</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <mat-tab-group [(selectedIndex)]="tabIndex">
-        <mat-tab label="fragments">
-          <div id="toolbar">
-            <button
-              type="button"
-              mat-flat-button
-              class="mat-primary"
-              (click)="addFr()"
-            >
-              <mat-icon>add_circle</mat-icon> fragment
-            </button>
-          </div>
-          @if (fragments.value.length) {
-          <table>
-            <thead>
-              <tr>
-                <th></th>
-                <th>ID</th>
-                <th>size</th>
-                <th>location</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (fr of fragments.value; track fr.id; let i = $index; let
-              first = $first; let last = $last) {
-              <tr>
-                <td class="fit-width">
-                  <button
-                    type="button"
-                    mat-icon-button
-                    matTooltip="Edit this fragment"
-                    (click)="editFr(fr, i)"
-                  >
-                    <mat-icon class="mat-primary">edit</mat-icon>
-                  </button>
-                  <button
-                    type="button"
-                    mat-icon-button
-                    matTooltip="Move this fragment up"
-                    [disabled]="first"
-                    (click)="moveFrUp(i)"
-                  >
-                    <mat-icon>arrow_upward</mat-icon>
-                  </button>
-                  <button
-                    type="button"
-                    mat-icon-button
-                    matTooltip="Move this fragment down"
-                    [disabled]="last"
-                    (click)="moveFrDown(i)"
-                  >
-                    <mat-icon>arrow_downward</mat-icon>
-                  </button>
-                  <button
-                    type="button"
-                    mat-icon-button
-                    matTooltip="Delete this fragment"
-                    (click)="deleteFr(i)"
-                  >
-                    <mat-icon class="mat-warn">remove_circle</mat-icon>
-                  </button>
-                </td>
-                <td>{{ fr.id }}</td>
-                <td>{{ fr.size | physicalSize }}</td>
-                <td>{{ fr.location }}</td>
-              </tr>
-              }
-            </tbody>
-          </table>
+      <div id="toolbar">
+        <button
+          type="button"
+          mat-flat-button
+          class="mat-primary"
+          (click)="addFr()"
+        >
+          <mat-icon>add_circle</mat-icon> fragment
+        </button>
+      </div>
+      @if (fragments.value.length) {
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>ID</th>
+            <th>size</th>
+            <th>location</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (fr of fragments.value; track fr.id; let i = $index; let first =
+          $first; let last = $last) {
+          <tr [class.selected]="fr === edited">
+            <td class="fit-width">
+              <button
+                type="button"
+                mat-icon-button
+                matTooltip="Edit this fragment"
+                (click)="editFr(fr, i)"
+              >
+                <mat-icon class="mat-primary">edit</mat-icon>
+              </button>
+              <button
+                type="button"
+                mat-icon-button
+                matTooltip="Move this fragment up"
+                [disabled]="first"
+                (click)="moveFrUp(i)"
+              >
+                <mat-icon>arrow_upward</mat-icon>
+              </button>
+              <button
+                type="button"
+                mat-icon-button
+                matTooltip="Move this fragment down"
+                [disabled]="last"
+                (click)="moveFrDown(i)"
+              >
+                <mat-icon>arrow_downward</mat-icon>
+              </button>
+              <button
+                type="button"
+                mat-icon-button
+                matTooltip="Delete this fragment"
+                (click)="deleteFr(i)"
+              >
+                <mat-icon class="mat-warn">remove_circle</mat-icon>
+              </button>
+            </td>
+            <td>{{ fr.id }}</td>
+            <td>{{ fr.size | physicalSize }}</td>
+            <td>{{ fr.location }}</td>
+          </tr>
           }
-        </mat-tab>
-
-        <mat-tab label="fragment" *ngIf="edited">
-          <cadmus-epi-support-fr
-            [tagEntries]="tagEntries"
-            [unitEntries]="unitEntries"
-            [dimTagEntries]="dimTagEntries"
-            [fragment]="edited"
-            (fragmentChange)="saveFr($event)"
-            (fragmentCancel)="closeFr()"
-          />
-        </mat-tab>
-      </mat-tab-group>
+        </tbody>
+      </table>
+      } @if (edited) {
+      <mat-expansion-panel [expanded]="edited" [disabled]="!edited">
+        <mat-expansion-panel-header>
+          <mat-panel-title> fragment </mat-panel-title>
+        </mat-expansion-panel-header>
+        <cadmus-epi-support-fr
+          [tagEntries]="tagEntries"
+          [unitEntries]="unitEntries"
+          [dimTagEntries]="dimTagEntries"
+          [fragment]="edited"
+          (fragmentChange)="saveFr($event)"
+          (fragmentCancel)="closeFr()"
+        />
+      </mat-expansion-panel>
+      }
     </mat-card-content>
     <mat-card-actions>
       <cadmus-close-save-buttons

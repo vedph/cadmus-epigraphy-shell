@@ -1,6 +1,6 @@
 {
   "name": "@myrmidon/cadmus-part-epigraphy-pg",
-  "version": "7.0.0",
+  "version": "8.0.0",
   "description": "Cadmus - epigraphic components wrapper.",
   "keywords": [
     "Cadmus",
@@ -17,16 +17,16 @@
   "peerDependencies": {
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0",
-    "@myrmidon/cadmus-core": "^10.1.0",
-    "@myrmidon/cadmus-state": "^10.2.0",
-    "@myrmidon/cadmus-ui": "^10.2.0",
-    "@myrmidon/cadmus-ui-pg": "^10.2.0",
-    "@myrmidon/cadmus-part-epigraphy-support": "^7.0.0",
-    "@myrmidon/cadmus-part-epigraphy-support-frr": "^7.0.0",
-    "@myrmidon/cadmus-part-epigraphy-writing": "^7.0.0",
-    "@myrmidon/cadmus-part-epigraphy-signs": "^7.0.0",
-    "@myrmidon/cadmus-fr-epigraphy-ligatures": "^7.0.0",
-    "@myrmidon/cadmus-part-epigraphy-formula-patterns": "^7.0.0"
+    "@myrmidon/cadmus-core": "^11.0.0",
+    "@myrmidon/cadmus-state": "^11.0.0",
+    "@myrmidon/cadmus-ui": "^11.0.0",
+    "@myrmidon/cadmus-ui-pg": "^11.0.0",
+    "@myrmidon/cadmus-part-epigraphy-support": "^8.0.0",
+    "@myrmidon/cadmus-part-epigraphy-support-frr": "^8.0.0",
+    "@myrmidon/cadmus-part-epigraphy-writing": "^8.0.0",
+    "@myrmidon/cadmus-part-epigraphy-signs": "^8.0.0",
+    "@myrmidon/cadmus-fr-epigraphy-ligatures": "^8.0.0",
+    "@myrmidon/cadmus-part-epigraphy-formula-patterns": "^8.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

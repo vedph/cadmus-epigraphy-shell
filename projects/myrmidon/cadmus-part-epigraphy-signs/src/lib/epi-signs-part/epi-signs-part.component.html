@@ -30,7 +30,7 @@
         <tbody>
           @for (sign of signs.value; track sign.id; let i = $index; let first =
           $first; let last = $last) {
-          <tr>
+          <tr [class.selected]="sign === edited">
             <td class="fit-width">
               <button
                 type="button"
@@ -74,8 +74,7 @@
           }
         </tbody>
       </table>
-      }
-
+      } @if (edited) {
       <mat-expansion-panel [expanded]="edited" [disabled]="!edited">
         <cadmus-epi-sign
           [featEntries]="featEntries"
@@ -87,6 +86,7 @@
           (signCancel)="closeSign()"
         />
       </mat-expansion-panel>
+      }
     </mat-card-content>
     <mat-card-actions>
       <cadmus-close-save-buttons

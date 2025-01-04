@@ -20,9 +20,13 @@ import {
 } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 
-import { ThesaurusEntry } from '@myrmidon/cadmus-core';
-import { renderLabelFromLastColon, CadmusUiModule } from '@myrmidon/cadmus-ui';
 import { NgxToolsValidators } from '@myrmidon/ngx-tools';
+
+import { ThesaurusEntry } from '@myrmidon/cadmus-core';
+import {
+  renderLabelFromLastColon,
+  ThesaurusTreeComponent,
+} from '@myrmidon/cadmus-ui';
 
 import { EpiFormulaToken } from '../epi-formula-patterns-part';
 
@@ -37,7 +41,6 @@ import { EpiFormulaToken } from '../epi-formula-patterns-part';
     FormsModule,
     ReactiveFormsModule,
     MatCheckbox,
-    CadmusUiModule,
     MatIconButton,
     MatTooltip,
     MatIcon,
@@ -46,6 +49,7 @@ import { EpiFormulaToken } from '../epi-formula-patterns-part';
     MatHint,
     MatError,
     MatLabel,
+    ThesaurusTreeComponent,
   ],
 })
 export class EpiFormulaTokenComponent {

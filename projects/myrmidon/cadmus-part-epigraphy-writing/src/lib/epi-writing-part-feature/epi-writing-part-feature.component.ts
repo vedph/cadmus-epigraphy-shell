@@ -4,14 +4,15 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { ItemService, ThesaurusService } from '@myrmidon/cadmus-api';
 import { EditPartFeatureBase, PartEditorService } from '@myrmidon/cadmus-state';
-import { CadmusUiPgModule } from '@myrmidon/cadmus-ui-pg';
+import { CurrentItemBarComponent } from '@myrmidon/cadmus-ui-pg';
+
 import { EpiWritingPartComponent } from '../epi-writing-part/epi-writing-part.component';
 
 @Component({
   selector: 'cadmus-epi-writing-part-feature',
   templateUrl: './epi-writing-part-feature.component.html',
   styleUrl: './epi-writing-part-feature.component.scss',
-  imports: [CadmusUiPgModule, EpiWritingPartComponent],
+  imports: [CurrentItemBarComponent, EpiWritingPartComponent],
 })
 export class EpiWritingPartFeatureComponent
   extends EditPartFeatureBase

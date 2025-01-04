@@ -15,6 +15,64 @@ Cadmus epigraphic components development shell.
 2. update version in `env.js` (and Docker files) and `ng build`;
 3. `docker build . -t vedph2020/cadmus-epigraphy-shell:1.0.0 -t vedph2020/cadmus-epigraphy-shell:latest` (replace with the current version).
 
+## Libraries
+
+```mermaid
+graph LR;
+  cadmus-fr-epigraphy-ligatures --> cadmus-mat-physical-size
+  cadmus-fr-epigraphy-ligatures --> cadmus-refs-decorated-counts
+  cadmus-fr-epigraphy-ligatures --> cadmus-ui-flag-set
+  cadmus-fr-epigraphy-ligatures --> cadmus-ui
+  cadmus-fr-epigraphy-ligatures --> cadmus-ui-pg
+  cadmus-part-epigraphy-formula-patterns --> cadmus-mat-physical-size
+  cadmus-part-epigraphy-formula-patterns --> cadmus-refs-decorated-counts
+  cadmus-part-epigraphy-formula-patterns --> cadmus-ui-flag-set
+  cadmus-part-epigraphy-formula-patterns --> cadmus-ui
+  cadmus-part-epigraphy-formula-patterns --> cadmus-ui-pg
+  cadmus-part-epigraphy-signs --> cadmus-mat-physical-size
+  cadmus-part-epigraphy-signs --> cadmus-ui-flag-set
+  cadmus-part-epigraphy-signs --> cadmus-core
+  cadmus-part-epigraphy-signs --> cadmus-state
+  cadmus-part-epigraphy-signs --> cadmus-ui
+  cadmus-part-epigraphy-signs --> cadmus-ui-pg
+  cadmus-part-epigraphy-support --> cadmus-refs-decorated-counts
+  cadmus-part-epigraphy-support --> cadmus-ui-flag-set
+  cadmus-part-epigraphy-support --> cadmus-mat-physical-size
+  cadmus-part-epigraphy-support --> cadmus-core
+  cadmus-part-epigraphy-support --> cadmus-state
+  cadmus-part-epigraphy-support --> cadmus-ui
+  cadmus-part-epigraphy-support --> cadmus-ui-pg
+  cadmus-part-epigraphy-support-frr --> cadmus-refs-decorated-counts
+  cadmus-part-epigraphy-support-frr --> cadmus-ui-flag-set
+  cadmus-part-epigraphy-support-frr --> cadmus-mat-physical-size
+  cadmus-part-epigraphy-support-frr --> cadmus-core
+  cadmus-part-epigraphy-support-frr --> cadmus-state
+  cadmus-part-epigraphy-support-frr --> cadmus-ui
+  cadmus-part-epigraphy-support-frr --> cadmus-ui-pg
+  cadmus-part-epigraphy-technique --> cadmus-ui-flag-set
+  cadmus-part-epigraphy-technique --> cadmus-core
+  cadmus-part-epigraphy-technique --> cadmus-state
+  cadmus-part-epigraphy-technique --> cadmus-ui
+  cadmus-part-epigraphy-technique --> cadmus-ui-pg
+  cadmus-part-epigraphy-writing --> cadmus-mat-physical-size
+  cadmus-part-epigraphy-writing --> cadmus-refs-decorated-counts
+  cadmus-part-epigraphy-writing --> cadmus-ui-flag-set
+  cadmus-part-epigraphy-writing --> cadmus-core
+  cadmus-part-epigraphy-writing --> cadmus-state
+  cadmus-part-epigraphy-writing --> cadmus-ui
+  cadmus-part-epigraphy-writing --> cadmus-ui-pg
+  cadmus-part-epigraphy-pg --> cadmus-core
+  cadmus-part-epigraphy-pg --> cadmus-state
+  cadmus-part-epigraphy-pg --> cadmus-ui
+  cadmus-part-epigraphy-pg --> cadmus-ui-pg
+  cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-support
+  cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-support-frr
+  cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-writing
+  cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-signs
+  cadmus-part-epigraphy-pg --> cadmus-fr-epigraphy-ligatures
+  cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-formula-patterns
+```
+
 ## Setup
 
 Script which created this workspace:
@@ -35,6 +93,10 @@ ng g library @myrmidon/cadmus-part-epigraphy-writing --prefix cadmus --force
 ```
 
 ## History
+
+### 8.0.0
+
+- 2025-01-04: ⚠️ updated [Cadmus dependencies](https://github.com/vedph/cadmus-shell-v3) to version 11 (standalone components).
 
 ### 7.0.0
 

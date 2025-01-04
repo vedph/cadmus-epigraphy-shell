@@ -15,19 +15,19 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import {
-  CadmusUiModule,
+  CloseSaveButtonsComponent,
   EditedObject,
   ModelEditorComponentBase,
 } from '@myrmidon/cadmus-ui';
 import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
 import { PhysicalSizePipe } from '@myrmidon/cadmus-mat-physical-size';
+
 import {
   EPI_SUPPORT_FRR_PART_TYPEID,
   EpiSupportFr,
@@ -52,11 +52,10 @@ import { EpiSupportFrComponent } from '../epi-support-fr/epi-support-fr.componen
     MatIconModule,
     MatInputModule,
     MatSelectModule,
-    MatTabsModule,
     MatTooltipModule,
-    CadmusUiModule,
     PhysicalSizePipe,
     EpiSupportFrComponent,
+    CloseSaveButtonsComponent
   ],
   templateUrl: './epi-support-frr-part.component.html',
   styleUrl: './epi-support-frr-part.component.scss',
@@ -67,7 +66,6 @@ export class EpiSupportFrrPartComponent
 {
   private _editedIndex: number;
 
-  public tabIndex: number;
   public edited: EpiSupportFr | undefined;
 
   // physical-size-units
@@ -88,7 +86,6 @@ export class EpiSupportFrrPartComponent
   ) {
     super(authService, formBuilder);
     this._editedIndex = -1;
-    this.tabIndex = 0;
     // form
     this.fragments = formBuilder.control([], {
       // at least 1 entry
@@ -167,17 +164,11 @@ export class EpiSupportFrrPartComponent
   public editFr(entry: EpiSupportFr, index: number): void {
     this._editedIndex = index;
     this.edited = entry;
-    setTimeout(() => {
-      this.tabIndex = 1;
-    });
   }
 
   public closeFr(): void {
     this._editedIndex = -1;
     this.edited = undefined;
-    setTimeout(() => {
-      this.tabIndex = 0;
-    });
   }
 
   public saveFr(fr: EpiSupportFr): void {

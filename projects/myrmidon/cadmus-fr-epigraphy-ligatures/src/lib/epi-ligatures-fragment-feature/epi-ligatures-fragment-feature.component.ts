@@ -7,8 +7,8 @@ import {
   EditFragmentFeatureBase,
   FragmentEditorService,
 } from '@myrmidon/cadmus-state';
-import { CadmusUiPgModule } from '@myrmidon/cadmus-ui-pg';
-import { CadmusUiModule } from '@myrmidon/cadmus-ui';
+import { CurrentItemBarComponent } from '@myrmidon/cadmus-ui-pg';
+import { DecoratedTokenTextComponent } from '@myrmidon/cadmus-ui';
 
 import { EpiLigaturesFragmentComponent } from '../epi-ligatures-fragment/epi-ligatures-fragment.component';
 
@@ -16,7 +16,11 @@ import { EpiLigaturesFragmentComponent } from '../epi-ligatures-fragment/epi-lig
   selector: 'cadmus-epi-ligatures-fragment-feature',
   templateUrl: './epi-ligatures-fragment-feature.component.html',
   styleUrls: ['./epi-ligatures-fragment-feature.component.css'],
-  imports: [CadmusUiPgModule, CadmusUiModule, EpiLigaturesFragmentComponent],
+  imports: [
+    CurrentItemBarComponent,
+    DecoratedTokenTextComponent,
+    EpiLigaturesFragmentComponent,
+  ],
 })
 export class EpiLigaturesFragmentFeatureComponent
   extends EditFragmentFeatureBase

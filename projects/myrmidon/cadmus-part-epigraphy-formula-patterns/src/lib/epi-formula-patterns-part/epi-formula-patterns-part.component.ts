@@ -29,9 +29,9 @@ import { NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import {
+  CloseSaveButtonsComponent,
   EditedObject,
   ModelEditorComponentBase,
-  CadmusUiModule,
 } from '@myrmidon/cadmus-ui';
 import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
 
@@ -68,8 +68,8 @@ import { EpiFormulaTokenPipe } from '../epi-formula-token.pipe';
     MatExpansionPanelHeader,
     EpiFormulaPatternComponent,
     MatCardActions,
-    CadmusUiModule,
     EpiFormulaTokenPipe,
+    CloseSaveButtonsComponent,
   ],
 })
 export class EpiFormulaPatternsPartComponent
