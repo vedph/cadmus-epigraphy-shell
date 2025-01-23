@@ -94,6 +94,8 @@ ng g library @myrmidon/cadmus-part-epigraphy-writing --prefix cadmus --force
 
 ## History
 
+- 2025-01-23: updated packages.
+
 ### 8.0.0
 
 - 2025-01-04: ⚠️ updated [Cadmus dependencies](https://github.com/vedph/cadmus-shell-v3) to version 11 (standalone components).
