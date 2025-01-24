@@ -82,7 +82,7 @@
           [measUnitEntries]="measUnitEntries"
           [measDimTagEntries]="measDimTagEntries"
           [sign]="edited"
-          (signChange)="saveSign($event)"
+          (signChange)="saveSign($event!)"
           (signCancel)="closeSign()"
         />
       </mat-expansion-panel>

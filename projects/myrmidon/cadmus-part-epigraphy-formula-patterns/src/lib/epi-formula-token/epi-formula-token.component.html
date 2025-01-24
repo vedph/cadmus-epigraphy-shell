@@ -13,7 +13,7 @@
     <div class="form-row">
       <!-- picker -->
       <cadmus-thesaurus-tree
-        [entries]="tagEntries"
+        [entries]="tagEntries()"
         rootLabel="categories"
         [renderLabel]="renderLabel"
         (entryChange)="onEntryChange($event)"

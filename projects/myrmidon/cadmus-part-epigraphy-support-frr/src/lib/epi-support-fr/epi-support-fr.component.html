@@ -97,7 +97,7 @@
             <cadmus-epi-support-fr-cell-mapping
               [mapping]="editedMapping"
               (mappingCancel)="closeMapping()"
-              (mappingChange)="onMappingChange($event)"
+              (mappingChange)="onMappingChange($event!)"
             />
           </mat-expansion-panel>
           }
@@ -108,9 +108,9 @@
     <!-- size -->
     <div id="size">
       <cadmus-mat-physical-size
-        [tagEntries]="tagEntries"
-        [unitEntries]="unitEntries"
-        [dimTagEntries]="dimTagEntries"
+        [tagEntries]="tagEntries()"
+        [unitEntries]="unitEntries()"
+        [dimTagEntries]="dimTagEntries()"
         [size]="size.value || undefined"
         (sizeChange)="onSizeChange($event!)"
       />

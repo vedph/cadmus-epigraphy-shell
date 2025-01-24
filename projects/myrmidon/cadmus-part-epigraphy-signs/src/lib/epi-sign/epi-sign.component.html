@@ -33,9 +33,9 @@
     <legend>measurements</legend>
     <cadmus-mat-physical-measurement-set
       [allowCustomName]="true"
-      [nameEntries]="measNameEntries"
-      [unitEntries]="measUnitEntries || []"
-      [dimTagEntries]="measDimTagEntries"
+      [nameEntries]="measNameEntries()"
+      [unitEntries]="measUnitEntries() || []"
+      [dimTagEntries]="measDimTagEntries()"
       [measurements]="measurements.value"
       (measurementsChange)="onMeasurementsChange($event)"
     />

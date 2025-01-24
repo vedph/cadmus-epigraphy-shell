@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, effect, input, model, output } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -53,29 +53,15 @@ import { EpiFormulaToken } from '../epi-formula-patterns-part';
   ],
 })
 export class EpiFormulaTokenComponent {
-  private _token: EpiFormulaToken | undefined;
-
-  @Input()
-  public get token(): EpiFormulaToken | undefined | null {
-    return this._token;
-  }
-  public set token(value: EpiFormulaToken | undefined | null) {
-    if (this._token === value) {
-      return;
-    }
-    this._token = value || undefined;
-    this.updateForm(this._token);
-  }
+  /**
+   * The token being edited.
+   */
+  public readonly token = model<EpiFormulaToken>();
 
   // epi-formula-token-tags
-  @Input()
-  public tagEntries: ThesaurusEntry[] | undefined;
+  public readonly tagEntries = input<ThesaurusEntry[]>();
 
-  @Output()
-  public tokenChange: EventEmitter<EpiFormulaToken>;
-
-  @Output()
-  public editorClose: EventEmitter<any>;
+  public editorClose = output();
 
   public optional: FormControl<boolean>;
   public placeholder: FormControl<boolean>;
@@ -104,9 +90,10 @@ export class EpiFormulaTokenComponent {
       values: this.values,
       note: this.note,
     });
-    // events
-    this.tokenChange = new EventEmitter<EpiFormulaToken>();
-    this.editorClose = new EventEmitter<any>();
+
+    effect(() => {
+      this.updateForm(this.token());
+    });
   }
 
   private updateForm(pattern: EpiFormulaToken | undefined): void {
@@ -118,7 +105,7 @@ export class EpiFormulaTokenComponent {
     this.placeholder.setValue(pattern.isPlaceholder || false);
     this.tags.setValue(
       pattern.tags.map(
-        (t) => this.tagEntries?.find((e) => e.id === t) || { id: t, value: t }
+        (t) => this.tagEntries()?.find((e) => e.id === t) || { id: t, value: t }
       )
     );
     this.values.setValue(pattern.values.join('\n'));
@@ -193,8 +180,7 @@ export class EpiFormulaTokenComponent {
     if (this.form.invalid) {
       return;
     }
-    this._token = this.getToken();
-    this.tokenChange.emit(this._token);
+    this.token.set(this.getToken());
   }
 
   public renderLabel(label: string): string {

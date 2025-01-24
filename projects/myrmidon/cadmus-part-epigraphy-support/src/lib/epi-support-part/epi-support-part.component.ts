@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormControl,
   FormBuilder,
@@ -130,19 +130,8 @@ export class EpiSupportPartComponent
   public objTypeEntries?: ThesaurusEntry[];
   // epi-support-count-types
   public countTypeEntries?: ThesaurusEntry[];
-
   // epi-support-features
-  @Input()
-  public get featEntries(): ThesaurusEntry[] | undefined {
-    return this._featEntries;
-  }
-  public set featEntries(value: ThesaurusEntry[] | undefined) {
-    if (this._featEntries === value) {
-      return;
-    }
-    this._featEntries = value || [];
-    this.featFlags = this._featEntries.map(entryToFlag);
-  }
+  public featEntries?: ThesaurusEntry[];
 
   // size:
   // physical-size-units
@@ -269,8 +258,10 @@ export class EpiSupportPartComponent
     key = 'epi-support-features';
     if (this.hasThesaurus(key)) {
       this.featEntries = thesauri[key].entries;
+      this.featFlags = this.featEntries!.map(entryToFlag) || [];
     } else {
       this.featEntries = undefined;
+      this.featFlags = [];
     }
     key = 'physical-size-units';
     if (this.hasThesaurus(key)) {

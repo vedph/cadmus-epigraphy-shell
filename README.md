@@ -68,6 +68,7 @@ graph LR;
   cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-support
   cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-support-frr
   cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-writing
+  cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-technique
   cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-signs
   cadmus-part-epigraphy-pg --> cadmus-fr-epigraphy-ligatures
   cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-formula-patterns
@@ -94,6 +95,9 @@ ng g library @myrmidon/cadmus-part-epigraphy-writing --prefix cadmus --force
 
 ## History
 
+### 8.0.1
+
+- 2025-01-24: ⚠️ migrated to signals. This did not affect `@myrmidon/cadmus-fr-epigraphy-ligatures` which had no `@Input` or `@Output` endpoints.
 - 2025-01-23: updated packages.
 
 ### 8.0.0

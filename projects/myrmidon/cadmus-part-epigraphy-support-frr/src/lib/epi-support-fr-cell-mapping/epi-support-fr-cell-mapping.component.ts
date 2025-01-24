@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, output, Output } from '@angular/core';
+import { Component, effect, model, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -31,26 +31,12 @@ import { EpiSupportFrCellMapping } from '../epi-support-frr-part';
   styleUrl: './epi-support-fr-cell-mapping.component.scss',
 })
 export class EpiSupportFrCellMappingComponent {
-  private _mapping?: EpiSupportFrCellMapping;
+  /**
+   * The mapping being edited.
+   */
+  public readonly mapping = model<EpiSupportFrCellMapping>();
 
-  @Input()
-  public get mapping(): EpiSupportFrCellMapping | undefined {
-    return this._mapping;
-  }
-  public set mapping(value: EpiSupportFrCellMapping | undefined | null) {
-    if (this._mapping === value) {
-      return;
-    }
-    this._mapping = value || undefined;
-    this.updateForm(this._mapping);
-  }
-
-  @Output()
-  public readonly mappingChange: EventEmitter<EpiSupportFrCellMapping> =
-    new EventEmitter<EpiSupportFrCellMapping>();
-
-  @Output()
-  public readonly mappingCancel: EventEmitter<void> = new EventEmitter<void>();
+  public readonly mappingCancel = output();
 
   public location: FormControl<string>;
   public headText: FormControl<string | null>;
@@ -81,6 +67,10 @@ export class EpiSupportFrCellMappingComponent {
       headTextLoc: this.headTextLoc,
       tailText: this.tailText,
       tailTextLoc: this.tailTextLoc,
+    });
+
+    effect(() => {
+      this.updateForm(this.mapping());
     });
   }
 
@@ -116,7 +106,6 @@ export class EpiSupportFrCellMappingComponent {
     if (!this.form.valid) {
       return;
     }
-    this._mapping = this.getMapping();
-    this.mappingChange.emit(this._mapping);
+    this.mapping.set(this.getMapping());
   }
 }

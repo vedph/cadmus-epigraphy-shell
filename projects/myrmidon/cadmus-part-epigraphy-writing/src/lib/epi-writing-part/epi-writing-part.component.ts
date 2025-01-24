@@ -1,6 +1,4 @@
-// NAME-part.component.ts
-
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormControl,
   FormBuilder,
@@ -78,8 +76,6 @@ export class EpiWritingPartComponent
   extends ModelEditorComponentBase<EpiWritingPart>
   implements OnInit
 {
-  private _featEntries?: ThesaurusEntry[];
-
   public system: FormControl<string | null>;
   public script: FormControl<string>;
   public casing: FormControl<string | null>;
@@ -94,17 +90,7 @@ export class EpiWritingPartComponent
   // epi-writing-casings
   public casingEntries?: ThesaurusEntry[];
   // epi-writing-features
-  @Input()
-  public get featEntries(): ThesaurusEntry[] | undefined {
-    return this._featEntries;
-  }
-  public set featEntries(value: ThesaurusEntry[] | undefined) {
-    if (this._featEntries === value) {
-      return;
-    }
-    this._featEntries = value || [];
-    this.featFlags = this._featEntries.map(entryToFlag);
-  }
+  public featEntries?: ThesaurusEntry[];
   // flags
   public featFlags: Flag[] = [];
 
@@ -157,8 +143,10 @@ export class EpiWritingPartComponent
     key = 'epi-writing-features';
     if (this.hasThesaurus(key)) {
       this.featEntries = thesauri[key].entries;
+      this.featFlags = this.featEntries!.map(entryToFlag);
     } else {
       this.featEntries = undefined;
+      this.featFlags = [];
     }
   }
 

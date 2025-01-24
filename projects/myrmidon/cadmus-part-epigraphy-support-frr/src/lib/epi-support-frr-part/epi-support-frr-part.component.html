@@ -84,7 +84,7 @@
           [unitEntries]="unitEntries"
           [dimTagEntries]="dimTagEntries"
           [fragment]="edited"
-          (fragmentChange)="saveFr($event)"
+          (fragmentChange)="saveFr($event!)"
           (fragmentCancel)="closeFr()"
         />
       </mat-expansion-panel>

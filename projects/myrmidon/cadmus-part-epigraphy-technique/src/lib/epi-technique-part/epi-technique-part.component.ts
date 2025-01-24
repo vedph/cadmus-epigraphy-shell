@@ -75,9 +75,6 @@ export class EpiTechniquePartComponent
   extends ModelEditorComponentBase<EpiTechniquePart>
   implements OnInit
 {
-  private _techEntries?: ThesaurusEntry[];
-  private _toolEntries?: ThesaurusEntry[];
-
   public techniques: FormControl<string[]>;
   public tools: FormControl<string[]>;
   public note: FormControl<string | null>;
@@ -87,30 +84,9 @@ export class EpiTechniquePartComponent
   public toolFlags: Flag[] = [];
 
   // epi-technique-types
-  @Input()
-  public get techEntries(): ThesaurusEntry[] | undefined {
-    return this._techEntries;
-  }
-  public set techEntries(value: ThesaurusEntry[] | undefined) {
-    if (this._techEntries === value) {
-      return;
-    }
-    this._techEntries = value || [];
-    this.techFlags = this._techEntries.map(entryToFlag);
-  }
-
+  public techEntries?: ThesaurusEntry[];
   // epi-technique-tools
-  @Input()
-  public get toolEntries(): ThesaurusEntry[] | undefined {
-    return this._toolEntries;
-  }
-  public set toolEntries(value: ThesaurusEntry[] | undefined) {
-    if (this._toolEntries === value) {
-      return;
-    }
-    this._toolEntries = value || [];
-    this.toolFlags = this._toolEntries.map(entryToFlag);
-  }
+  public toolEntries?: ThesaurusEntry[];
 
   constructor(authService: AuthJwtService, formBuilder: FormBuilder) {
     super(authService, formBuilder);
@@ -138,14 +114,18 @@ export class EpiTechniquePartComponent
     let key = 'epi-technique-types';
     if (this.hasThesaurus(key)) {
       this.techEntries = thesauri[key].entries;
+      this.techFlags = this.techEntries!.map(entryToFlag);
     } else {
       this.techEntries = undefined;
+      this.techFlags = [];
     }
     key = 'epi-technique-tools';
     if (this.hasThesaurus(key)) {
       this.toolEntries = thesauri[key].entries;
+      this.toolFlags = this.toolEntries!.map(entryToFlag);
     } else {
       this.toolEntries = undefined;
+      this.toolFlags = [];
     }
   }
 

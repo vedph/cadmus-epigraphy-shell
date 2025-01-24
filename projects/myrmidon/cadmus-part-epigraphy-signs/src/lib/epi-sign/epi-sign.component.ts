@@ -1,11 +1,12 @@
 import {
   Component,
-  EventEmitter,
+  effect,
   Inject,
-  Input,
+  input,
+  model,
   OnDestroy,
   Optional,
-  Output,
+  output,
 } from '@angular/core';
 import {
   FormBuilder,
@@ -70,58 +71,28 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   providers: [CadmusTextEdService],
 })
 export class EpiSignComponent implements OnDestroy {
-  private _sign?: EpiSign;
   private _editorModel?: monaco.editor.ITextModel;
   private _editor?: monaco.editor.IStandaloneCodeEditor;
   private readonly _disposables: monaco.IDisposable[] = [];
+
   // flags
-  private _featEntries?: ThesaurusEntry[];
   public featFlags: Flag[] = [];
 
   /**
    * The sign being edited.
    */
-  @Input()
-  public get sign(): EpiSign | undefined | null {
-    return this._sign;
-  }
-  public set sign(value: EpiSign | undefined | null) {
-    if (this._sign !== value) {
-      this._sign = value || undefined;
-      this.updateForm(value);
-    }
-  }
+  public readonly sign = model<EpiSign>();
 
   // epi-signs-measure-names
-  @Input()
-  public measNameEntries?: ThesaurusEntry[];
-
+  public readonly measNameEntries = input<ThesaurusEntry[]>();
   // physical-size-units
-  @Input()
-  public measUnitEntries?: ThesaurusEntry[];
-
+  public readonly measUnitEntries = input<ThesaurusEntry[]>();
   // physical-size-dim-tags
-  @Input()
-  public measDimTagEntries?: ThesaurusEntry[];
-
+  public readonly measDimTagEntries = input<ThesaurusEntry[]>();
   // epi-signs-features
-  @Input()
-  public get featEntries(): ThesaurusEntry[] | undefined {
-    return this._featEntries;
-  }
-  public set featEntries(value: ThesaurusEntry[] | undefined) {
-    if (this._featEntries === value) {
-      return;
-    }
-    this._featEntries = value || [];
-    this.featFlags = this._featEntries.map(entryToFlag);
-  }
+  public readonly featEntries = input<ThesaurusEntry[]>();
 
-  @Output()
-  public readonly signChange: EventEmitter<EpiSign> =
-    new EventEmitter<EpiSign>();
-  @Output()
-  public readonly signCancel: EventEmitter<void> = new EventEmitter<void>();
+  public readonly signCancel = output();
 
   public id: FormControl<string>;
   public features: FormControl<string[]>;
@@ -153,6 +124,14 @@ export class EpiSignComponent implements OnDestroy {
       description: this.description,
       measurements: this.measurements,
     });
+
+    effect(() => {
+      this.updateForm(this.sign());
+    });
+
+    effect(() => {
+      this.featFlags = this.featEntries()?.map(entryToFlag) || [];
+    });
   }
 
   public ngOnDestroy() {
@@ -180,6 +159,12 @@ export class EpiSignComponent implements OnDestroy {
         forceMoveMarkers: true,
       },
     ]);
+  }
+
+  private updateEditorContent(description: string | null) {
+    if (this._editorModel) {
+      this._editorModel.setValue(description || '');
+    }
   }
 
   public onEditorInit(editor: monaco.editor.IEditor) {
@@ -214,6 +199,9 @@ export class EpiSignComponent implements OnDestroy {
         });
       });
     }
+
+    // update the editor content if the description is already available
+    this.updateEditorContent(this.description.value);
   }
 
   private updateForm(sign: EpiSign | undefined | null): void {
@@ -225,10 +213,12 @@ export class EpiSignComponent implements OnDestroy {
     this.id.setValue(sign.id || '');
     this.features.setValue(sign.features || []);
     this.description.setValue(sign.description || null);
-    this._editorModel?.setValue(sign.description || '');
+    // this._editorModel?.setValue(sign.description || '');
     this.measurements.setValue(sign.measurements || []);
 
     this.form.markAsPristine();
+
+    this.updateEditorContent(sign.description || null);
   }
 
   private getSign(): EpiSign {
@@ -262,7 +252,6 @@ export class EpiSignComponent implements OnDestroy {
     if (this.form.invalid) {
       return;
     }
-    this._sign = this.getSign();
-    this.signChange.emit(this._sign);
+    this.sign.set(this.getSign());
   }
 }

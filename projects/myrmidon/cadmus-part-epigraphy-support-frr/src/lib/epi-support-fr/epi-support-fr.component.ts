@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, effect, input, model, output } from '@angular/core';
 import {
   FormGroup,
   FormBuilder,
@@ -21,7 +21,6 @@ import {
   PhysicalSizeComponent,
 } from '@myrmidon/cadmus-mat-physical-size';
 import {
-  ExcelColumnPipe,
   PhysicalGridCoordsService,
   PhysicalGridLocation,
   PhysicalGridLocationComponent,
@@ -51,48 +50,18 @@ import { EpiSupportFrCellMappingComponent } from '../epi-support-fr-cell-mapping
   styleUrl: './epi-support-fr.component.scss',
 })
 export class EpiSupportFrComponent {
-  private readonly _excelColumnPipe: ExcelColumnPipe = new ExcelColumnPipe();
-  private _fragment?: EpiSupportFr;
-  private _gridPresetEntries?: ThesaurusEntry[];
-
-  @Input()
-  public get fragment(): EpiSupportFr | undefined | null {
-    return this._fragment;
-  }
-  public set fragment(value: EpiSupportFr | undefined | null) {
-    if (this._fragment !== value) {
-      this._fragment = value || undefined;
-      this.updateForm(value);
-    }
-  }
+  public readonly fragment = model<EpiSupportFr>();
 
   // physical-size-units
-  @Input()
-  public unitEntries?: ThesaurusEntry[];
-
+  public readonly unitEntries = input<ThesaurusEntry[]>();
   // physical-size-tags
-  @Input()
-  public tagEntries?: ThesaurusEntry[];
-
+  public readonly tagEntries = input<ThesaurusEntry[]>();
   // physical-size-dim-tags
-  @Input()
-  public dimTagEntries?: ThesaurusEntry[];
-
+  public readonly dimTagEntries = input<ThesaurusEntry[]>();
   // physical-grid-presets
-  @Input()
-  public get gridPresetEntries(): ThesaurusEntry[] | undefined {
-    return this._gridPresetEntries;
-  }
-  public set gridPresetEntries(value: ThesaurusEntry[] | undefined) {
-    this._gridPresetEntries = value;
-    this.gridPresets = value?.map((e) => e.value);
-  }
+  public readonly gridPresetEntries = input<ThesaurusEntry[]>();
 
-  @Output()
-  public readonly fragmentChange: EventEmitter<EpiSupportFr> =
-    new EventEmitter<EpiSupportFr>();
-  @Output()
-  public readonly fragmentCancel: EventEmitter<void> = new EventEmitter<void>();
+  public readonly fragmentCancel = output();
 
   public id: FormControl<string>;
   public shelfmark: FormControl<string | null>;
@@ -140,6 +109,14 @@ export class EpiSupportFrComponent {
       location: this.location,
       mappings: this.mappings,
       note: this.note,
+    });
+
+    effect(() => {
+      this.updateForm(this.fragment());
+    });
+
+    effect(() => {
+      this.gridPresets = this.gridPresetEntries()?.map((e) => e.value);
     });
   }
 
@@ -246,7 +223,6 @@ export class EpiSupportFrComponent {
     if (this.form.invalid) {
       return;
     }
-    this._fragment = this.getFragment();
-    this.fragmentChange.emit(this._fragment);
+    this.fragment.set(this.getFragment());
   }
 }

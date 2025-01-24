@@ -83,7 +83,7 @@
           [tokTagEntries]="tokTagEntries"
           [pattern]="edited"
           (editorClose)="closePattern()"
-          (patternChange)="savePattern($event)"
+          (patternChange)="savePattern($event!)"
         />
       </mat-expansion-panel>
       }

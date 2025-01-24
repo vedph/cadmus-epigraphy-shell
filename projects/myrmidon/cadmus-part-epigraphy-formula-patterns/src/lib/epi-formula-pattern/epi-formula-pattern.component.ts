@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, effect, input, model, output } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -60,35 +60,19 @@ import { EpiFormulaTokenPipe } from '../epi-formula-token.pipe';
   ],
 })
 export class EpiFormulaPatternComponent {
-  private _pattern: EpiFormulaPattern | undefined;
-
-  @Input()
-  public get pattern(): EpiFormulaPattern | undefined | null {
-    return this._pattern;
-  }
-  public set pattern(value: EpiFormulaPattern | undefined | null) {
-    if (this._pattern === value) {
-      return;
-    }
-    this._pattern = value || undefined;
-    this.updateForm(this._pattern);
-  }
+  /**
+   * The pattern being edited.
+   */
+  public readonly pattern = model<EpiFormulaPattern>();
 
   // epi-formula-pattern-languages
-  @Input()
-  public langEntries: ThesaurusEntry[] | undefined;
+  public readonly langEntries = input<ThesaurusEntry[]>();
   // epi-formula-pattern-tags
-  @Input()
-  public tagEntries: ThesaurusEntry[] | undefined;
+  public readonly tagEntries = input<ThesaurusEntry[]>();
   // epi-formula-token-tags
-  @Input()
-  public tokTagEntries: ThesaurusEntry[] | undefined;
+  public readonly tokTagEntries = input<ThesaurusEntry[]>();
 
-  @Output()
-  public editorClose: EventEmitter<any>;
-
-  @Output()
-  public patternChange: EventEmitter<EpiFormulaPattern>;
+  public readonly editorClose = output();
 
   public editedIndex: number;
   public edited?: EpiFormulaToken;
@@ -118,9 +102,10 @@ export class EpiFormulaPatternComponent {
       tag: this.tag,
       tokens: this.tokens,
     });
-    // events
-    this.editorClose = new EventEmitter<any>();
-    this.patternChange = new EventEmitter<EpiFormulaPattern>();
+
+    effect(() => {
+      this.updateForm(this.pattern());
+    });
   }
 
   private updateForm(pattern?: EpiFormulaPattern) {
@@ -228,7 +213,6 @@ export class EpiFormulaPatternComponent {
     if (this.form.invalid) {
       return;
     }
-    this._pattern = this.getPattern();
-    this.patternChange.emit(this._pattern);
+    this.pattern.set(this.getPattern());
   }
 }

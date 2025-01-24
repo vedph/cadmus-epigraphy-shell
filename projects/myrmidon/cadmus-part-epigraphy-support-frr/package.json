@@ -1,6 +1,6 @@
 {
   "name": "@myrmidon/cadmus-part-epigraphy-support-frr",
-  "version": "8.0.0",
+  "version": "8.0.1",
   "description": "Cadmus - epigraphic support fragments components.",
   "keywords": [
     "Cadmus",
@@ -17,7 +17,7 @@
   "peerDependencies": {
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0",
-    "@myrmidon/cadmus-refs-decorated-counts": "^8.0.0",
+    "@myrmidon/cadmus-refs-decorated-counts": "^8.0.1",
     "@myrmidon/cadmus-ui-flag-set": "^8.0.1",
     "@myrmidon/cadmus-mat-physical-size": "^8.0.0",
     "@myrmidon/cadmus-core": "^11.0.0",
