@@ -95,6 +95,10 @@ ng g library @myrmidon/cadmus-part-epigraphy-writing --prefix cadmus --force
 
 ## History
 
+### 9.0.0
+
+- 2025-01-28: ⚠️ updated Cadmus dependencies for signals. The only relevant change (apart from version numbers) is changing part feature data change event handler: `(dataChange)="save($event!.value!)"`.
+
 ### 8.0.1
 
 - 2025-01-24: ⚠️ migrated to signals. This did not affect `@myrmidon/cadmus-fr-epigraphy-ligatures` which had no `@Input` or `@Output` endpoints.
