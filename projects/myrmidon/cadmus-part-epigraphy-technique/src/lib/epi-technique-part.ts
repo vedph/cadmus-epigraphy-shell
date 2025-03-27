@@ -4,6 +4,7 @@ import { Part } from '@myrmidon/cadmus-core';
  * The EpiTechnique part model.
  */
 export interface EpiTechniquePart extends Part {
+  grooveType?: string;
   techniques?: string[];
   tools?: string[];
   note?: string;
@@ -65,6 +66,9 @@ export const EPI_TECHNIQUE_PART_SCHEMA = {
     roleId: {
       type: ['string', 'null'],
       pattern: '^([a-z][-0-9a-z._]*)?$',
+    },
+    grooveType: {
+      type: 'string',
     },
     techniques: {
       type: 'array',

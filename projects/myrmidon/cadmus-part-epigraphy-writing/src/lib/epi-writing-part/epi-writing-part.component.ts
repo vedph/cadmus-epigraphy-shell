@@ -20,7 +20,7 @@ import {
 import { MatIcon } from '@angular/material/icon';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatSelect } from '@angular/material/select';
-import { NgFor } from '@angular/common';
+import { NgFor, TitleCasePipe } from '@angular/common';
 import { MatOption } from '@angular/material/core';
 import { MatInput } from '@angular/material/input';
 
@@ -69,6 +69,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     MatInput,
     FlagSetComponent,
     MatCardActions,
+    TitleCasePipe,
     CloseSaveButtonsComponent,
   ],
 })

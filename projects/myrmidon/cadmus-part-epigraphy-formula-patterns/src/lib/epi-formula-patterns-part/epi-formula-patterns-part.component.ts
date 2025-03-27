@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TitleCasePipe } from '@angular/common';
 import {
   FormControl,
   FormBuilder,
@@ -69,6 +70,7 @@ import { EpiFormulaTokenPipe } from '../epi-formula-token.pipe';
     EpiFormulaPatternComponent,
     MatCardActions,
     EpiFormulaTokenPipe,
+    TitleCasePipe,
     CloseSaveButtonsComponent,
   ],
 })

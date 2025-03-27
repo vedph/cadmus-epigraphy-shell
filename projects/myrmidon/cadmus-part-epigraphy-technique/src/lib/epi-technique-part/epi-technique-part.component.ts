@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -75,6 +75,7 @@ export class EpiTechniquePartComponent
   extends ModelEditorComponentBase<EpiTechniquePart>
   implements OnInit
 {
+  public grooveType: FormControl<string | null>;
   public techniques: FormControl<string[]>;
   public tools: FormControl<string[]>;
   public note: FormControl<string | null>;
@@ -83,6 +84,8 @@ export class EpiTechniquePartComponent
   public techFlags: Flag[] = [];
   public toolFlags: Flag[] = [];
 
+  // epi-technique-groove-types
+  public grooveTypeEntries?: ThesaurusEntry[];
   // epi-technique-types
   public techEntries?: ThesaurusEntry[];
   // epi-technique-tools
@@ -91,6 +94,7 @@ export class EpiTechniquePartComponent
   constructor(authService: AuthJwtService, formBuilder: FormBuilder) {
     super(authService, formBuilder);
     // form
+    this.grooveType = formBuilder.control(null, Validators.maxLength(50));
     this.techniques = formBuilder.control([], { nonNullable: true });
     this.tools = formBuilder.control([], { nonNullable: true });
     this.note = formBuilder.control(null, {
@@ -104,6 +108,7 @@ export class EpiTechniquePartComponent
 
   protected buildForm(formBuilder: FormBuilder): FormGroup | UntypedFormGroup {
     return formBuilder.group({
+      grooveType: this.grooveType,
       techniques: this.techniques,
       tools: this.tools,
       note: this.note,
@@ -111,7 +116,13 @@ export class EpiTechniquePartComponent
   }
 
   private updateThesauri(thesauri: ThesauriSet): void {
-    let key = 'epi-technique-types';
+    let key = 'epi-technique-groove-types';
+    if (this.hasThesaurus(key)) {
+      this.grooveTypeEntries = thesauri[key].entries;
+    } else {
+      this.grooveTypeEntries = undefined;
+    }
+    key = 'epi-technique-types';
     if (this.hasThesaurus(key)) {
       this.techEntries = thesauri[key].entries;
       this.techFlags = this.techEntries!.map(entryToFlag);
@@ -135,6 +146,7 @@ export class EpiTechniquePartComponent
       return;
     }
 
+    this.grooveType.setValue(part.grooveType || null);
     this.techniques.setValue(part.techniques || []);
     this.tools.setValue(part.tools || []);
     this.note.setValue(part.note || null);
@@ -169,6 +181,7 @@ export class EpiTechniquePartComponent
       EPI_TECHNIQUE_PART_TYPEID
     ) as EpiTechniquePart;
 
+    part.grooveType = this.grooveType.value?.trim() || undefined;
     part.techniques = this.techniques.value.length
       ? this.techniques.value
       : undefined;

@@ -23,7 +23,7 @@ import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { MatInput } from '@angular/material/input';
-import { NgFor } from '@angular/common';
+import { NgFor, TitleCasePipe } from '@angular/common';
 import { MatCheckbox } from '@angular/material/checkbox';
 
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
@@ -83,6 +83,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     MatInput,
     NgFor,
     MatCheckbox,
+    TitleCasePipe,
     PhysicalSizeComponent,
     DecoratedCountsComponent,
     FlagSetComponent,
