@@ -17,11 +17,11 @@
   "peerDependencies": {
     "@angular/common": "^19.0.0",
     "@angular/core": "^19.0.0",
-    "@cisstech/nge": "^18.0.4",
+    "@cisstech/nge": "^18.2.1",
     "@myrmidon/cadmus-mat-physical-size": "^8.0.1",
     "@myrmidon/cadmus-ui-flag-set": "^8.0.2",
     "@myrmidon/cadmus-core": "^11.0.0",
-    "@myrmidon/cadmus-state": "^11.0.1",
+    "@myrmidon/cadmus-state": "^12.0.0",
     "@myrmidon/cadmus-ui": "^12.0.1",
     "@myrmidon/cadmus-ui-pg": "^13.0.0"
   },
