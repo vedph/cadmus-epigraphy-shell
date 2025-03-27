@@ -37,6 +37,10 @@ export class EpiTechniquePartFeatureComponent
   }
 
   protected override getReqThesauriIds(): string[] {
-    return ['epi-technique-types', 'epi-technique-tools'];
+    return [
+      'epi-technique-groove-types',
+      'epi-technique-types',
+      'epi-technique-tools',
+    ];
   }
 }

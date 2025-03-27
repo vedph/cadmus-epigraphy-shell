@@ -46,7 +46,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
 
 /**
  * EpiTechnique part editor component.
- * Thesauri: epi-technique-types, epi-technique-tools.
+ * Thesauri: epi-technique-groove-types, epi-technique-types, epi-technique-tools.
  */
 @Component({
   selector: 'cadmus-epi-technique-part',

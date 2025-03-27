@@ -12,6 +12,30 @@
     </mat-card-header>
     <mat-card-content>
       <div id="container">
+        <div>
+          <!-- grooveType (bound) -->
+          @if (grooveTypeEntries?.length) {
+          <mat-form-field>
+            <mat-label>groove</mat-label>
+            <mat-select [formControl]="grooveType">
+              <mat-option *ngFor="let e of grooveTypeEntries" [value]="e.id">{{
+                e.value
+              }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          } @else {
+          <!-- grooveType (free) -->
+          <mat-form-field>
+            <mat-label>groove</mat-label>
+            <input matInput [formControl]="grooveType" />
+            @if ($any(grooveType).errors?.maxLength && (grooveType.dirty ||
+            grooveType.touched)) {
+            <mat-error>groove too long</mat-error>
+            }
+          </mat-form-field>
+          }
+        </div>
+        <!-- techniques -->
         @if (techEntries?.length) {
         <div>
           <fieldset>
@@ -23,7 +47,9 @@
             />
           </fieldset>
         </div>
-        } @if (toolEntries?.length) {
+        }
+        <!-- tools -->
+        @if (toolEntries?.length) {
         <div>
           <fieldset>
             <legend>tools</legend>

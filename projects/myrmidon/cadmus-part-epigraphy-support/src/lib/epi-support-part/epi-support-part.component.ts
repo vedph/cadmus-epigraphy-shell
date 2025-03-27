@@ -25,11 +25,15 @@ import { MatOption } from '@angular/material/core';
 import { MatInput } from '@angular/material/input';
 import { NgFor, TitleCasePipe } from '@angular/common';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatButtonModule } from '@angular/material/button';
 
+import { FlatLookupPipe } from '@myrmidon/ngx-tools';
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import {
   PhysicalSize,
   PhysicalSizeComponent,
+  PhysicalSizePipe,
 } from '@myrmidon/cadmus-mat-physical-size';
 import {
   DecoratedCount,
@@ -37,6 +41,7 @@ import {
 } from '@myrmidon/cadmus-refs-decorated-counts';
 import { Flag, FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
 
+import { DialogService } from '@myrmidon/ngx-mat-tools';
 import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
 import {
   CloseSaveButtonsComponent,
@@ -44,7 +49,12 @@ import {
   ModelEditorComponentBase,
 } from '@myrmidon/cadmus-ui';
 
-import { EpiSupportPart, EPI_SUPPORT_PART_TYPEID } from '../epi-support-part';
+import {
+  EpiSupportPart,
+  EPI_SUPPORT_PART_TYPEID,
+  EpiTextArea,
+} from '../epi-support-part';
+import { EpiTextAreaComponent } from '../epi-text-area/epi-text-area.component';
 
 function entryToFlag(entry: ThesaurusEntry): Flag {
   return {
@@ -58,7 +68,9 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
  * Thesauri: epi-support-materials, epi-support-functions, epi-support-types,
  * epi-support-object-types, epi-support-count-types, epi-support-features,
  * physical-size-units, physical-size-tags, physical-size-dim-tags.
- * decorated-count-ids, decorated-count-tags.
+ * decorated-count-ids, decorated-count-tags, epi-support-text-area-types,
+ * epi-support-text-area-layouts, epi-support-text-area-features,
+ * epi-support-text-area-frame-types.
  */
 @Component({
   selector: 'cadmus-epi-support-part',
@@ -67,6 +79,8 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   imports: [
     FormsModule,
     ReactiveFormsModule,
+    MatButtonModule,
+    MatIcon,
     MatCard,
     MatCardHeader,
     MatCardAvatar,
@@ -75,6 +89,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     MatCardContent,
     MatTabGroup,
     MatTab,
+    MatExpansionModule,
     MatFormField,
     MatLabel,
     MatSelect,
@@ -89,13 +104,17 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     FlagSetComponent,
     MatCardActions,
     CloseSaveButtonsComponent,
+    EpiTextAreaComponent,
+    FlatLookupPipe,
+    PhysicalSizePipe,
   ],
 })
 export class EpiSupportPartComponent
   extends ModelEditorComponentBase<EpiSupportPart>
   implements OnInit
 {
-  private _featEntries?: ThesaurusEntry[];
+  public editedArea?: EpiTextArea;
+  public editedAreaIndex = -1;
 
   public material: FormControl<string>;
   public originalFn: FormControl<string | null>;
@@ -103,19 +122,11 @@ export class EpiSupportPartComponent
   public originalType: FormControl<string | null>;
   public currentType: FormControl<string | null>;
   public objectType: FormControl<string | null>;
-  public inSitu: FormControl<boolean>;
-  public indoor: FormControl<boolean>;
-  public hasSupportSize: FormControl<boolean>;
-  public supportSize: FormControl<PhysicalSize | null>;
-  public hasField: FormControl<boolean>;
-  public fieldSize: FormControl<PhysicalSize | null>;
-  public hasMirror: FormControl<boolean>;
-  public mirrorSize: FormControl<PhysicalSize | null>;
-  public hasFrame: FormControl<boolean>;
-  public frame: FormControl<string | null>;
-  public counts: FormControl<DecoratedCount[]>;
   public features: FormControl<string[]>;
-  public hasDamnatio: FormControl<boolean>;
+  public areas: FormControl<EpiTextArea[]>;
+  public hasSize: FormControl<boolean>;
+  public size: FormControl<PhysicalSize | null>;
+  public counts: FormControl<DecoratedCount[]>;
   public note: FormControl<string | null>;
 
   // flags
@@ -145,10 +156,24 @@ export class EpiSupportPartComponent
   // counts:
   // decorated-count-ids
   public countIdEntries: ThesaurusEntry[] | undefined;
-  // decirated-count-tags
+  // decorated-count-tags
   public countTagEntries: ThesaurusEntry[] | undefined;
 
-  constructor(authService: AuthJwtService, formBuilder: FormBuilder) {
+  // text areas:
+  // epi-support-text-area-types
+  public textAreaTypeEntries: ThesaurusEntry[] | undefined;
+  // epi-support-text-area-layouts
+  public textAreaLayoutEntries: ThesaurusEntry[] | undefined;
+  // epi-support-text-area-features
+  public textAreaFeatEntries: ThesaurusEntry[] | undefined;
+  // epi-support-text-area-frame-types
+  public textAreaFrameEntries: ThesaurusEntry[] | undefined;
+
+  constructor(
+    authService: AuthJwtService,
+    formBuilder: FormBuilder,
+    private _dialogService: DialogService
+  ) {
     super(authService, formBuilder);
     // form
     this.material = formBuilder.control<string>('', {
@@ -170,27 +195,15 @@ export class EpiSupportPartComponent
     this.objectType = formBuilder.control<string | null>(null, {
       validators: [Validators.maxLength(50)],
     });
-    this.inSitu = formBuilder.control<boolean>(false, { nonNullable: true });
-    this.indoor = formBuilder.control<boolean>(false, { nonNullable: true });
-    this.hasSupportSize = formBuilder.control<boolean>(false, {
+    this.hasSize = formBuilder.control<boolean>(false, {
       nonNullable: true,
     });
-    this.supportSize = formBuilder.control<PhysicalSize | null>(null);
-    this.hasField = formBuilder.control<boolean>(false, { nonNullable: true });
-    this.fieldSize = formBuilder.control<PhysicalSize | null>(null);
-    this.hasMirror = formBuilder.control<boolean>(false, { nonNullable: true });
-    this.mirrorSize = formBuilder.control<PhysicalSize | null>(null);
-    this.hasFrame = formBuilder.control<boolean>(false, { nonNullable: true });
-    this.frame = formBuilder.control<string | null>(null, {
-      validators: [Validators.maxLength(5000)],
-    });
+    this.size = formBuilder.control<PhysicalSize | null>(null);
     this.counts = formBuilder.control<DecoratedCount[]>([], {
       nonNullable: true,
     });
     this.features = formBuilder.control<string[]>([], { nonNullable: true });
-    this.hasDamnatio = formBuilder.control<boolean>(false, {
-      nonNullable: true,
-    });
+    this.areas = formBuilder.control<EpiTextArea[]>([], { nonNullable: true });
     this.note = formBuilder.control<string | null>(null, {
       validators: [Validators.maxLength(5000)],
     });
@@ -208,19 +221,11 @@ export class EpiSupportPartComponent
       originalType: this.originalType,
       currentType: this.currentType,
       objectType: this.objectType,
-      inSitu: this.inSitu,
-      indoor: this.indoor,
-      hasSupportSize: this.hasSupportSize,
-      supportSize: this.supportSize,
-      hasField: this.hasField,
-      fieldSize: this.fieldSize,
-      hasMirror: this.hasMirror,
-      mirrorSize: this.mirrorSize,
-      hasFrame: this.hasFrame,
-      frame: this.frame,
+      hasSupportSize: this.hasSize,
+      supportSize: this.size,
       counts: this.counts,
       features: this.features,
-      hasDamnatio: this.hasDamnatio,
+      areas: this.areas,
       note: this.note,
     });
   }
@@ -294,6 +299,30 @@ export class EpiSupportPartComponent
     } else {
       this.countTagEntries = undefined;
     }
+    key = 'epi-support-text-area-types';
+    if (this.hasThesaurus(key)) {
+      this.textAreaTypeEntries = thesauri[key].entries;
+    } else {
+      this.textAreaTypeEntries = undefined;
+    }
+    key = 'epi-support-text-area-layouts';
+    if (this.hasThesaurus(key)) {
+      this.textAreaLayoutEntries = thesauri[key].entries;
+    } else {
+      this.textAreaLayoutEntries = undefined;
+    }
+    key = 'epi-support-text-area-features';
+    if (this.hasThesaurus(key)) {
+      this.textAreaFeatEntries = thesauri[key].entries;
+    } else {
+      this.textAreaFeatEntries = undefined;
+    }
+    key = 'epi-support-text-area-frame-types';
+    if (this.hasThesaurus(key)) {
+      this.textAreaFrameEntries = thesauri[key].entries;
+    } else {
+      this.textAreaFrameEntries = undefined;
+    }
   }
 
   private updateForm(part?: EpiSupportPart | null): void {
@@ -308,19 +337,11 @@ export class EpiSupportPartComponent
     this.originalType.setValue(part.originalType || null);
     this.currentType.setValue(part.currentType || null);
     this.objectType.setValue(part.objectType || null);
-    this.inSitu.setValue(part.inSitu || false);
-    this.indoor.setValue(part.indoor || false);
-    this.hasSupportSize.setValue(!!part.supportSize);
-    this.supportSize.setValue(part.supportSize || null);
-    this.hasField.setValue(!!part.fieldSize);
-    this.fieldSize.setValue(part.fieldSize || null);
-    this.hasMirror.setValue(!!part.mirrorSize);
-    this.mirrorSize.setValue(part.mirrorSize || null);
-    this.hasFrame.setValue(!!part.frame);
-    this.frame.setValue(part.frame || null);
+    this.hasSize.setValue(!!part.size);
+    this.size.setValue(part.size || null);
     this.counts.setValue(part.counts || []);
     this.features.setValue(part.features || []);
-    this.hasDamnatio.setValue(!!part.hasDamnatio);
+    this.areas.setValue(part.textAreas || []);
     this.note.setValue(part.note || null);
 
     this.form.markAsPristine();
@@ -333,21 +354,9 @@ export class EpiSupportPartComponent
   }
 
   public onSupportSizeChange(size: PhysicalSize): void {
-    this.supportSize.setValue(size);
-    this.supportSize.markAsDirty();
-    this.supportSize.updateValueAndValidity();
-  }
-
-  public onFieldSizeChange(size: PhysicalSize): void {
-    this.fieldSize.setValue(size);
-    this.fieldSize.markAsDirty();
-    this.fieldSize.updateValueAndValidity();
-  }
-
-  public onMirrorSizeChange(size: PhysicalSize): void {
-    this.mirrorSize.setValue(size);
-    this.mirrorSize.markAsDirty();
-    this.mirrorSize.updateValueAndValidity();
+    this.size.setValue(size);
+    this.size.markAsDirty();
+    this.size.updateValueAndValidity();
   }
 
   public onCountsChange(counts: DecoratedCount[]): void {
@@ -375,29 +384,90 @@ export class EpiSupportPartComponent
     part.originalType = this.originalType.value?.trim();
     part.currentType = this.currentType.value?.trim();
     part.objectType = this.objectType.value?.trim();
-    part.inSitu = this.inSitu.value;
-    part.indoor = this.indoor.value;
-    part.supportSize =
-      this.hasSupportSize.value && this.supportSize.value
-        ? this.supportSize.value
-        : undefined;
-    part.hasField = this.hasField.value;
-    part.fieldSize =
-      this.hasField.value && this.fieldSize.value
-        ? this.fieldSize.value
-        : undefined;
-    part.hasMirror = this.hasMirror.value;
-    part.mirrorSize =
-      this.hasMirror.value && this.mirrorSize.value
-        ? this.mirrorSize.value
-        : undefined;
-    part.hasFrame = this.hasFrame.value;
-    part.frame = this.frame.value?.trim() || undefined;
+    part.size =
+      this.hasSize.value && this.size.value ? this.size.value : undefined;
     part.counts = this.counts.value || undefined;
     part.features = this.features.value || undefined;
-    part.hasDamnatio = this.hasDamnatio.value;
+    part.textAreas = this.areas.value?.length
+      ? this.areas.value || undefined
+      : undefined;
     part.note = this.note.value?.trim() || undefined;
 
     return part;
+  }
+
+  public addArea(): void {
+    const entry: EpiTextArea = {
+      type: this.textAreaTypeEntries?.length
+        ? this.textAreaTypeEntries[0].id
+        : '',
+    };
+    this.editArea(entry, -1);
+  }
+
+  public editArea(entry: EpiTextArea, index: number): void {
+    this.editedAreaIndex = index;
+    this.editedArea = entry;
+  }
+
+  public closeArea(): void {
+    this.editedAreaIndex = -1;
+    this.editedArea = undefined;
+  }
+
+  public saveArea(entry: EpiTextArea): void {
+    const areas = [...this.areas.value];
+    if (this.editedAreaIndex === -1) {
+      areas.push(entry);
+    } else {
+      areas.splice(this.editedAreaIndex, 1, entry);
+    }
+    this.areas.setValue(areas);
+    this.areas.markAsDirty();
+    this.areas.updateValueAndValidity();
+    this.closeArea();
+  }
+
+  public deleteArea(index: number): void {
+    this._dialogService
+      .confirm('Confirmation', 'Delete area?')
+      .subscribe((yes: boolean | undefined) => {
+        if (yes) {
+          if (this.editedAreaIndex === index) {
+            this.closeArea();
+          }
+          const entries = [...this.areas.value];
+          entries.splice(index, 1);
+          this.areas.setValue(entries);
+          this.areas.markAsDirty();
+          this.areas.updateValueAndValidity();
+        }
+      });
+  }
+
+  public moveAreaUp(index: number): void {
+    if (index < 1) {
+      return;
+    }
+    const area = this.areas.value[index];
+    const areas = [...this.areas.value];
+    areas.splice(index, 1);
+    areas.splice(index - 1, 0, area);
+    this.areas.setValue(areas);
+    this.areas.markAsDirty();
+    this.areas.updateValueAndValidity();
+  }
+
+  public moveAreaDown(index: number): void {
+    if (index + 1 >= this.areas.value.length) {
+      return;
+    }
+    const area = this.areas.value[index];
+    const areas = [...this.areas.value];
+    areas.splice(index, 1);
+    areas.splice(index + 1, 0, area);
+    this.areas.setValue(areas);
+    this.areas.markAsDirty();
+    this.areas.updateValueAndValidity();
   }
 }

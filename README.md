@@ -95,6 +95,14 @@ ng g library @myrmidon/cadmus-part-epigraphy-writing --prefix cadmus --force
 
 ## History
 
+### 10.0.0
+
+- 2025-03-27:
+  - updated Angular and packages.
+  - changed part editor titles to take advantage of `modelName`.
+  - added `grooveType` to `EpiTechniquePart`.
+  - ⚠️ [refactored model](https://github.com/vedph/cadmus-epigraphy/blob/master/docs/epi-support.md) of `EpiSupportPart`.
+
 ### 9.0.0
 
 - 2025-01-28: ⚠️ updated Cadmus dependencies for signals. The only relevant change (apart from version numbers) is changing part feature data change event handler: `(dataChange)="save($event!.value!)"`.

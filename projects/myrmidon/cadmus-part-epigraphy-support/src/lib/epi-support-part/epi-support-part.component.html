@@ -194,32 +194,22 @@
               }
             </mat-form-field>
             }
-            <!-- inSitu-->
-            <mat-checkbox [formControl]="inSitu">in situ</mat-checkbox>
-            <!-- indoor -->
-            <mat-checkbox [formControl]="indoor">indoor</mat-checkbox>
             <!-- hasSupportSize -->
-            <mat-checkbox [formControl]="hasSupportSize"
-              >support size</mat-checkbox
-            >
+            <mat-checkbox [formControl]="hasSize">size</mat-checkbox>
           </div>
-          <!-- supportSize -->
-          @if (hasSupportSize.value) {
+          <!-- size -->
+          @if (hasSize.value) {
           <fieldset>
             <legend>support size</legend>
             <cadmus-mat-physical-size
               [tagEntries]="szTagEntries"
               [unitEntries]="szUnitEntries"
               [dimTagEntries]="szDimTagEntries"
-              [size]="supportSize.value || undefined"
+              [size]="size.value || undefined"
               (sizeChange)="onSupportSizeChange($event!)"
             />
           </fieldset>
           }
-          <!-- hasDamnatio -->
-          <div>
-            <mat-checkbox [formControl]="hasDamnatio">damnatio</mat-checkbox>
-          </div>
           <!-- note -->
           <div>
             <mat-form-field class="long-text">
@@ -235,63 +225,113 @@
 
         <!-- LAYOUT -->
         <mat-tab label="layout">
-          <!-- hasField -->
           <div>
-            <mat-checkbox [formControl]="hasField">field</mat-checkbox>
+            <button
+              type="button"
+              mat-flat-button
+              color="primary"
+              (click)="addArea()"
+            >
+              <mat-icon>add_circle</mat-icon> area
+            </button>
           </div>
-          <!-- fieldSize -->
-          @if (hasField.value) {
-          <div>
-            <fieldset>
-              <legend>field size</legend>
-              <cadmus-mat-physical-size
-                [tagEntries]="szTagEntries"
-                [unitEntries]="szUnitEntries"
-                [dimTagEntries]="szDimTagEntries"
-                [size]="fieldSize.value || undefined"
-                (sizeChange)="onFieldSizeChange($event!)"
+          @if (areas.value.length) {
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>type</th>
+                <th>size</th>
+                <th>frame</th>
+                <th>eid</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (area of areas.value; track area; let i = $index; let first =
+              $first; let last = $last) {
+              <tr [class.selected]="area === editedArea">
+                <td class="fit-width">
+                  <button
+                    type="button"
+                    mat-icon-button
+                    color="primary"
+                    matTooltip="Edit this area"
+                    (click)="editArea(area, i)"
+                  >
+                    <mat-icon class="mat-primary">edit</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Move this area up"
+                    [disabled]="first"
+                    (click)="moveAreaUp(i)"
+                  >
+                    <mat-icon>arrow_upward</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Move this area down"
+                    [disabled]="last"
+                    (click)="moveAreaDown(i)"
+                  >
+                    <mat-icon>arrow_downward</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    color="warn"
+                    matTooltip="Delete this area"
+                    (click)="deleteArea(i)"
+                  >
+                    <mat-icon class="mat-warn">remove_circle</mat-icon>
+                  </button>
+                </td>
+                <td>
+                  {{
+                    area.type
+                      | flatLookup : textAreaTypeEntries : "id" : "value"
+                  }}
+                </td>
+                <td>{{ area.size | physicalSize }}</td>
+                <td>
+                  {{
+                    area.frameType
+                      | flatLookup : textAreaFrameEntries : "id" : "value"
+                  }}
+                </td>
+                <td>{{ area.eid }}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+          } @if (editedArea) {
+          <fieldset>
+            <mat-expansion-panel
+              [expanded]="editedArea"
+              [disabled]="!editedArea"
+            >
+              <mat-expansion-panel-header>
+                <mat-panel-title
+                  >Area #{{ editedAreaIndex + 1 }}</mat-panel-title
+                >
+              </mat-expansion-panel-header>
+              <cadmus-epi-text-area
+                [area]="editedArea"
+                [featEntries]="textAreaFeatEntries"
+                [typeEntries]="textAreaTypeEntries"
+                [frameEntries]="textAreaFrameEntries"
+                [layoutEntries]="textAreaLayoutEntries"
+                [szTagEntries]="szTagEntries"
+                [szUnitEntries]="szUnitEntries"
+                [szDimTagEntries]="szDimTagEntries"
+                (areaChange)="saveArea($event!)"
+                (cancel)="closeArea()"
               />
-            </fieldset>
-          </div>
+            </mat-expansion-panel>
+          </fieldset>
           }
-
-          <!-- hasMirror -->
-          <div>
-            <mat-checkbox [formControl]="hasMirror">mirror</mat-checkbox>
-          </div>
-          <!-- mirrorSize -->
-          @if (hasMirror.value) {
-          <div>
-            <fieldset>
-              <legend>mirror size</legend>
-              <cadmus-mat-physical-size
-                [tagEntries]="szTagEntries"
-                [unitEntries]="szUnitEntries"
-                [dimTagEntries]="szDimTagEntries"
-                [size]="mirrorSize.value || undefined"
-                (sizeChange)="onMirrorSizeChange($event!)"
-              />
-            </fieldset>
-          </div>
-          }
-
-          <div>
-            <!-- hasFrame -->
-            <mat-checkbox [formControl]="hasFrame">frame</mat-checkbox>
-            <!-- frame -->
-            @if (hasFrame.value) {
-            <div>
-              <mat-form-field class="long-text">
-                <textarea
-                  rows="3"
-                  matInput
-                  placeholder="frame"
-                  [formControl]="frame"
-                ></textarea>
-              </mat-form-field>
-            </div>
-            }
-          </div>
         </mat-tab>
 
         <!-- FEATURES -->
@@ -299,24 +339,30 @@
         <mat-tab label="features">
           <!-- counts -->
           @if (countIdEntries?.length) {
-          <div>
-            <cadmus-refs-decorated-counts
-              [idEntries]="countIdEntries"
-              [tagEntries]="countTagEntries"
-              [counts]="counts.value"
-              (countsChange)="onCountsChange($event!)"
-            />
-          </div>
+          <fieldset>
+            <legend>counts</legend>
+            <div>
+              <cadmus-refs-decorated-counts
+                [idEntries]="countIdEntries"
+                [tagEntries]="countTagEntries"
+                [counts]="counts.value"
+                (countsChange)="onCountsChange($event!)"
+              />
+            </div>
+          </fieldset>
           }
           <!-- features -->
           @if (featEntries?.length) {
-          <div>
-            <cadmus-ui-flag-set
-              [flags]="featFlags"
-              [checkedIds]="features.value"
-              (checkedIdsChange)="onFeatIdsChange($event)"
-            />
-          </div>
+          <fieldset>
+            <legend>features</legend>
+            <div>
+              <cadmus-ui-flag-set
+                [flags]="featFlags"
+                [checkedIds]="features.value"
+                (checkedIdsChange)="onFeatIdsChange($event)"
+              />
+            </div>
+          </fieldset>
           }
         </mat-tab>
         }

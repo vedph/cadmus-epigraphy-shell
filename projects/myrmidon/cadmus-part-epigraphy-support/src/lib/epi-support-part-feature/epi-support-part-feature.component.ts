@@ -49,6 +49,10 @@ export class EpiSupportPartFeatureComponent
       'physical-size-dim-tags',
       'decorated-count-ids',
       'decorated-count-tags',
+      'epi-support-text-area-types',
+      'epi-support-text-area-layouts',
+      'epi-support-text-area-features',
+      'epi-support-text-area-frame-types'
     ];
   }
 }
