@@ -6,15 +6,15 @@ import { ItemService, ThesaurusService } from '@myrmidon/cadmus-api';
 import { EditPartFeatureBase, PartEditorService } from '@myrmidon/cadmus-state';
 import { CurrentItemBarComponent } from '@myrmidon/cadmus-ui-pg';
 
-import { EpiWritingPartComponent } from '../epi-writing-part/epi-writing-part.component';
+import { EpiScriptsPartComponent } from '../epi-scripts-part/epi-scripts-part.component';
 
 @Component({
-  selector: 'cadmus-epi-writing-part-feature',
-  templateUrl: './epi-writing-part-feature.component.html',
-  styleUrl: './epi-writing-part-feature.component.scss',
-  imports: [CurrentItemBarComponent, EpiWritingPartComponent],
+  selector: 'cadmus-epi-scripts-part-feature',
+  templateUrl: './epi-scripts-part-feature.component.html',
+  styleUrl: './epi-scripts-part-feature.component.scss',
+  imports: [CurrentItemBarComponent, EpiScriptsPartComponent],
 })
-export class EpiWritingPartFeatureComponent
+export class EpiScriptsPartFeatureComponent
   extends EditPartFeatureBase
   implements OnInit
 {
@@ -38,10 +38,10 @@ export class EpiWritingPartFeatureComponent
 
   protected override getReqThesauriIds(): string[] {
     return [
-      'epi-writing-systems',
-      'epi-writing-scripts',
-      'epi-writing-casings',
-      'epi-writing-features',
+      'epi-script-systems',
+      'epi-scripts',
+      'epi-script-casings',
+      'epi-script-features',
     ];
   }
 }

@@ -54,20 +54,20 @@ graph LR;
   cadmus-part-epigraphy-technique --> cadmus-state
   cadmus-part-epigraphy-technique --> cadmus-ui
   cadmus-part-epigraphy-technique --> cadmus-ui-pg
-  cadmus-part-epigraphy-writing --> cadmus-mat-physical-size
-  cadmus-part-epigraphy-writing --> cadmus-refs-decorated-counts
-  cadmus-part-epigraphy-writing --> cadmus-ui-flag-set
-  cadmus-part-epigraphy-writing --> cadmus-core
-  cadmus-part-epigraphy-writing --> cadmus-state
-  cadmus-part-epigraphy-writing --> cadmus-ui
-  cadmus-part-epigraphy-writing --> cadmus-ui-pg
+  cadmus-part-epigraphy-scripts --> cadmus-mat-physical-size
+  cadmus-part-epigraphy-scripts --> cadmus-refs-decorated-counts
+  cadmus-part-epigraphy-scripts --> cadmus-ui-flag-set
+  cadmus-part-epigraphy-scripts --> cadmus-core
+  cadmus-part-epigraphy-scripts --> cadmus-state
+  cadmus-part-epigraphy-scripts --> cadmus-ui
+  cadmus-part-epigraphy-scripts --> cadmus-ui-pg
   cadmus-part-epigraphy-pg --> cadmus-core
   cadmus-part-epigraphy-pg --> cadmus-state
   cadmus-part-epigraphy-pg --> cadmus-ui
   cadmus-part-epigraphy-pg --> cadmus-ui-pg
   cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-support
   cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-support-frr
-  cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-writing
+  cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-scripts
   cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-technique
   cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-signs
   cadmus-part-epigraphy-pg --> cadmus-fr-epigraphy-ligatures
@@ -90,10 +90,16 @@ ng g library @myrmidon/cadmus-part-epigraphy-signs --prefix cadmus --force
 ng g library @myrmidon/cadmus-part-epigraphy-support --prefix cadmus --force
 ng g library @myrmidon/cadmus-part-epigraphy-support-frr --prefix cadmus --force
 ng g library @myrmidon/cadmus-part-epigraphy-technique --prefix cadmus --force
-ng g library @myrmidon/cadmus-part-epigraphy-writing --prefix cadmus --force
+ng g library @myrmidon/cadmus-part-epigraphy-scripts --prefix cadmus --force
 ```
 
 ## History
+
+### 11.0.0
+
+- 2025-04-01:
+  - ⚠️ [refactored model](https://github.com/vedph/cadmus-epigraphy/blob/master/docs/epi-scripts.md) of renamed `EpiScriptsPart` (formerly `EpiWritingPart`): `@myrmidon/cadmus-part-epigraphy-scripts`.
+  - updated peer dependencies in `@myrmidon/cadmus-part-epigraphy-pg`
 
 ### 10.0.0
 

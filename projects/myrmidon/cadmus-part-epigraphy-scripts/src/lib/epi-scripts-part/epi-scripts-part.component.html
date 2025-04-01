@@ -1,0 +1,114 @@
+<form [formGroup]="form" (submit)="save()">
+  <mat-card>
+    <mat-card-header>
+      <div mat-card-avatar>
+        <mat-icon>picture_in_picture</mat-icon>
+      </div>
+      <mat-card-title>{{
+        (modelName() | titlecase) || "Epigraphic Scripts Part"
+      }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div>
+        <button
+          type="button"
+          mat-flat-button
+          color="primary"
+          (click)="addScript()"
+        >
+          <mat-icon>add_circle</mat-icon> script
+        </button>
+      </div>
+      @if (scripts.value.length) {
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>system</th>
+            <th>script</th>
+            <th>casing</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (script of scripts.value; track script; let i = $index; let first
+          = $first; let last = $last) {
+          <tr [class.selected]="script === edited">
+            <td class="fit-width">
+              <button
+                type="button"
+                mat-icon-button
+                color="primary"
+                matTooltip="Edit this script"
+                (click)="editScript(script, i)"
+              >
+                <mat-icon class="mat-primary">edit</mat-icon>
+              </button>
+              <button
+                type="button"
+                mat-icon-button
+                matTooltip="Move this script up"
+                [disabled]="first"
+                (click)="moveScriptUp(i)"
+              >
+                <mat-icon>arrow_upward</mat-icon>
+              </button>
+              <button
+                type="button"
+                mat-icon-button
+                matTooltip="Move this script down"
+                [disabled]="last"
+                (click)="moveScriptDown(i)"
+              >
+                <mat-icon>arrow_downward</mat-icon>
+              </button>
+              <button
+                type="button"
+                mat-icon-button
+                color="warn"
+                matTooltip="Delete this script"
+                (click)="deleteScript(i)"
+              >
+                <mat-icon class="mat-warn">remove_circle</mat-icon>
+              </button>
+            </td>
+            <td>
+              {{ script.system | flatLookup : systemEntries : "id" : "value" }}
+            </td>
+            <td>
+              {{ script.script | flatLookup : scriptEntries : "id" : "value" }}
+            </td>
+            <td>
+              {{ script.casing | flatLookup : casingEntries : "id" : "value" }}
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+      } @if (edited) {
+      <fieldset>
+        <mat-expansion-panel [expanded]="edited" [disabled]="!edited">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Script #</mat-panel-title>
+          </mat-expansion-panel-header>
+          <cadmus-epi-script
+            [script]="edited"
+            [featEntries]="featEntries"
+            [casingEntries]="casingEntries"
+            [scriptEntries]="scriptEntries"
+            [systemEntries]="systemEntries"
+            (scriptCancel)="closeScript()"
+            (scriptChange)="saveScript($event!)"
+          />
+        </mat-expansion-panel>
+      </fieldset>
+      }
+    </mat-card-content>
+    <mat-card-actions>
+      <cadmus-close-save-buttons
+        [form]="form"
+        [noSave]="userLevel < 2"
+        (closeRequest)="close()"
+      />
+    </mat-card-actions>
+  </mat-card>
+</form>

@@ -9,13 +9,13 @@
     "test": "ng test",
     "build-sup": "ng build @myrmidon/cadmus-part-epigraphy-support",
     "build-suf": "ng build @myrmidon/cadmus-part-epigraphy-support-frr",
-    "build-wri": "ng build @myrmidon/cadmus-part-epigraphy-writing",
+    "build-scr": "ng build @myrmidon/cadmus-part-epigraphy-scripts",
     "build-sig": "ng build @myrmidon/cadmus-part-epigraphy-signs",
     "build-for": "ng build @myrmidon/cadmus-part-epigraphy-formula-patterns",
     "build-lig": "ng build @myrmidon/cadmus-fr-epigraphy-ligatures",
     "build-tec": "ng build @myrmidon/cadmus-part-epigraphy-technique",
     "build-pg": "ng build @myrmidon/cadmus-part-epigraphy-pg",
-    "build-lib": "npm run build-sup && npm run build-wri && npm run build-for && npm run build-lig && npm run build-suf && npm run build-sig && npm run build-tec && npm run build-pg"
+    "build-lib": "npm run build-sup && npm run build-scr && npm run build-for && npm run build-lig && npm run build-suf && npm run build-sig && npm run build-tec && npm run build-pg"
   },
   "private": true,
   "dependencies": {

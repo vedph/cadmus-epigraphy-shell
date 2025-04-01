@@ -3,6 +3,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
     "paths": {
       "@myrmidon/cadmus-fr-epigraphy-ligatures": [
         "./dist/myrmidon/cadmus-fr-epigraphy-ligatures"
@@ -25,8 +26,8 @@
       "@myrmidon/cadmus-part-epigraphy-technique": [
         "./dist/myrmidon/cadmus-part-epigraphy-technique"
       ],
-      "@myrmidon/cadmus-part-epigraphy-writing": [
-        "./dist/myrmidon/cadmus-part-epigraphy-writing"
+      "@myrmidon/cadmus-part-epigraphy-scripts": [
+        "./dist/myrmidon/cadmus-part-epigraphy-scripts"
       ]
     },
     "outDir": "./dist/out-tsc",

@@ -1,6 +1,6 @@
 {
   "name": "@myrmidon/cadmus-part-epigraphy-pg",
-  "version": "10.0.0",
+  "version": "11.0.0",
   "description": "Cadmus - epigraphic components wrapper.",
   "keywords": [
     "Cadmus",
@@ -26,7 +26,7 @@
     "@myrmidon/cadmus-part-epigraphy-support": "^10.0.0",
     "@myrmidon/cadmus-part-epigraphy-support-frr": "^10.0.0",
     "@myrmidon/cadmus-part-epigraphy-technique": "^10.0.0",
-    "@myrmidon/cadmus-part-epigraphy-writing": "^10.0.0",
+    "@myrmidon/cadmus-part-epigraphy-scripts": "^11.0.0",
     "@myrmidon/cadmus-fr-epigraphy-ligatures": "^10.0.0"
   },
   "dependencies": {

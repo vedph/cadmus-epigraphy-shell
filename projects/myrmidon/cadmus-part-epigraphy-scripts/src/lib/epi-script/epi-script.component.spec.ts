@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EpiWritingPartComponent } from './epi-writing-part.component';
+import { EpiScriptComponent } from './epi-script.component';
 
-describe('EpiWritingPartComponent', () => {
-  let component: EpiWritingPartComponent;
-  let fixture: ComponentFixture<EpiWritingPartComponent>;
+describe('EpiScriptComponent', () => {
+  let component: EpiScriptComponent;
+  let fixture: ComponentFixture<EpiScriptComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EpiWritingPartComponent]
+      imports: [EpiScriptComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(EpiWritingPartComponent);
+    fixture = TestBed.createComponent(EpiScriptComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

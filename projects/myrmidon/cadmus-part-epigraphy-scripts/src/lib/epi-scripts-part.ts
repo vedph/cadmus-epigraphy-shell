@@ -1,9 +1,6 @@
 import { Part } from '@myrmidon/cadmus-core';
 
-/**
- * The EpiWriting part model.
- */
-export interface EpiWritingPart extends Part {
+export interface EpiScript {
   system?: string;
   script: string;
   casing?: string;
@@ -12,20 +9,27 @@ export interface EpiWritingPart extends Part {
 }
 
 /**
- * The type ID used to identify the EpiWritingPart type.
+ * The EpiScripts part model.
  */
-export const EPI_WRITING_PART_TYPEID = 'it.vedph.epigraphy.writing';
+export interface EpiScriptsPart extends Part {
+  scripts: EpiScript[];
+}
 
 /**
- * JSON schema for the EpiWriting part.
+ * The type ID used to identify the EpiScriptsPart type.
+ */
+export const EPI_SCRIPTS_PART_TYPEID = 'it.vedph.epigraphy.scripts';
+
+/**
+ * JSON schema for the EpiScripts part.
  * You can use the JSON schema tool at https://jsonschema.net/.
  */
-export const EPI_WRITING_PART_SCHEMA = {
+export const EPI_SCRIPTS_PART_SCHEMA = {
   $schema: 'http://json-schema.org/draft-07/schema#',
   $id:
-    'www.vedph.it/cadmus/parts/epigraphy/' + EPI_WRITING_PART_TYPEID + '.json',
+    'www.vedph.it/cadmus/parts/epigraphy/' + EPI_SCRIPTS_PART_TYPEID + '.json',
   type: 'object',
-  title: 'EpiWritingPart',
+  title: 'EpiScriptsPart',
   required: [
     'id',
     'itemId',
@@ -67,23 +71,32 @@ export const EPI_WRITING_PART_SCHEMA = {
       type: ['string', 'null'],
       pattern: '^([a-z][-0-9a-z._]*)?$',
     },
-    system: {
-      type: 'string',
-    },
-    script: {
-      type: 'string',
-    },
-    casing: {
-      type: 'string',
-    },
-    features: {
+    scripts: {
       type: 'array',
       items: {
-        type: 'string',
+        type: 'object',
+        required: ['script'],
+        properties: {
+          system: {
+            type: 'string',
+          },
+          script: {
+            type: 'string',
+          },
+          casing: {
+            type: 'string',
+          },
+          features: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
+          note: {
+            type: 'string',
+          },
+        },
       },
-    },
-    note: {
-      type: 'string',
     },
   },
 };
