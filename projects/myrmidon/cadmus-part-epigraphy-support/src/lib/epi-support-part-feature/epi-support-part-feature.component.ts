@@ -39,16 +39,13 @@ export class EpiSupportPartFeatureComponent
   protected override getReqThesauriIds(): string[] {
     return [
       'epi-support-materials',
-      'epi-support-functions',
-      'epi-support-types',
       'epi-support-object-types',
       'epi-support-count-types',
+      'epi-support-count-tags',
       'epi-support-features',
       'physical-size-units',
       'physical-size-tags',
       'physical-size-dim-tags',
-      'decorated-count-ids',
-      'decorated-count-tags',
       'epi-support-text-area-types',
       'epi-support-text-area-layouts',
       'epi-support-text-area-features',

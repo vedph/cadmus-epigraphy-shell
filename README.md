@@ -95,6 +95,12 @@ ng g library @myrmidon/cadmus-part-epigraphy-scripts --prefix cadmus --force
 
 ## History
 
+### 12.0.0
+
+- 2025-05-05:
+  - ⚠️ [refactored model](https://github.com/vedph/cadmus-epigraphy/blob/master/docs/epi-support.md) of `EpiSupportPart` by removing housing structure functions and types.
+  - fixes to epigraphic support thesauri names.
+
 ### 11.0.0
 
 - 2025-04-01:

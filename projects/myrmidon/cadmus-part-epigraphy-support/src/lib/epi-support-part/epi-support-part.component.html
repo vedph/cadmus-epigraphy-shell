@@ -12,7 +12,6 @@
       <mat-tab-group>
         <!-- GENERAL -->
         <mat-tab label="general">
-          <!-- material -->
           <div class="form-row">
             <!-- material (bound) -->
             @if (matEntries?.length) {
@@ -43,129 +42,6 @@
               }
             </mat-form-field>
             }
-          </div>
-          <!-- functions -->
-          <div class="form-row">
-            <!-- originalFn (bound) -->
-            @if (fnEntries?.length) {
-            <mat-form-field>
-              <mat-label>original fn.</mat-label>
-              <mat-select [formControl]="originalFn">
-                @for (e of fnEntries; track e.id) {
-                <mat-option [value]="e.id">{{ e.value }}</mat-option>
-                }
-              </mat-select>
-              @if ( $any(originalFn).errors?.required && (originalFn.dirty ||
-              originalFn.touched) ) {
-              <mat-error>original fn. required</mat-error>
-              }
-            </mat-form-field>
-            }
-            <!-- originalFn (free) -->
-            @else {
-            <mat-form-field>
-              <mat-label>original fn.</mat-label>
-              <input matInput [formControl]="originalFn" />
-              @if ( $any(originalFn).errors?.required && (originalFn.dirty ||
-              originalFn.touched) ) {
-              <mat-error>original fn. required</mat-error>
-              } @if ( $any(originalFn).errors?.maxLength && (originalFn.dirty ||
-              originalFn.touched) ) {
-              <mat-error>original fn. too long</mat-error>
-              }
-            </mat-form-field>
-            }
-
-            <!-- currentFn (bound) -->
-            @if (fnEntries?.length) {
-            <mat-form-field>
-              <mat-label>current fn.</mat-label>
-              <mat-select [formControl]="currentFn">
-                @for (e of fnEntries; track e.id) {
-                <mat-option [value]="e.id">{{ e.value }}</mat-option>
-                }
-              </mat-select>
-              @if ( $any(currentFn).errors?.required && (currentFn.dirty ||
-              currentFn.touched) ) {
-              <mat-error>current fn. required</mat-error>
-              }
-            </mat-form-field>
-            }
-            <!-- currentFn (free) -->
-            @else {
-            <mat-form-field>
-              <mat-label>current fn.</mat-label>
-              <input matInput [formControl]="currentFn" />
-              @if ( $any(currentFn).errors?.required && (currentFn.dirty ||
-              currentFn.touched) ) {
-              <mat-error>current fn. required</mat-error>
-              } @if ( $any(currentFn).errors?.maxLength && (currentFn.dirty ||
-              currentFn.touched) ) {
-              <mat-error>current fn. too long</mat-error>
-              }
-            </mat-form-field>
-            }
-          </div>
-          <!-- types -->
-          <div class="form-row">
-            <!-- originalType (bound) -->
-            @if (typeEntries?.length) {
-            <mat-form-field>
-              <mat-label>originalType</mat-label>
-              <mat-select [formControl]="originalType">
-                <mat-option *ngFor="let e of typeEntries" [value]="e.id">{{
-                  e.value
-                }}</mat-option>
-              </mat-select>
-              @if ($any(originalType).errors?.required && (originalType.dirty ||
-              originalType.touched)) {
-              <mat-error>originalType required</mat-error>
-              }
-            </mat-form-field>
-            } @else {
-            <!-- originalType (free) -->
-            <mat-form-field>
-              <mat-label>original type</mat-label>
-              <input matInput [formControl]="originalType" />
-              @if ($any(originalType).errors?.required && (originalType.dirty ||
-              originalType.touched)) {
-              <mat-error>original type required</mat-error>
-              } @if ($any(originalType).errors?.maxLength && (originalType.dirty
-              || originalType.touched)) {
-              <mat-error>original type too long</mat-error>
-              }
-            </mat-form-field>
-            }
-            <!-- currentType (bound) -->
-            @if (typeEntries?.length) {
-            <mat-form-field>
-              <mat-label>current type</mat-label>
-              <mat-select [formControl]="currentType">
-                <mat-option *ngFor="let e of typeEntries" [value]="e.id">{{
-                  e.value
-                }}</mat-option>
-              </mat-select>
-              @if ($any(currentType).errors?.required && (currentType.dirty ||
-              currentType.touched)) {
-              <mat-error>current type required</mat-error>
-              }
-            </mat-form-field>
-            } @else {
-            <!-- currentType (free) -->
-            <mat-form-field>
-              <mat-label>current type</mat-label>
-              <input matInput [formControl]="currentType" />
-              @if ($any(currentType).errors?.required && (currentType.dirty ||
-              currentType.touched)) {
-              <mat-error>current type required</mat-error>
-              } @if ($any(currentType).errors?.maxLength && (currentType.dirty
-              || currentType.touched)) {
-              <mat-error>current type too long</mat-error>
-              }
-            </mat-form-field>
-            }
-          </div>
-          <div>
             <!-- objectType (bound) -->
             @if (objTypeEntries?.length) {
             <mat-form-field>
@@ -314,7 +190,7 @@
             >
               <mat-expansion-panel-header>
                 <mat-panel-title
-                  >Area #{{ editedAreaIndex + 1 }}</mat-panel-title
+                  >area #{{ editedAreaIndex + 1 }}</mat-panel-title
                 >
               </mat-expansion-panel-header>
               <cadmus-epi-text-area
@@ -335,15 +211,15 @@
         </mat-tab>
 
         <!-- FEATURES -->
-        @if (countIdEntries?.length || featEntries?.length) {
+        @if (countTypeEntries?.length || featEntries?.length) {
         <mat-tab label="features">
           <!-- counts -->
-          @if (countIdEntries?.length) {
+          @if (countTypeEntries?.length) {
           <fieldset>
             <legend>counts</legend>
             <div>
               <cadmus-refs-decorated-counts
-                [idEntries]="countIdEntries"
+                [idEntries]="countTypeEntries"
                 [tagEntries]="countTagEntries"
                 [counts]="counts.value"
                 (countsChange)="onCountsChange($event!)"

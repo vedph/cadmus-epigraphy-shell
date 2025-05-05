@@ -18,10 +18,6 @@ export interface EpiTextArea {
  */
 export interface EpiSupportPart extends Part {
   material: string;
-  originalFn?: string;
-  currentFn?: string;
-  originalType?: string;
-  currentType?: string;
   objectType?: string;
   features?: string[];
   size?: PhysicalSize;
@@ -87,18 +83,6 @@ export const EPI_SUPPORT_PART_SCHEMA = {
       pattern: '^([a-z][-0-9a-z._]*)?$',
     },
     material: {
-      type: 'string',
-    },
-    originalFn: {
-      type: 'string',
-    },
-    currentFn: {
-      type: 'string',
-    },
-    originalType: {
-      type: 'string',
-    },
-    currentType: {
       type: 'string',
     },
     objectType: {

@@ -65,12 +65,11 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
 
 /**
  * EpiSupport part editor component.
- * Thesauri: epi-support-materials, epi-support-functions, epi-support-types,
- * epi-support-object-types, epi-support-count-types, epi-support-features,
+ * Thesauri: epi-support-materials, epi-support-object-types,
+ * epi-support-count-types, epi-support-count-tags, epi-support-features,
  * physical-size-units, physical-size-tags, physical-size-dim-tags.
- * decorated-count-ids, decorated-count-tags, epi-support-text-area-types,
- * epi-support-text-area-layouts, epi-support-text-area-features,
- * epi-support-text-area-frame-types.
+ * epi-support-text-area-types, epi-support-text-area-layouts,
+ * epi-support-text-area-features, epi-support-text-area-frame-types.
  */
 @Component({
   selector: 'cadmus-epi-support-part',
@@ -117,10 +116,6 @@ export class EpiSupportPartComponent
   public editedAreaIndex = -1;
 
   public material: FormControl<string>;
-  public originalFn: FormControl<string | null>;
-  public currentFn: FormControl<string | null>;
-  public originalType: FormControl<string | null>;
-  public currentType: FormControl<string | null>;
   public objectType: FormControl<string | null>;
   public features: FormControl<string[]>;
   public areas: FormControl<EpiTextArea[]>;
@@ -134,14 +129,12 @@ export class EpiSupportPartComponent
 
   // epi-support-materials
   public matEntries?: ThesaurusEntry[];
-  // epi-support-functions
-  public fnEntries?: ThesaurusEntry[];
-  // epi-support-types
-  public typeEntries?: ThesaurusEntry[];
   // epi-support-object-types
   public objTypeEntries?: ThesaurusEntry[];
   // epi-support-count-types
   public countTypeEntries?: ThesaurusEntry[];
+  // epi-support-count-tags
+  public countTagEntries?: ThesaurusEntry[];
   // epi-support-features
   public featEntries?: ThesaurusEntry[];
 
@@ -152,12 +145,6 @@ export class EpiSupportPartComponent
   public szTagEntries: ThesaurusEntry[] | undefined;
   // physical-size-dim-tags
   public szDimTagEntries: ThesaurusEntry[] | undefined;
-
-  // counts:
-  // decorated-count-ids
-  public countIdEntries: ThesaurusEntry[] | undefined;
-  // decorated-count-tags
-  public countTagEntries: ThesaurusEntry[] | undefined;
 
   // text areas:
   // epi-support-text-area-types
@@ -179,18 +166,6 @@ export class EpiSupportPartComponent
     this.material = formBuilder.control<string>('', {
       nonNullable: true,
       validators: [Validators.required, Validators.maxLength(50)],
-    });
-    this.originalFn = formBuilder.control<string | null>(null, {
-      validators: [Validators.maxLength(50)],
-    });
-    this.currentFn = formBuilder.control<string | null>(null, {
-      validators: [Validators.maxLength(50)],
-    });
-    this.originalType = formBuilder.control<string | null>(null, {
-      validators: [Validators.maxLength(50)],
-    });
-    this.currentType = formBuilder.control<string | null>(null, {
-      validators: [Validators.maxLength(50)],
     });
     this.objectType = formBuilder.control<string | null>(null, {
       validators: [Validators.maxLength(50)],
@@ -216,10 +191,6 @@ export class EpiSupportPartComponent
   protected buildForm(formBuilder: FormBuilder): FormGroup | UntypedFormGroup {
     return formBuilder.group({
       material: this.material,
-      originalFn: this.originalFn,
-      currentFn: this.currentFn,
-      originalType: this.originalType,
-      currentType: this.currentType,
       objectType: this.objectType,
       hasSupportSize: this.hasSize,
       supportSize: this.size,
@@ -237,18 +208,6 @@ export class EpiSupportPartComponent
     } else {
       this.matEntries = undefined;
     }
-    key = 'epi-support-functions';
-    if (this.hasThesaurus(key)) {
-      this.fnEntries = thesauri[key].entries;
-    } else {
-      this.fnEntries = undefined;
-    }
-    key = 'epi-support-types';
-    if (this.hasThesaurus(key)) {
-      this.typeEntries = thesauri[key].entries;
-    } else {
-      this.typeEntries = undefined;
-    }
     key = 'epi-support-object-types';
     if (this.hasThesaurus(key)) {
       this.objTypeEntries = thesauri[key].entries;
@@ -260,6 +219,12 @@ export class EpiSupportPartComponent
       this.countTypeEntries = thesauri[key].entries;
     } else {
       this.countTypeEntries = undefined;
+    }
+    key = 'epi-support-count-tags';
+    if (this.hasThesaurus(key)) {
+      this.countTagEntries = thesauri[key].entries;
+    } else {
+      this.countTagEntries = undefined;
     }
     key = 'epi-support-features';
     if (this.hasThesaurus(key)) {
@@ -286,18 +251,6 @@ export class EpiSupportPartComponent
       this.szDimTagEntries = thesauri[key].entries;
     } else {
       this.szDimTagEntries = undefined;
-    }
-    key = 'decorated-count-ids';
-    if (this.hasThesaurus(key)) {
-      this.countIdEntries = thesauri[key].entries;
-    } else {
-      this.countIdEntries = undefined;
-    }
-    key = 'decorated-count-tags';
-    if (this.hasThesaurus(key)) {
-      this.countTagEntries = thesauri[key].entries;
-    } else {
-      this.countTagEntries = undefined;
     }
     key = 'epi-support-text-area-types';
     if (this.hasThesaurus(key)) {
@@ -332,10 +285,6 @@ export class EpiSupportPartComponent
     }
 
     this.material.setValue(part.material || '');
-    this.originalFn.setValue(part.originalFn || null);
-    this.currentFn.setValue(part.currentFn || null);
-    this.originalType.setValue(part.originalType || null);
-    this.currentType.setValue(part.currentType || null);
     this.objectType.setValue(part.objectType || null);
     this.hasSize.setValue(!!part.size);
     this.size.setValue(part.size || null);
@@ -379,10 +328,6 @@ export class EpiSupportPartComponent
     let part = this.getEditedPart(EPI_SUPPORT_PART_TYPEID) as EpiSupportPart;
 
     part.material = this.material.value?.trim();
-    part.originalFn = this.originalFn.value?.trim();
-    part.currentFn = this.currentFn.value?.trim();
-    part.originalType = this.originalType.value?.trim();
-    part.currentType = this.currentType.value?.trim();
     part.objectType = this.objectType.value?.trim();
     part.size =
       this.hasSize.value && this.size.value ? this.size.value : undefined;
