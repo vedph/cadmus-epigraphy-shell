@@ -15,7 +15,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -53,7 +53,6 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
 @Component({
   selector: 'cadmus-epi-sign',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
     MatExpansionModule,
@@ -64,8 +63,8 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     MatTooltipModule,
     NgeMonacoModule,
     FlagSetComponent,
-    PhysicalMeasurementSetComponent,
-  ],
+    PhysicalMeasurementSetComponent
+],
   templateUrl: './epi-sign.component.html',
   styleUrl: './epi-sign.component.scss',
   providers: [CadmusTextEdService],

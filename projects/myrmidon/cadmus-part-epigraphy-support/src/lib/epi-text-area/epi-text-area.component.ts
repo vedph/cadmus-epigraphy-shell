@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   Component,
   computed,
@@ -43,7 +43,6 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
 @Component({
   selector: 'cadmus-epi-text-area',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
     MatCheckboxModule,
@@ -53,8 +52,8 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     MatSelectModule,
     MatTooltipModule,
     PhysicalSizeComponent,
-    FlagSetComponent,
-  ],
+    FlagSetComponent
+],
   templateUrl: './epi-text-area.component.html',
   styleUrl: './epi-text-area.component.css',
 })

@@ -6,7 +6,7 @@ import {
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -33,7 +33,6 @@ import { EpiSupportFrCellMappingComponent } from '../epi-support-fr-cell-mapping
 @Component({
   selector: 'cadmus-epi-support-fr',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
     MatCheckboxModule,
@@ -44,8 +43,8 @@ import { EpiSupportFrCellMappingComponent } from '../epi-support-fr-cell-mapping
     MatTooltipModule,
     PhysicalSizeComponent,
     PhysicalGridLocationComponent,
-    EpiSupportFrCellMappingComponent,
-  ],
+    EpiSupportFrCellMappingComponent
+],
   templateUrl: './epi-support-fr.component.html',
   styleUrl: './epi-support-fr.component.scss',
 })

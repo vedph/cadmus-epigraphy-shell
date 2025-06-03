@@ -95,6 +95,8 @@ ng g library @myrmidon/cadmus-part-epigraphy-scripts --prefix cadmus --force
 
 ## History
 
+- 2025-06-03: ⚠️ upgraded to Angular 20.
+
 ### 12.0.0
 
 - 2025-05-05:

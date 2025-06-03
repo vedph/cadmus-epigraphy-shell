@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   Component,
   computed,
@@ -39,7 +39,6 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
 @Component({
   selector: 'cadmus-epi-script',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
     MatCheckboxModule,
@@ -48,8 +47,8 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     MatInputModule,
     MatSelectModule,
     MatTooltipModule,
-    FlagSetComponent,
-  ],
+    FlagSetComponent
+],
   templateUrl: './epi-script.component.html',
   styleUrl: './epi-script.component.css',
 })

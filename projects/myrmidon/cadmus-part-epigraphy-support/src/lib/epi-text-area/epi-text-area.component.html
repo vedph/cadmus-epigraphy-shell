@@ -2,50 +2,54 @@
   <div class="form-row">
     <!-- type (bound) -->
     @if (typeEntries()?.length) {
-    <mat-form-field>
-      <mat-label>type</mat-label>
-      <mat-select [formControl]="type">
-        <mat-option *ngFor="let e of typeEntries()" [value]="e.id">{{
-          e.value
-        }}</mat-option>
-      </mat-select>
-      @if ($any(type).errors?.required && (type.dirty || type.touched)) {
-      <mat-error>type required</mat-error>
-      }
-    </mat-form-field>
+      <mat-form-field>
+        <mat-label>type</mat-label>
+        <mat-select [formControl]="type">
+          @for (e of typeEntries(); track e) {
+            <mat-option [value]="e.id">{{
+              e.value
+            }}</mat-option>
+          }
+        </mat-select>
+        @if ($any(type).errors?.required && (type.dirty || type.touched)) {
+          <mat-error>type required</mat-error>
+        }
+      </mat-form-field>
     } @else {
-    <!-- type (free) -->
-    <mat-form-field>
-      <mat-label>type</mat-label>
-      <input matInput [formControl]="type" />
-      @if ($any(type).errors?.required && (type.dirty || type.touched)) {
-      <mat-error>type required</mat-error>
-      } @if ($any(type).errors?.maxLength && (type.dirty || type.touched)) {
-      <mat-error>type too long</mat-error>
-      }
-    </mat-form-field>
+      <!-- type (free) -->
+      <mat-form-field>
+        <mat-label>type</mat-label>
+        <input matInput [formControl]="type" />
+        @if ($any(type).errors?.required && (type.dirty || type.touched)) {
+          <mat-error>type required</mat-error>
+          } @if ($any(type).errors?.maxLength && (type.dirty || type.touched)) {
+          <mat-error>type too long</mat-error>
+        }
+      </mat-form-field>
     }
 
     <!-- layout (bound) -->
     @if (layoutEntries()?.length) {
-    <mat-form-field>
-      <mat-label>layout</mat-label>
-      <mat-select [formControl]="layout">
-        <mat-option [value]="null">---</mat-option>
-        <mat-option *ngFor="let e of layoutEntries()" [value]="e.id">{{
-          e.value
-        }}</mat-option>
-      </mat-select>
-    </mat-form-field>
+      <mat-form-field>
+        <mat-label>layout</mat-label>
+        <mat-select [formControl]="layout">
+          <mat-option [value]="null">---</mat-option>
+          @for (e of layoutEntries(); track e) {
+            <mat-option [value]="e.id">{{
+              e.value
+            }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
     } @else {
-    <!-- layout (free) -->
-    <mat-form-field>
-      <mat-label>layout</mat-label>
-      <input matInput [formControl]="layout" />
-      @if ($any(layout).errors?.maxLength && (layout.dirty || layout.touched)) {
-      <mat-error>layout too long</mat-error>
-      }
-    </mat-form-field>
+      <!-- layout (free) -->
+      <mat-form-field>
+        <mat-label>layout</mat-label>
+        <input matInput [formControl]="layout" />
+        @if ($any(layout).errors?.maxLength && (layout.dirty || layout.touched)) {
+          <mat-error>layout too long</mat-error>
+        }
+      </mat-form-field>
     }
 
     <!-- eid -->
@@ -53,7 +57,7 @@
       <mat-label>eid</mat-label>
       <input matInput [formControl]="eid" />
       @if ($any(eid).errors?.maxLength && (eid.dirty || eid.touched)) {
-      <mat-error>eid too long</mat-error>
+        <mat-error>eid too long</mat-error>
       }
     </mat-form-field>
   </div>
@@ -62,105 +66,107 @@
   <div>
     <mat-checkbox [formControl]="hasSize">size</mat-checkbox>
     @if (hasSize.value) {
-    <div>
-      <cadmus-mat-physical-size
-        [size]="size.value || undefined"
-        [tagEntries]="szTagEntries()"
-        [unitEntries]="szUnitEntries()"
-        [dimTagEntries]="szDimTagEntries()"
-        (sizeChange)="onSizeChange($event!)"
-      />
+      <div>
+        <cadmus-mat-physical-size
+          [size]="size.value || undefined"
+          [tagEntries]="szTagEntries()"
+          [unitEntries]="szUnitEntries()"
+          [dimTagEntries]="szDimTagEntries()"
+          (sizeChange)="onSizeChange($event!)"
+          />
+        </div>
+      }
     </div>
-    }
-  </div>
 
-  <!-- features -->
-  @if (featEntries()?.length) {
-  <fieldset>
-    <legend>features</legend>
-    <cadmus-ui-flag-set
-      [flags]="featFlags()"
-      [checkedIds]="features.value"
-      (checkedIdsChange)="onFeatCheckedIdsChange($event)"
-    />
-  </fieldset>
-  }
-
-  <!-- frame -->
-  <mat-checkbox [formControl]="hasFrame">frame</mat-checkbox>
-  @if (hasFrame.value) {
-  <fieldset>
-    <legend>frame</legend>
-    <!-- frameType (bound) -->
-    @if (frameEntries()?.length) {
-    <mat-form-field>
-      <mat-label>type</mat-label>
-      <mat-select [formControl]="frameType">
-        <mat-option *ngFor="let e of frameEntries()" [value]="e.id">{{
-          e.value
-        }}</mat-option>
-      </mat-select>
-      @if ($any(frameType).errors?.required && (frameType.dirty ||
-      frameType.touched)) {
-      <mat-error>frame type required</mat-error>
+    <!-- features -->
+    @if (featEntries()?.length) {
+      <fieldset>
+        <legend>features</legend>
+        <cadmus-ui-flag-set
+          [flags]="featFlags()"
+          [checkedIds]="features.value"
+          (checkedIdsChange)="onFeatCheckedIdsChange($event)"
+          />
+        </fieldset>
       }
-    </mat-form-field>
-    } @else {
-    <!-- frameType (free) -->
-    <mat-form-field>
-      <mat-label>type</mat-label>
-      <input matInput [formControl]="frameType" />
-      @if ($any(frameType).errors?.required && (frameType.dirty ||
-      frameType.touched)) {
-      <mat-error>frame type required</mat-error>
-      } @if ($any(frameType).errors?.maxLength && (frameType.dirty ||
-      frameType.touched)) {
-      <mat-error>frame type too long</mat-error>
-      }
-    </mat-form-field>
-    }
-    <!-- frameDescription -->
-    <div>
-      <mat-form-field class="long-text">
-        <mat-label>description</mat-label>
-        <textarea matInput [formControl]="frameDescription" rows="3"></textarea>
-        @if ($any(frameDescription).errors?.maxLength && (frameDescription.dirty
-        || frameDescription.touched)) {
-        <mat-error>description too long</mat-error>
-        }
-      </mat-form-field>
-    </div>
-  </fieldset>
-  }
 
-  <!-- note -->
-  <div>
-    <mat-form-field class="long-text">
-      <mat-label>note</mat-label>
-      <textarea matInput [formControl]="note" rows="3"></textarea>
-      @if ($any(note).errors?.maxLength && (note.dirty || note.touched)) {
-      <mat-error>note too long</mat-error>
+      <!-- frame -->
+      <mat-checkbox [formControl]="hasFrame">frame</mat-checkbox>
+      @if (hasFrame.value) {
+        <fieldset>
+          <legend>frame</legend>
+          <!-- frameType (bound) -->
+          @if (frameEntries()?.length) {
+            <mat-form-field>
+              <mat-label>type</mat-label>
+              <mat-select [formControl]="frameType">
+                @for (e of frameEntries(); track e) {
+                  <mat-option [value]="e.id">{{
+                    e.value
+                  }}</mat-option>
+                }
+              </mat-select>
+              @if ($any(frameType).errors?.required && (frameType.dirty ||
+                frameType.touched)) {
+                <mat-error>frame type required</mat-error>
+              }
+            </mat-form-field>
+          } @else {
+            <!-- frameType (free) -->
+            <mat-form-field>
+              <mat-label>type</mat-label>
+              <input matInput [formControl]="frameType" />
+              @if ($any(frameType).errors?.required && (frameType.dirty ||
+                frameType.touched)) {
+                <mat-error>frame type required</mat-error>
+                } @if ($any(frameType).errors?.maxLength && (frameType.dirty ||
+                frameType.touched)) {
+                <mat-error>frame type too long</mat-error>
+              }
+            </mat-form-field>
+          }
+          <!-- frameDescription -->
+          <div>
+            <mat-form-field class="long-text">
+              <mat-label>description</mat-label>
+              <textarea matInput [formControl]="frameDescription" rows="3"></textarea>
+              @if ($any(frameDescription).errors?.maxLength && (frameDescription.dirty
+                || frameDescription.touched)) {
+                <mat-error>description too long</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </fieldset>
       }
-    </mat-form-field>
-  </div>
 
-  <!-- buttons -->
-  <div>
-    <button
-      type="button"
-      mat-icon-button
-      matTooltip="Discard changes"
-      (click)="dismiss()"
-    >
-      <mat-icon class="mat-warn">clear</mat-icon>
-    </button>
-    <button
-      type="submit"
-      mat-icon-button
-      matTooltip="Accept changes"
-      [disabled]="form.invalid || form.pristine"
-    >
-      <mat-icon class="mat-primary">check_circle</mat-icon>
-    </button>
-  </div>
-</form>
+      <!-- note -->
+      <div>
+        <mat-form-field class="long-text">
+          <mat-label>note</mat-label>
+          <textarea matInput [formControl]="note" rows="3"></textarea>
+          @if ($any(note).errors?.maxLength && (note.dirty || note.touched)) {
+            <mat-error>note too long</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- buttons -->
+      <div>
+        <button
+          type="button"
+          mat-icon-button
+          matTooltip="Discard changes"
+          (click)="dismiss()"
+          >
+          <mat-icon class="mat-warn">clear</mat-icon>
+        </button>
+        <button
+          type="submit"
+          mat-icon-button
+          matTooltip="Accept changes"
+          [disabled]="form.invalid || form.pristine"
+          >
+          <mat-icon class="mat-primary">check_circle</mat-icon>
+        </button>
+      </div>
+    </form>

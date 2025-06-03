@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { Thesaurus, ThesaurusEntry } from '@myrmidon/cadmus-core';
 import { Router, RouterModule } from '@angular/router';
@@ -23,15 +23,14 @@ import { GeoNamesRefLookupService } from '@myrmidon/cadmus-refs-geonames-lookup'
 @Component({
   selector: 'app-root',
   imports: [
-    CommonModule,
     RouterModule,
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
     MatTooltipModule,
     MatToolbarModule,
-    GravatarPipe,
-  ],
+    GravatarPipe
+],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })

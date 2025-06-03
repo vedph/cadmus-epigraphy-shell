@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -11,7 +11,7 @@ import { EpiSupportFrrPartComponent } from '../epi-support-frr-part/epi-support-
 
 @Component({
   selector: 'cadmus-epi-support-frr-part-feature',
-  imports: [CommonModule, CurrentItemBarComponent, EpiSupportFrrPartComponent],
+  imports: [CurrentItemBarComponent, EpiSupportFrrPartComponent],
   templateUrl: './epi-support-frr-part-feature.component.html',
   styleUrl: './epi-support-frr-part-feature.component.scss',
 })

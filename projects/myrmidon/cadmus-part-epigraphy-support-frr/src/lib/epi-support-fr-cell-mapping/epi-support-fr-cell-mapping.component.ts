@@ -1,5 +1,5 @@
 import { Component, effect, model, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   FormBuilder,
   FormControl,
@@ -19,14 +19,13 @@ import { EpiSupportFrCellMapping } from '../epi-support-frr-part';
 @Component({
   selector: 'cadmus-epi-support-fr-cell-mapping',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatTooltipModule,
-  ],
+    MatTooltipModule
+],
   templateUrl: './epi-support-fr-cell-mapping.component.html',
   styleUrl: './epi-support-fr-cell-mapping.component.scss',
 })

@@ -23,7 +23,7 @@ import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { MatInput } from '@angular/material/input';
-import { NgFor, TitleCasePipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonModule } from '@angular/material/button';
@@ -95,7 +95,6 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     MatOption,
     MatError,
     MatInput,
-    NgFor,
     MatCheckbox,
     TitleCasePipe,
     PhysicalSizeComponent,
@@ -105,8 +104,8 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     CloseSaveButtonsComponent,
     EpiTextAreaComponent,
     FlatLookupPipe,
-    PhysicalSizePipe,
-  ],
+    PhysicalSizePipe
+],
 })
 export class EpiSupportPartComponent
   extends ModelEditorComponentBase<EpiSupportPart>
