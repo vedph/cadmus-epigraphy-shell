@@ -1,4 +1,3 @@
-
 import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { Thesaurus, ThesaurusEntry } from '@myrmidon/cadmus-core';
 import { Router, RouterModule } from '@angular/router';
@@ -14,8 +13,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { AuthJwtService, GravatarPipe, User } from '@myrmidon/auth-jwt-login';
 import { EnvService, RamStorageService } from '@myrmidon/ngx-tools';
 import { AppRepository } from '@myrmidon/cadmus-state';
-import { ASSERTED_COMPOSITE_ID_CONFIGS_KEY } from '@myrmidon/cadmus-refs-asserted-ids';
-import { RefLookupConfig } from '@myrmidon/cadmus-refs-lookup';
+import {
+  LOOKUP_CONFIGS_KEY,
+  RefLookupConfig,
+} from '@myrmidon/cadmus-refs-lookup';
 import { ViafRefLookupService } from '@myrmidon/cadmus-refs-viaf-lookup';
 import { DbpediaRefLookupService } from '@myrmidon/cadmus-refs-dbpedia-lookup';
 import { GeoNamesRefLookupService } from '@myrmidon/cadmus-refs-geonames-lookup';
@@ -29,8 +30,8 @@ import { GeoNamesRefLookupService } from '@myrmidon/cadmus-refs-geonames-lookup'
     MatMenuModule,
     MatTooltipModule,
     MatToolbarModule,
-    GravatarPipe
-],
+    GravatarPipe,
+  ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
@@ -58,7 +59,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {
     this.version = env.get('version') || '';
 
-    storage.store(ASSERTED_COMPOSITE_ID_CONFIGS_KEY, [
+    storage.store(LOOKUP_CONFIGS_KEY, [
       {
         name: 'VIAF',
         iconUrl: 'img/viaf128.png',
