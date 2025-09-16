@@ -14,7 +14,7 @@
   <fieldset>
     <legend>features</legend>
     <cadmus-ui-flag-set
-      [flags]="featFlags"
+      [flags]="featFlags()"
       [checkedIds]="features.value"
       (checkedIdsChange)="onFeatIdsChange($event)"
     />

@@ -24,7 +24,7 @@
         <tbody>
           @for ( pattern of patterns.value; track pattern; let i = $index; let
           first = $first; let last = $last) {
-          <tr [class.selected]="pattern === edited">
+          <tr [class.selected]="i === editedIndex()">
             <td class="fit-width">
               <button
                 type="button"
@@ -74,16 +74,16 @@
           }
         </tbody>
       </table>
-      } @if (edited) {
-      <mat-expansion-panel [disabled]="!edited" [expanded]="edited">
+      } @if (edited()) {
+      <mat-expansion-panel [disabled]="!edited()" [expanded]="edited()">
         <mat-expansion-panel-header
-          >Pattern #{{ editedIndex }}</mat-expansion-panel-header
+          >Pattern #{{ editedIndex() }}</mat-expansion-panel-header
         >
         <cadmus-epi-formula-pattern
-          [langEntries]="langEntries"
-          [tagEntries]="tagEntries"
-          [tokTagEntries]="tokTagEntries"
-          [pattern]="edited"
+          [langEntries]="langEntries()"
+          [tagEntries]="tagEntries()"
+          [tokTagEntries]="tokTagEntries()"
+          [pattern]="edited()"
           (editorClose)="closePattern()"
           (patternChange)="savePattern($event!)"
         />

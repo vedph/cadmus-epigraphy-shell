@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 import {
   FormBuilder,
@@ -25,9 +25,12 @@ import { MatInput } from '@angular/material/input';
 import { NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import { Flag, FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
-import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
 import {
+  ThesauriSet,
+  ThesaurusEntry,
   EditedObject,
+} from '@myrmidon/cadmus-core';
+import {
   ModelEditorComponentBase,
   CloseSaveButtonsComponent,
 } from '@myrmidon/cadmus-ui';
@@ -72,24 +75,17 @@ export class EpiLigaturesFragmentComponent
   extends ModelEditorComponentBase<EpiLigaturesFragment>
   implements OnInit
 {
-  private _typeEntries: ThesaurusEntry[] = [];
-  public typeFlags: Flag[] = [];
-
   public types: FormControl<string[]>;
   public eid: FormControl<string | null>;
   public groupId: FormControl<string | null>;
   public note: FormControl<string | null>;
 
-  public set typeEntries(value: ThesaurusEntry[] | undefined | null) {
-    if (this._typeEntries === value) {
-      return;
-    }
-    this._typeEntries = value || [];
-    this.typeFlags = this._typeEntries.map(entryToFlag);
-  }
-  public get typeEntries(): ThesaurusEntry[] | undefined | null {
-    return this._typeEntries;
-  }
+  // epi-ligature-types
+  public readonly typeEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+
+  public readonly typeFlags = computed<Flag[]>(
+    () => this.typeEntries()?.map(entryToFlag) ?? []
+  );
 
   constructor(authService: AuthJwtService, formBuilder: FormBuilder) {
     super(authService, formBuilder);
@@ -119,9 +115,9 @@ export class EpiLigaturesFragmentComponent
   private updateThesauri(thesauri: ThesauriSet): void {
     const key = 'epi-ligature-types';
     if (this.hasThesaurus(key)) {
-      this.typeEntries = thesauri[key].entries;
+      this.typeEntries.set(thesauri[key].entries);
     } else {
-      this.typeEntries = undefined;
+      this.typeEntries.set(undefined);
     }
   }
 

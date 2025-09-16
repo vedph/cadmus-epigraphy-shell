@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -25,10 +25,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import { Flag, FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
 
-import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
+import {
+  ThesauriSet,
+  ThesaurusEntry,
+  EditedObject,
+} from '@myrmidon/cadmus-core';
 import {
   CloseSaveButtonsComponent,
-  EditedObject,
   ModelEditorComponentBase,
 } from '@myrmidon/cadmus-ui';
 
@@ -80,16 +83,24 @@ export class EpiTechniquePartComponent
   public tools: FormControl<string[]>;
   public note: FormControl<string | null>;
 
-  // flags
-  public techFlags: Flag[] = [];
-  public toolFlags: Flag[] = [];
-
   // epi-technique-groove-types
-  public grooveTypeEntries?: ThesaurusEntry[];
+  public readonly grooveTypeEntries = signal<ThesaurusEntry[] | undefined>(
+    undefined
+  );
   // epi-technique-types
-  public techEntries?: ThesaurusEntry[];
+  public readonly techEntries = signal<ThesaurusEntry[] | undefined>(undefined);
   // epi-technique-tools
-  public toolEntries?: ThesaurusEntry[];
+  public readonly toolEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+
+  // flags
+  public readonly techFlags = computed<Flag[]>(() => {
+    const entries = this.techEntries();
+    return entries ? entries.map(entryToFlag) : [];
+  });
+  public readonly toolFlags = computed<Flag[]>(() => {
+    const entries = this.toolEntries();
+    return entries ? entries.map(entryToFlag) : [];
+  });
 
   constructor(authService: AuthJwtService, formBuilder: FormBuilder) {
     super(authService, formBuilder);
@@ -118,25 +129,21 @@ export class EpiTechniquePartComponent
   private updateThesauri(thesauri: ThesauriSet): void {
     let key = 'epi-technique-groove-types';
     if (this.hasThesaurus(key)) {
-      this.grooveTypeEntries = thesauri[key].entries;
+      this.grooveTypeEntries.set(thesauri[key].entries);
     } else {
-      this.grooveTypeEntries = undefined;
+      this.grooveTypeEntries.set(undefined);
     }
     key = 'epi-technique-types';
     if (this.hasThesaurus(key)) {
-      this.techEntries = thesauri[key].entries;
-      this.techFlags = this.techEntries!.map(entryToFlag);
+      this.techEntries.set(thesauri[key].entries);
     } else {
-      this.techEntries = undefined;
-      this.techFlags = [];
+      this.techEntries.set(undefined);
     }
     key = 'epi-technique-tools';
     if (this.hasThesaurus(key)) {
-      this.toolEntries = thesauri[key].entries;
-      this.toolFlags = this.toolEntries!.map(entryToFlag);
+      this.toolEntries.set(thesauri[key].entries);
     } else {
-      this.toolEntries = undefined;
-      this.toolFlags = [];
+      this.toolEntries.set(undefined);
     }
   }
 

@@ -6,14 +6,14 @@
     <a mat-button routerLink="/home">Cadmus</a>
 
     <!-- items menu -->
-    @if (logged && itemBrowsers) {
+    @if (logged() && itemBrowsers()) {
     <button type="button" mat-button [matMenuTriggerFor]="itemMenu">
       Items
     </button>
     }
     <mat-menu #itemMenu>
       <a mat-menu-item routerLink="/items">Items</a>
-      @for (entry of itemBrowsers; track entry) {
+      @for (entry of itemBrowsers(); track entry) {
       <a
         mat-menu-item
         [routerLink]="'item-browser/' + getItemBrowserRoute(entry.id)"
@@ -21,21 +21,17 @@
       >
       }
     </mat-menu>
-    <!-- item menu -->
-    @if (logged && !itemBrowsers) {
-    <button type="button" mat-button routerLink="/items">Items</button>
-    }
 
+    <!-- item menu -->
+    @if (logged() && !itemBrowsers()) {
+    <button type="button" mat-button routerLink="/items">Items</button>
+    } @if (logged()) {
     <!-- search menu -->
-    @if (logged) {
     <button type="button" mat-button routerLink="/search">Search</button>
-    }
     <!-- graph menu -->
-    <!-- <button mat-button routerLink="/graph" *ngIf="logged">Graph</button> -->
-    <!-- thesauri menu -->
-    @if ( user && (user.roles.includes('admin') ||
-    user.roles.includes('editor')) ) {
-    <button type="button" mat-button routerLink="/thesauri">Thesauri</button>
+    <button type="button" mat-button routerLink="/graph">Graph</button>
+    <!-- stats menu -->
+    <button type="button" mat-button routerLink="/stats">Stats</button>
     }
 
     <!-- demo menu -->
@@ -43,6 +39,9 @@
       Demo
     </button>
     <mat-menu #demoMenu>
+      <button type="button" mat-menu-item routerLink="/demo/graph">
+        Graph
+      </button>
       <button type="button" mat-menu-item routerLink="/demo/layers">
         Text Layers
       </button>
@@ -51,17 +50,21 @@
     <span class="tb-fill-remaining-space"></span>
 
     <!-- user -->
-    @if (user) {
-    <div fxLayout="row" fxLayoutAlign="start center">
+    @if (user()) {
+    <div>
       <!-- indicators -->
-      <img [src]="user.email | gravatar : 32" alt="{{ user.userName }}" />
-      @if (user && user.roles.includes('admin')) {
+      <img
+        alt="avatar"
+        [src]="user()!.email | gravatar : 32"
+        [alt]="user()!.userName"
+      />
+      @if (user() && user()!.roles.includes('admin')) {
       <mat-icon class="small-icon" title="admin">build</mat-icon>
-      } @if (user && !user.emailConfirmed) {
+      } @if (user() && !user()!.emailConfirmed) {
       <mat-icon
         class="small-icon"
         title="You must verify your email address! Please check your mailbox {{
-          user.email
+          user()!.email
         }}"
         >feedback</mat-icon
       >
@@ -74,7 +77,7 @@
         <a mat-menu-item routerLink="/reset-password">Reset password</a>
       </mat-menu>
       <!-- admin menu -->
-      @if (user && user.roles.includes('admin')) {
+      @if (user() && user()!.roles.includes('admin')) {
       <button type="button" mat-button [matMenuTriggerFor]="adminMenu">
         Admin
       </button>
@@ -82,19 +85,26 @@
       <mat-menu #adminMenu>
         <a mat-menu-item routerLink="/manage-users">Manage users</a>
         <a mat-menu-item routerLink="/register-user">Register user</a>
+        <a mat-menu-item routerLink="/flags"> Flags </a>
+        <a mat-menu-item routerLink="/thesauri"> Thesauri </a>
       </mat-menu>
     </div>
     }
 
     <!-- login -->
-    @if (!logged) {
-    <button type="button" mat-icon-button routerLink="/login">
+    @if (!logged()) {
+    <button
+      type="button"
+      mat-icon-button
+      [routerLink]="['/login']"
+      [queryParams]="{ returnUrl: 'items' }"
+    >
       <mat-icon>login</mat-icon>
     </button>
     }
     <!-- logout -->
-    @if (logged) {
-    <button mat-icon-button (click)="logout()">
+    @if (logged()) {
+    <button type="button" mat-icon-button (click)="logout()">
       <mat-icon>logout</mat-icon>
     </button>
     }
@@ -112,7 +122,7 @@
       <a rel="noopener" href="https://www.fusisoft.it" target="_blank"
         >Daniele Fusi</a
       >
-      - version {{ version }}
+      - version {{ version() }}
     </p>
   </div>
 </footer>

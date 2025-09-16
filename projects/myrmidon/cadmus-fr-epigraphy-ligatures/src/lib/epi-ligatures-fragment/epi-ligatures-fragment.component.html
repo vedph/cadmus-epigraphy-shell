@@ -13,7 +13,7 @@
       <!-- types -->
       <div>
         <cadmus-ui-flag-set
-          [flags]="typeFlags"
+          [flags]="typeFlags()"
           [checkedIds]="types.value"
           (checkedIdsChange)="onTypeIdsChange($event)"
         />

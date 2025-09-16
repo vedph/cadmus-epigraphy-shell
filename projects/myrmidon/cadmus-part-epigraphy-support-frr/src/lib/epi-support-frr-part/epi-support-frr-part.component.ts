@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import {
   FormControl,
   FormBuilder,
@@ -17,15 +17,18 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { NgxToolsValidators } from '@myrmidon/ngx-tools';
+import { deepCopy, NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import {
   CloseSaveButtonsComponent,
-  EditedObject,
   ModelEditorComponentBase,
 } from '@myrmidon/cadmus-ui';
-import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
+import {
+  ThesauriSet,
+  ThesaurusEntry,
+  EditedObject,
+} from '@myrmidon/cadmus-core';
 import { PhysicalSizePipe } from '@myrmidon/cadmus-mat-physical-size';
 
 import {
@@ -55,7 +58,7 @@ import { EpiSupportFrComponent } from '../epi-support-fr/epi-support-fr.componen
     MatTooltipModule,
     PhysicalSizePipe,
     EpiSupportFrComponent,
-    CloseSaveButtonsComponent
+    CloseSaveButtonsComponent,
   ],
   templateUrl: './epi-support-frr-part.component.html',
   styleUrl: './epi-support-frr-part.component.scss',
@@ -64,18 +67,17 @@ export class EpiSupportFrrPartComponent
   extends ModelEditorComponentBase<EpiSupportFrrPart>
   implements OnInit
 {
-  private _editedIndex: number;
-
-  public edited: EpiSupportFr | undefined;
+  public readonly edited = signal<EpiSupportFr | undefined>(undefined);
+  public readonly editedIndex = signal<number>(-1);
 
   // physical-size-units
-  public unitEntries?: ThesaurusEntry[];
-
+  public readonly unitEntries = signal<ThesaurusEntry[] | undefined>(undefined);
   // physical-size-tags
-  public tagEntries?: ThesaurusEntry[];
-
+  public readonly tagEntries = signal<ThesaurusEntry[] | undefined>(undefined);
   // physical-size-dim-tags
-  public dimTagEntries?: ThesaurusEntry[];
+  public readonly dimTagEntries = signal<ThesaurusEntry[] | undefined>(
+    undefined
+  );
 
   public fragments: FormControl<EpiSupportFr[]>;
 
@@ -85,7 +87,6 @@ export class EpiSupportFrrPartComponent
     private _dialogService: DialogService
   ) {
     super(authService, formBuilder);
-    this._editedIndex = -1;
     // form
     this.fragments = formBuilder.control([], {
       // at least 1 entry
@@ -107,23 +108,23 @@ export class EpiSupportFrrPartComponent
   private updateThesauri(thesauri: ThesauriSet): void {
     let key = 'physical-size-units';
     if (this.hasThesaurus(key)) {
-      this.unitEntries = thesauri[key].entries;
+      this.unitEntries.set(thesauri[key].entries);
     } else {
-      this.unitEntries = undefined;
+      this.unitEntries.set(undefined);
     }
 
     key = 'physical-size-tags';
     if (this.hasThesaurus(key)) {
-      this.tagEntries = thesauri[key].entries;
+      this.tagEntries.set(thesauri[key].entries);
     } else {
-      this.tagEntries = undefined;
+      this.tagEntries.set(undefined);
     }
 
     key = 'physical-size-dim-tags';
     if (this.hasThesaurus(key)) {
-      this.dimTagEntries = thesauri[key].entries;
+      this.dimTagEntries.set(thesauri[key].entries);
     } else {
-      this.dimTagEntries = undefined;
+      this.dimTagEntries.set(undefined);
     }
   }
 
@@ -162,13 +163,13 @@ export class EpiSupportFrrPartComponent
   }
 
   public editFr(entry: EpiSupportFr, index: number): void {
-    this._editedIndex = index;
-    this.edited = entry;
+    this.editedIndex.set(index);
+    this.edited.set(deepCopy(entry));
   }
 
   public closeFr(): void {
-    this._editedIndex = -1;
-    this.edited = undefined;
+    this.editedIndex.set(-1);
+    this.edited.set(undefined);
   }
 
   public saveFr(fr: EpiSupportFr): void {
@@ -177,13 +178,13 @@ export class EpiSupportFrrPartComponent
     // if fr.id already exists, replace it
     const i = fragments.findIndex((f) => f.id === fr.id);
     if (i > -1) {
-      this._editedIndex = i;
+      this.editedIndex.set(i);
     }
 
-    if (this._editedIndex === -1) {
+    if (this.editedIndex() === -1) {
       fragments.push(fr);
     } else {
-      fragments.splice(this._editedIndex, 1, fr);
+      fragments.splice(this.editedIndex(), 1, fr);
     }
     this.fragments.setValue(fragments);
     this.fragments.markAsDirty();
@@ -196,7 +197,7 @@ export class EpiSupportFrrPartComponent
       .confirm('Confirmation', 'Delete fragment?')
       .subscribe((yes: boolean | undefined) => {
         if (yes) {
-          if (this._editedIndex === index) {
+          if (this.editedIndex() === index) {
             this.closeFr();
           }
           const fragments = [...this.fragments.value];

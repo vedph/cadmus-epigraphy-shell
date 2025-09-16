@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import {
   FormControl,
   FormBuilder,
@@ -17,15 +17,18 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { EllipsisPipe, NgxToolsValidators } from '@myrmidon/ngx-tools';
+import { deepCopy, EllipsisPipe, NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import {
   CloseSaveButtonsComponent,
-  EditedObject,
   ModelEditorComponentBase,
 } from '@myrmidon/cadmus-ui';
-import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
+import {
+  ThesauriSet,
+  ThesaurusEntry,
+  EditedObject,
+} from '@myrmidon/cadmus-core';
 
 import {
   EPI_SIGNS_PART_TYPEID,
@@ -64,18 +67,17 @@ export class EpiSignsPartComponent
   extends ModelEditorComponentBase<EpiSignsPart>
   implements OnInit
 {
-  private _editedIndex: number;
-
-  public edited: EpiSign | undefined;
+  public edited = signal<EpiSign | undefined>(undefined);
+  public editedIndex = signal<number>(-1);
 
   // epi-signs-measure-names
-  public measNameEntries?: ThesaurusEntry[];
+  public readonly measNameEntries = signal<ThesaurusEntry[] | undefined>(undefined);
   // physical-size-units
-  public measUnitEntries?: ThesaurusEntry[];
+  public readonly measUnitEntries = signal<ThesaurusEntry[] | undefined>(undefined);
   // physical-size-dim-tags
-  public measDimTagEntries?: ThesaurusEntry[];
+  public readonly measDimTagEntries = signal<ThesaurusEntry[] | undefined>(undefined);
   // epi-signs-features
-  public featEntries?: ThesaurusEntry[];
+  public readonly featEntries = signal<ThesaurusEntry[] | undefined>(undefined);
 
   public signs: FormControl<EpiSign[]>;
 
@@ -85,7 +87,6 @@ export class EpiSignsPartComponent
     private _dialogService: DialogService
   ) {
     super(authService, formBuilder);
-    this._editedIndex = -1;
     // form
     this.signs = formBuilder.control([], {
       // at least 1 entry
@@ -107,30 +108,30 @@ export class EpiSignsPartComponent
   private updateThesauri(thesauri: ThesauriSet): void {
     let key = 'epi-signs-measure-names';
     if (this.hasThesaurus(key)) {
-      this.measNameEntries = thesauri[key].entries;
+      this.measNameEntries.set(thesauri[key].entries);
     } else {
-      this.measNameEntries = undefined;
+      this.measNameEntries.set(undefined);
     }
 
     key = 'physical-size-units';
     if (this.hasThesaurus(key)) {
-      this.measUnitEntries = thesauri[key].entries;
+      this.measUnitEntries.set(thesauri[key].entries);
     } else {
-      this.measUnitEntries = undefined;
+      this.measUnitEntries.set(undefined);
     }
 
     key = 'physical-size-dim-tags';
     if (this.hasThesaurus(key)) {
-      this.measDimTagEntries = thesauri[key].entries;
+      this.measDimTagEntries.set(thesauri[key].entries);
     } else {
-      this.measDimTagEntries = undefined;
+      this.measDimTagEntries.set(undefined);
     }
 
     key = 'epi-signs-features';
     if (this.hasThesaurus(key)) {
-      this.featEntries = thesauri[key].entries;
+      this.featEntries.set(thesauri[key].entries);
     } else {
-      this.featEntries = undefined;
+      this.featEntries.set(undefined);
     }
   }
 
@@ -167,13 +168,13 @@ export class EpiSignsPartComponent
   }
 
   public editSign(entry: EpiSign, index: number): void {
-    this._editedIndex = index;
-    this.edited = entry;
+    this.editedIndex.set(index);
+    this.edited.set(deepCopy(entry));
   }
 
   public closeSign(): void {
-    this._editedIndex = -1;
-    this.edited = undefined;
+    this.editedIndex.set(-1);
+    this.edited.set(undefined);
   }
 
   public saveSign(sign: EpiSign): void {
@@ -182,13 +183,13 @@ export class EpiSignsPartComponent
     // if fr.id already exists, replace it
     const i = signs.findIndex((s) => s.id === sign.id);
     if (i > -1) {
-      this._editedIndex = i;
+      this.editedIndex.set(i);
     }
 
-    if (this._editedIndex === -1) {
+    if (this.editedIndex() === -1) {
       signs.push(sign);
     } else {
-      signs.splice(this._editedIndex, 1, sign);
+      signs.splice(this.editedIndex(), 1, sign);
     }
     this.signs.setValue(signs);
     this.signs.markAsDirty();
@@ -201,7 +202,7 @@ export class EpiSignsPartComponent
       .confirm('Confirmation', 'Delete sign?')
       .subscribe((yes: boolean | undefined) => {
         if (yes) {
-          if (this._editedIndex === index) {
+          if (this.editedIndex() === index) {
             this.closeSign();
           }
           const entries = [...this.signs.value];

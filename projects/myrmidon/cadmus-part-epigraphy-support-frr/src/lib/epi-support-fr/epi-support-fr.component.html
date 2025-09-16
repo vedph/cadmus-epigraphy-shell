@@ -33,7 +33,7 @@
         <cadmus-mat-physical-grid-location
           [allowCustomSize]="true"
           [allowResize]="true"
-          [presets]="gridPresets"
+          [presets]="gridPresets()"
           [location]="location.value || undefined"
           (locationChange)="onLocationChange($event!)"
         />
@@ -57,7 +57,7 @@
             </thead>
             <tbody>
               @for (m of mappings.value; track m; let i = $index) {
-              <tr [class.selected]="m === editedMapping">
+              <tr [class.selected]="i === editedIndex()">
                 <td class="fit-width">
                   <button
                     type="button"
@@ -85,17 +85,19 @@
           </table>
 
           <!-- mapping editor -->
-          @if (editedMapping) {
+          @if (editedMapping()) {
           <mat-expansion-panel
-            [disabled]="!editedMapping"
-            [expanded]="editedMapping"
+            [disabled]="!editedMapping()"
+            [expanded]="editedMapping()"
           >
             <mat-expansion-panel-header>
-              <mat-panel-title> mapping </mat-panel-title>
+              <mat-panel-title>
+                mapping # {{ editedIndex() + 1 }}</mat-panel-title
+              >
             </mat-expansion-panel-header>
 
             <cadmus-epi-support-fr-cell-mapping
-              [mapping]="editedMapping"
+              [mapping]="editedMapping()"
               (mappingCancel)="closeMapping()"
               (mappingChange)="onMappingChange($event!)"
             />

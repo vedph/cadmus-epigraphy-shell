@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   effect,
   Inject,
   input,
@@ -75,7 +76,9 @@ export class EpiSignComponent implements OnDestroy {
   private readonly _disposables: monaco.IDisposable[] = [];
 
   // flags
-  public featFlags: Flag[] = [];
+  public readonly featFlags = computed<Flag[]>(() => {
+    return this.featEntries()?.map(entryToFlag) || [];
+  });
 
   /**
    * The sign being edited.
@@ -126,10 +129,6 @@ export class EpiSignComponent implements OnDestroy {
 
     effect(() => {
       this.updateForm(this.sign());
-    });
-
-    effect(() => {
-      this.featFlags = this.featEntries()?.map(entryToFlag) || [];
     });
   }
 

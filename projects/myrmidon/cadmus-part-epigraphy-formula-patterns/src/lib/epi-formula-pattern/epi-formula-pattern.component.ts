@@ -1,4 +1,4 @@
-import { Component, effect, input, model, output } from '@angular/core';
+import { Component, effect, input, model, output, signal } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -21,7 +21,7 @@ import {
   MatExpansionPanelHeader,
 } from '@angular/material/expansion';
 
-import { NgxToolsValidators } from '@myrmidon/ngx-tools';
+import { deepCopy, NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
 
 import { ThesaurusEntry } from '@myrmidon/cadmus-core';
@@ -74,8 +74,8 @@ export class EpiFormulaPatternComponent {
 
   public readonly editorClose = output();
 
-  public editedIndex: number;
-  public edited?: EpiFormulaToken;
+  public readonly edited = signal<EpiFormulaToken | undefined>(undefined);
+  public readonly editedIndex = signal<number>(-1);
 
   public eid: FormControl<string | null>;
   public language: FormControl<string>;
@@ -84,7 +84,6 @@ export class EpiFormulaPatternComponent {
   public form: FormGroup;
 
   constructor(formBuilder: FormBuilder, private _dialogService: DialogService) {
-    this.editedIndex = -1;
     // form
     this.eid = formBuilder.control(null, Validators.maxLength(500));
     this.language = formBuilder.control('', {
@@ -130,21 +129,21 @@ export class EpiFormulaPatternComponent {
   }
 
   public editToken(token: EpiFormulaToken, index: number): void {
-    this.editedIndex = index;
-    this.edited = token;
+    this.editedIndex.set(index);
+    this.edited.set(deepCopy(token));
   }
 
   public closeToken(): void {
-    this.editedIndex = -1;
-    this.edited = undefined;
+    this.editedIndex.set(-1);
+    this.edited.set(undefined);
   }
 
   public saveToken(token: EpiFormulaToken): void {
     const tokens = [...this.tokens.value];
-    if (this.editedIndex === -1) {
+    if (this.editedIndex() === -1) {
       tokens.push(token);
     } else {
-      tokens.splice(this.editedIndex, 1, token);
+      tokens.splice(this.editedIndex(), 1, token);
     }
     this.tokens.setValue(tokens);
     this.tokens.markAsDirty();
@@ -158,7 +157,7 @@ export class EpiFormulaPatternComponent {
       .pipe(take(1))
       .subscribe((yes) => {
         if (yes) {
-          if (this.editedIndex === index) {
+          if (this.editedIndex() === index) {
             this.closeToken();
           }
           const tokens = [...this.tokens.value];
@@ -175,10 +174,10 @@ export class EpiFormulaPatternComponent {
       return;
     }
     const token = this.tokens.value[index];
-    const entries = [...this.tokens.value];
-    entries.splice(index, 1);
-    entries.splice(index - 1, 0, token);
-    this.tokens.setValue(entries);
+    const tokens = [...this.tokens.value];
+    tokens.splice(index, 1);
+    tokens.splice(index - 1, 0, token);
+    this.tokens.setValue(tokens);
     this.tokens.markAsDirty();
     this.tokens.updateValueAndValidity();
   }
@@ -187,11 +186,11 @@ export class EpiFormulaPatternComponent {
     if (index + 1 >= this.tokens.value.length) {
       return;
     }
-    const entry = this.tokens.value[index];
-    const entries = [...this.tokens.value];
-    entries.splice(index, 1);
-    entries.splice(index + 1, 0, entry);
-    this.tokens.setValue(entries);
+    const token = this.tokens.value[index];
+    const tokens = [...this.tokens.value];
+    tokens.splice(index, 1);
+    tokens.splice(index + 1, 0, token);
+    this.tokens.setValue(tokens);
     this.tokens.markAsDirty();
     this.tokens.updateValueAndValidity();
   }

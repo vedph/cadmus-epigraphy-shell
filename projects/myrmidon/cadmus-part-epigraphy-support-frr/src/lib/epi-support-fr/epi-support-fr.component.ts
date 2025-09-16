@@ -1,4 +1,12 @@
-import { Component, effect, input, model, output } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  input,
+  model,
+  output,
+  signal,
+} from '@angular/core';
 import {
   FormGroup,
   FormBuilder,
@@ -6,7 +14,6 @@ import {
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -16,11 +23,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
+import { deepCopy } from '@myrmidon/ngx-tools';
 import {
   PhysicalSize,
   PhysicalSizeComponent,
 } from '@myrmidon/cadmus-mat-physical-size';
 import {
+  PhysicalGridCoords,
   PhysicalGridCoordsService,
   PhysicalGridLocation,
   PhysicalGridLocationComponent,
@@ -43,8 +52,8 @@ import { EpiSupportFrCellMappingComponent } from '../epi-support-fr-cell-mapping
     MatTooltipModule,
     PhysicalSizeComponent,
     PhysicalGridLocationComponent,
-    EpiSupportFrCellMappingComponent
-],
+    EpiSupportFrCellMappingComponent,
+  ],
   templateUrl: './epi-support-fr.component.html',
   styleUrl: './epi-support-fr.component.scss',
 })
@@ -62,6 +71,15 @@ export class EpiSupportFrComponent {
 
   public readonly fragmentCancel = output();
 
+  public readonly editedMapping = signal<EpiSupportFrCellMapping | undefined>(
+    undefined
+  );
+  public readonly editedIndex = signal<number>(-1);
+
+  public readonly gridPresets = computed<string[] | undefined>(() =>
+    this.gridPresetEntries()?.map((e) => e.value)
+  );
+
   public id: FormControl<string>;
   public shelfmark: FormControl<string | null>;
   public lost: FormControl<boolean>;
@@ -70,11 +88,6 @@ export class EpiSupportFrComponent {
   public mappings: FormControl<EpiSupportFrCellMapping[]>;
   public note: FormControl<string | null>;
   public form: FormGroup;
-
-  public gridPresets?: string[];
-
-  public editedIndex = -1;
-  public editedMapping?: EpiSupportFrCellMapping;
 
   constructor(
     formBuilder: FormBuilder,
@@ -113,10 +126,6 @@ export class EpiSupportFrComponent {
     effect(() => {
       this.updateForm(this.fragment());
     });
-
-    effect(() => {
-      this.gridPresets = this.gridPresetEntries()?.map((e) => e.value);
-    });
   }
 
   private updateForm(fr: EpiSupportFr | undefined | null): void {
@@ -132,7 +141,9 @@ export class EpiSupportFrComponent {
     const location: PhysicalGridLocation = {
       rows: fr.rowCount || 0,
       columns: fr.columnCount || 0,
-      coords: this._gridService.parsePhysicalGridCoords(fr.location) || [],
+      coords: this._gridService.parsePhysicalGridCoords(
+        fr.location
+      ) as PhysicalGridCoords[],
     };
     this.location.setValue(location);
     this.mappings.setValue(fr.cellMappings || []);
@@ -173,24 +184,24 @@ export class EpiSupportFrComponent {
   }
 
   public addMapping(): void {
-    this.editedMapping = {
+    this.editedMapping.set({
       location: '',
-    };
-    this.editedIndex = -1;
+    });
+    this.editedIndex.set(-1);
   }
 
   public editMapping(index: number): void {
-    this.editedIndex = index;
-    this.editedMapping = this.mappings.value[index];
+    this.editedIndex.set(index);
+    this.editedMapping.set(deepCopy(this.mappings.value[index]));
   }
 
   public closeMapping(): void {
-    this.editedIndex = -1;
-    this.editedMapping = undefined;
+    this.editedMapping.set(undefined);
+    this.editedIndex.set(-1);
   }
 
   public deleteMapping(index: number): void {
-    if (this.editedIndex === index) {
+    if (this.editedIndex() === index) {
       this.closeMapping();
     }
     const mappings = [...this.mappings.value];
@@ -202,10 +213,10 @@ export class EpiSupportFrComponent {
 
   public onMappingChange(mapping: EpiSupportFrCellMapping): void {
     const mappings = [...this.mappings.value];
-    if (this.editedIndex === -1) {
+    if (this.editedIndex() === -1) {
       mappings.push(mapping);
     } else {
-      mappings[this.editedIndex] = mapping;
+      mappings[this.editedIndex()] = mapping;
     }
     this.mappings.setValue(mappings);
     this.mappings.markAsDirty();

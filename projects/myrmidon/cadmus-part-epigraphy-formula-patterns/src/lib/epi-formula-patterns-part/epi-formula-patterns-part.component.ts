@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 import {
   FormControl,
@@ -26,15 +26,18 @@ import {
   MatExpansionPanelHeader,
 } from '@angular/material/expansion';
 
-import { NgxToolsValidators } from '@myrmidon/ngx-tools';
+import { deepCopy, NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import {
   CloseSaveButtonsComponent,
-  EditedObject,
   ModelEditorComponentBase,
 } from '@myrmidon/cadmus-ui';
-import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
+import {
+  ThesauriSet,
+  ThesaurusEntry,
+  EditedObject,
+} from '@myrmidon/cadmus-core';
 
 import {
   EpiFormulaPattern,
@@ -78,15 +81,17 @@ export class EpiFormulaPatternsPartComponent
   extends ModelEditorComponentBase<EpiFormulaPatternsPart>
   implements OnInit
 {
-  public editedIndex: number;
-  public edited: EpiFormulaPattern | undefined;
+  public readonly edited = signal<EpiFormulaPattern | undefined>(undefined);
+  public readonly editedIndex = signal<number>(-1);
 
   // epi-formula-pattern-languages
-  public langEntries: ThesaurusEntry[] | undefined;
+  public readonly langEntries = signal<ThesaurusEntry[] | undefined>(undefined);
   // epi-formula-pattern-tags
-  public tagEntries: ThesaurusEntry[] | undefined;
+  public readonly tagEntries = signal<ThesaurusEntry[] | undefined>(undefined);
   // epi-formula-token-tags
-  public tokTagEntries: ThesaurusEntry[] | undefined;
+  public readonly tokTagEntries = signal<ThesaurusEntry[] | undefined>(
+    undefined
+  );
 
   public patterns: FormControl<EpiFormulaPattern[]>;
 
@@ -96,7 +101,6 @@ export class EpiFormulaPatternsPartComponent
     private _dialogService: DialogService
   ) {
     super(authService, formBuilder);
-    this.editedIndex = -1;
     // form
     this.patterns = formBuilder.control([], {
       // at least 1 entry
@@ -118,21 +122,21 @@ export class EpiFormulaPatternsPartComponent
   private updateThesauri(thesauri: ThesauriSet): void {
     let key = 'epi-formula-pattern-languages';
     if (this.hasThesaurus(key)) {
-      this.langEntries = thesauri[key].entries;
+      this.langEntries.set(thesauri[key].entries);
     } else {
-      this.langEntries = undefined;
+      this.langEntries.set(undefined);
     }
     key = 'epi-formula-pattern-tags';
     if (this.hasThesaurus(key)) {
-      this.tagEntries = thesauri[key].entries;
+      this.tagEntries.set(thesauri[key].entries);
     } else {
-      this.tagEntries = undefined;
+      this.tagEntries.set(undefined);
     }
     key = 'epi-formula-token-tags';
     if (this.hasThesaurus(key)) {
-      this.tokTagEntries = thesauri[key].entries;
+      this.tokTagEntries.set(thesauri[key].entries);
     } else {
-      this.tokTagEntries = undefined;
+      this.tokTagEntries.set(undefined);
     }
   }
 
@@ -174,21 +178,21 @@ export class EpiFormulaPatternsPartComponent
   }
 
   public editPattern(entry: EpiFormulaPattern, index: number): void {
-    this.editedIndex = index;
-    this.edited = entry;
+    this.editedIndex.set(index);
+    this.edited.set(deepCopy(entry));
   }
 
   public closePattern(): void {
-    this.editedIndex = -1;
-    this.edited = undefined;
+    this.editedIndex.set(-1);
+    this.edited.set(undefined);
   }
 
   public savePattern(pattern: EpiFormulaPattern): void {
     const patterns = [...this.patterns.value];
-    if (this.editedIndex === -1) {
+    if (this.editedIndex() === -1) {
       patterns.push(pattern);
     } else {
-      patterns.splice(this.editedIndex, 1, pattern);
+      patterns.splice(this.editedIndex(), 1, pattern);
     }
     this.patterns.setValue(patterns);
     this.patterns.markAsDirty();
@@ -202,7 +206,7 @@ export class EpiFormulaPatternsPartComponent
       .pipe(take(1))
       .subscribe((yes) => {
         if (yes) {
-          if (this.editedIndex === index) {
+          if (this.editedIndex() === index) {
             this.closePattern();
           }
           const patterns = [...this.patterns.value];

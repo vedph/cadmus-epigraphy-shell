@@ -32,7 +32,7 @@
         <tbody>
           @for (fr of fragments.value; track fr.id; let i = $index; let first =
           $first; let last = $last) {
-          <tr [class.selected]="fr === edited">
+          <tr [class.selected]="i === editedIndex()">
             <td class="fit-width">
               <button
                 type="button"
@@ -76,16 +76,16 @@
           }
         </tbody>
       </table>
-      } @if (edited) {
-      <mat-expansion-panel [expanded]="edited" [disabled]="!edited">
+      } @if (edited()) {
+      <mat-expansion-panel [expanded]="edited()" [disabled]="!edited()">
         <mat-expansion-panel-header>
           <mat-panel-title> fragment </mat-panel-title>
         </mat-expansion-panel-header>
         <cadmus-epi-support-fr
-          [tagEntries]="tagEntries"
-          [unitEntries]="unitEntries"
-          [dimTagEntries]="dimTagEntries"
-          [fragment]="edited"
+          [tagEntries]="tagEntries()"
+          [unitEntries]="unitEntries()"
+          [dimTagEntries]="dimTagEntries()"
+          [fragment]="edited()"
           (fragmentChange)="saveFr($event!)"
           (fragmentCancel)="closeFr()"
         />

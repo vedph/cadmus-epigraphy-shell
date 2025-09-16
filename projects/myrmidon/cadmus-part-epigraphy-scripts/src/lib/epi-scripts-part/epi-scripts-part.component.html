@@ -32,7 +32,7 @@
         <tbody>
           @for (script of scripts.value; track script; let i = $index; let first
           = $first; let last = $last) {
-          <tr [class.selected]="script === edited">
+          <tr [class.selected]="i === editedIndex()">
             <td class="fit-width">
               <button
                 type="button"
@@ -72,30 +72,30 @@
               </button>
             </td>
             <td>
-              {{ script.system | flatLookup : systemEntries : "id" : "value" }}
+              {{ script.system | flatLookup : systemEntries() : "id" : "value" }}
             </td>
             <td>
-              {{ script.script | flatLookup : scriptEntries : "id" : "value" }}
+              {{ script.script | flatLookup : scriptEntries() : "id" : "value" }}
             </td>
             <td>
-              {{ script.casing | flatLookup : casingEntries : "id" : "value" }}
+              {{ script.casing | flatLookup : casingEntries() : "id" : "value" }}
             </td>
           </tr>
           }
         </tbody>
       </table>
-      } @if (edited) {
+      } @if (edited()) {
       <fieldset>
-        <mat-expansion-panel [expanded]="edited" [disabled]="!edited">
+        <mat-expansion-panel [expanded]="edited()" [disabled]="!edited()">
           <mat-expansion-panel-header>
             <mat-panel-title>Script #</mat-panel-title>
           </mat-expansion-panel-header>
           <cadmus-epi-script
-            [script]="edited"
-            [featEntries]="featEntries"
-            [casingEntries]="casingEntries"
-            [scriptEntries]="scriptEntries"
-            [systemEntries]="systemEntries"
+            [script]="edited()"
+            [featEntries]="featEntries()"
+            [casingEntries]="casingEntries()"
+            [scriptEntries]="scriptEntries()"
+            [systemEntries]="systemEntries()"
             (scriptCancel)="closeScript()"
             (scriptChange)="saveScript($event!)"
           />

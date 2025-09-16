@@ -95,6 +95,10 @@ ng g library @myrmidon/cadmus-part-epigraphy-scripts --prefix cadmus --force
 
 ## History
 
+- 2025-09-16:
+  - refactored components for full reactive state.
+  - ⚠️ removed legacy module from PG library.
+  - updated Angular and packages.
 - 2025-06-07: updated Angular and packages.
 - 2025-06-03: ⚠️ upgraded to Angular 20.
 

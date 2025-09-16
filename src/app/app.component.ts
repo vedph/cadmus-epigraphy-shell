@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy, signal } from '@angular/core';
 import { Thesaurus, ThesaurusEntry } from '@myrmidon/cadmus-core';
 import { Router, RouterModule } from '@angular/router';
 import { take } from 'rxjs/operators';
@@ -18,7 +18,6 @@ import {
   RefLookupConfig,
 } from '@myrmidon/cadmus-refs-lookup';
 import { ViafRefLookupService } from '@myrmidon/cadmus-refs-viaf-lookup';
-import { DbpediaRefLookupService } from '@myrmidon/cadmus-refs-dbpedia-lookup';
 import { GeoNamesRefLookupService } from '@myrmidon/cadmus-refs-geonames-lookup';
 
 @Component({
@@ -39,10 +38,12 @@ export class AppComponent implements OnInit, OnDestroy {
   private _authSub?: Subscription;
   private _brSub?: Subscription;
 
-  public user?: User;
-  public logged?: boolean;
-  public itemBrowsers?: ThesaurusEntry[];
-  public version: string;
+  public readonly user = signal<User | undefined>(undefined);
+  public readonly logged = signal<boolean>(false);
+  public readonly itemBrowsers = signal<ThesaurusEntry[] | undefined>(
+    undefined
+  );
+  public readonly version = signal<string>('');
 
   constructor(
     @Inject('itemBrowserKeys')
@@ -54,10 +55,9 @@ export class AppComponent implements OnInit, OnDestroy {
     // lookup
     storage: RamStorageService,
     viaf: ViafRefLookupService,
-    dbpedia: DbpediaRefLookupService,
     geonames: GeoNamesRefLookupService
   ) {
-    this.version = env.get('version') || '';
+    this.version.set(env.get('version') || '');
 
     storage.store(LOOKUP_CONFIGS_KEY, [
       {
@@ -82,13 +82,13 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.user = this._authService.currentUserValue || undefined;
-    this.logged = this.user !== null;
+    this.user.set(this._authService.currentUserValue || undefined);
+    this.logged.set(this.user() !== null);
 
     this._authSub = this._authService.currentUser$.subscribe(
       (user: User | null) => {
-        this.logged = this._authService.isAuthenticated(true);
-        this.user = user || undefined;
+        this.logged.set(this._authService.isAuthenticated(true));
+        this.user.set(user || undefined);
         if (user) {
           this._appRepository.load();
         }
@@ -97,7 +97,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this._brSub = this._appRepository.itemBrowserThesaurus$.subscribe(
       (thesaurus: Thesaurus | undefined) => {
-        this.itemBrowsers = thesaurus ? thesaurus.entries : undefined;
+        this.itemBrowsers.set(thesaurus ? thesaurus.entries : undefined);
       }
     );
   }

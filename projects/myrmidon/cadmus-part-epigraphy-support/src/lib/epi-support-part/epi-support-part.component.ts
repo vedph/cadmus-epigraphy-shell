@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import {
   FormControl,
   FormBuilder,
@@ -28,7 +28,7 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonModule } from '@angular/material/button';
 
-import { FlatLookupPipe } from '@myrmidon/ngx-tools';
+import { deepCopy, FlatLookupPipe } from '@myrmidon/ngx-tools';
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import {
   PhysicalSize,
@@ -42,10 +42,13 @@ import {
 import { Flag, FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
 
 import { DialogService } from '@myrmidon/ngx-mat-tools';
-import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
+import {
+  ThesauriSet,
+  ThesaurusEntry,
+  EditedObject,
+} from '@myrmidon/cadmus-core';
 import {
   CloseSaveButtonsComponent,
-  EditedObject,
   ModelEditorComponentBase,
 } from '@myrmidon/cadmus-ui';
 
@@ -104,15 +107,69 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     CloseSaveButtonsComponent,
     EpiTextAreaComponent,
     FlatLookupPipe,
-    PhysicalSizePipe
-],
+    PhysicalSizePipe,
+  ],
 })
 export class EpiSupportPartComponent
   extends ModelEditorComponentBase<EpiSupportPart>
   implements OnInit
 {
-  public editedArea?: EpiTextArea;
-  public editedAreaIndex = -1;
+  public readonly editedArea = signal<EpiTextArea | undefined>(undefined);
+  public readonly editedAreaIndex = signal<number>(-1);
+
+  // flags
+  public readonly featFlags = computed<Flag[]>(() => {
+    return this.featEntries()?.map(entryToFlag) || [];
+  });
+
+  // epi-support-materials
+  public readonly matEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+  // epi-support-object-types
+  public readonly objTypeEntries = signal<ThesaurusEntry[] | undefined>(
+    undefined
+  );
+  // epi-support-count-types
+  public readonly countTypeEntries = signal<ThesaurusEntry[] | undefined>(
+    undefined
+  );
+  // epi-support-count-tags
+  public readonly countTagEntries = signal<ThesaurusEntry[] | undefined>(
+    undefined
+  );
+  // epi-support-features
+  public readonly featEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+
+  // size:
+  // physical-size-units
+  public readonly szUnitEntries = signal<ThesaurusEntry[] | undefined>(
+    undefined
+  );
+  // physical-size-tags
+  public readonly szTagEntries = signal<ThesaurusEntry[] | undefined>(
+    undefined
+  );
+  // physical-size-dim-tags
+  public readonly szDimTagEntries = signal<ThesaurusEntry[] | undefined>(
+    undefined
+  );
+
+  // text areas:
+  // epi-support-text-area-types
+  public readonly textAreaTypeEntries = signal<ThesaurusEntry[] | undefined>(
+    undefined
+  );
+  // epi-support-text-area-layouts
+  public readonly textAreaLayoutEntries = signal<ThesaurusEntry[] | undefined>(
+    undefined
+  );
+  // epi-support-text-area-features
+  public readonly textAreaFeatEntries = signal<ThesaurusEntry[] | undefined>(
+    undefined
+  );
+  // epi-support-text-area-frame-types
+  public readonly textAreaFrameEntries = signal<ThesaurusEntry[] | undefined>(
+    undefined
+  );
 
   public material: FormControl<string>;
   public objectType: FormControl<string | null>;
@@ -122,38 +179,6 @@ export class EpiSupportPartComponent
   public size: FormControl<PhysicalSize | null>;
   public counts: FormControl<DecoratedCount[]>;
   public note: FormControl<string | null>;
-
-  // flags
-  public featFlags: Flag[] = [];
-
-  // epi-support-materials
-  public matEntries?: ThesaurusEntry[];
-  // epi-support-object-types
-  public objTypeEntries?: ThesaurusEntry[];
-  // epi-support-count-types
-  public countTypeEntries?: ThesaurusEntry[];
-  // epi-support-count-tags
-  public countTagEntries?: ThesaurusEntry[];
-  // epi-support-features
-  public featEntries?: ThesaurusEntry[];
-
-  // size:
-  // physical-size-units
-  public szUnitEntries: ThesaurusEntry[] | undefined;
-  // physical-size-tags
-  public szTagEntries: ThesaurusEntry[] | undefined;
-  // physical-size-dim-tags
-  public szDimTagEntries: ThesaurusEntry[] | undefined;
-
-  // text areas:
-  // epi-support-text-area-types
-  public textAreaTypeEntries: ThesaurusEntry[] | undefined;
-  // epi-support-text-area-layouts
-  public textAreaLayoutEntries: ThesaurusEntry[] | undefined;
-  // epi-support-text-area-features
-  public textAreaFeatEntries: ThesaurusEntry[] | undefined;
-  // epi-support-text-area-frame-types
-  public textAreaFrameEntries: ThesaurusEntry[] | undefined;
 
   constructor(
     authService: AuthJwtService,
@@ -203,77 +228,75 @@ export class EpiSupportPartComponent
   private updateThesauri(thesauri: ThesauriSet): void {
     let key = 'epi-support-materials';
     if (this.hasThesaurus(key)) {
-      this.matEntries = thesauri[key].entries;
+      this.matEntries.set(thesauri[key].entries);
     } else {
-      this.matEntries = undefined;
+      this.matEntries.set(undefined);
     }
     key = 'epi-support-object-types';
     if (this.hasThesaurus(key)) {
-      this.objTypeEntries = thesauri[key].entries;
+      this.objTypeEntries.set(thesauri[key].entries);
     } else {
-      this.objTypeEntries = undefined;
+      this.objTypeEntries.set(undefined);
     }
     key = 'epi-support-count-types';
     if (this.hasThesaurus(key)) {
-      this.countTypeEntries = thesauri[key].entries;
+      this.countTypeEntries.set(thesauri[key].entries);
     } else {
-      this.countTypeEntries = undefined;
+      this.countTypeEntries.set(undefined);
     }
     key = 'epi-support-count-tags';
     if (this.hasThesaurus(key)) {
-      this.countTagEntries = thesauri[key].entries;
+      this.countTagEntries.set(thesauri[key].entries);
     } else {
-      this.countTagEntries = undefined;
+      this.countTagEntries.set(undefined);
     }
     key = 'epi-support-features';
     if (this.hasThesaurus(key)) {
-      this.featEntries = thesauri[key].entries;
-      this.featFlags = this.featEntries!.map(entryToFlag) || [];
+      this.featEntries.set(thesauri[key].entries);
     } else {
-      this.featEntries = undefined;
-      this.featFlags = [];
+      this.featEntries.set(undefined);
     }
     key = 'physical-size-units';
     if (this.hasThesaurus(key)) {
-      this.szUnitEntries = thesauri[key].entries;
+      this.szUnitEntries.set(thesauri[key].entries);
     } else {
-      this.szUnitEntries = undefined;
+      this.szUnitEntries.set(undefined);
     }
     key = 'physical-size-tags';
     if (this.hasThesaurus(key)) {
-      this.szTagEntries = thesauri[key].entries;
+      this.szTagEntries.set(thesauri[key].entries);
     } else {
-      this.szTagEntries = undefined;
+      this.szTagEntries.set(undefined);
     }
     key = 'physical-size-dim-tags';
     if (this.hasThesaurus(key)) {
-      this.szDimTagEntries = thesauri[key].entries;
+      this.szDimTagEntries.set(thesauri[key].entries);
     } else {
-      this.szDimTagEntries = undefined;
+      this.szDimTagEntries.set(undefined);
     }
     key = 'epi-support-text-area-types';
     if (this.hasThesaurus(key)) {
-      this.textAreaTypeEntries = thesauri[key].entries;
+      this.textAreaTypeEntries.set(thesauri[key].entries);
     } else {
-      this.textAreaTypeEntries = undefined;
+      this.textAreaTypeEntries.set(undefined);
     }
     key = 'epi-support-text-area-layouts';
     if (this.hasThesaurus(key)) {
-      this.textAreaLayoutEntries = thesauri[key].entries;
+      this.textAreaLayoutEntries.set(thesauri[key].entries);
     } else {
-      this.textAreaLayoutEntries = undefined;
+      this.textAreaLayoutEntries.set(undefined);
     }
     key = 'epi-support-text-area-features';
     if (this.hasThesaurus(key)) {
-      this.textAreaFeatEntries = thesauri[key].entries;
+      this.textAreaFeatEntries.set(thesauri[key].entries);
     } else {
-      this.textAreaFeatEntries = undefined;
+      this.textAreaFeatEntries.set(undefined);
     }
     key = 'epi-support-text-area-frame-types';
     if (this.hasThesaurus(key)) {
-      this.textAreaFrameEntries = thesauri[key].entries;
+      this.textAreaFrameEntries.set(thesauri[key].entries);
     } else {
-      this.textAreaFrameEntries = undefined;
+      this.textAreaFrameEntries.set(undefined);
     }
   }
 
@@ -342,29 +365,29 @@ export class EpiSupportPartComponent
 
   public addArea(): void {
     const entry: EpiTextArea = {
-      type: this.textAreaTypeEntries?.length
-        ? this.textAreaTypeEntries[0].id
+      type: this.textAreaTypeEntries()?.length
+        ? this.textAreaTypeEntries()![0].id
         : '',
     };
     this.editArea(entry, -1);
   }
 
   public editArea(entry: EpiTextArea, index: number): void {
-    this.editedAreaIndex = index;
-    this.editedArea = entry;
+    this.editedAreaIndex.set(index);
+    this.editedArea.set(deepCopy(entry));
   }
 
   public closeArea(): void {
-    this.editedAreaIndex = -1;
-    this.editedArea = undefined;
+    this.editedAreaIndex.set(-1);
+    this.editedArea.set(undefined);
   }
 
   public saveArea(entry: EpiTextArea): void {
     const areas = [...this.areas.value];
-    if (this.editedAreaIndex === -1) {
+    if (this.editedAreaIndex() === -1) {
       areas.push(entry);
     } else {
-      areas.splice(this.editedAreaIndex, 1, entry);
+      areas.splice(this.editedAreaIndex(), 1, entry);
     }
     this.areas.setValue(areas);
     this.areas.markAsDirty();
@@ -377,7 +400,7 @@ export class EpiSupportPartComponent
       .confirm('Confirmation', 'Delete area?')
       .subscribe((yes: boolean | undefined) => {
         if (yes) {
-          if (this.editedAreaIndex === index) {
+          if (this.editedAreaIndex() === index) {
             this.closeArea();
           }
           const entries = [...this.areas.value];

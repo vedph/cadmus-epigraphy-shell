@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import {
   FormControl,
   FormBuilder,
@@ -23,12 +23,11 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { FlatLookupPipe, NgxToolsValidators } from '@myrmidon/ngx-tools';
+import { deepCopy, FlatLookupPipe, NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
-import { ThesauriSet, ThesaurusEntry } from '@myrmidon/cadmus-core';
+import { ThesauriSet, ThesaurusEntry, EditedObject } from '@myrmidon/cadmus-core';
 import {
-  EditedObject,
   ModelEditorComponentBase,
   CloseSaveButtonsComponent,
 } from '@myrmidon/cadmus-ui';
@@ -72,18 +71,18 @@ export class EpiScriptsPartComponent
   extends ModelEditorComponentBase<EpiScriptsPart>
   implements OnInit
 {
-  public editedIndex: number = -1;
-  public edited: EpiScript | undefined;
+  public readonly edited = signal<EpiScript | undefined>(undefined);
+  public readonly editedIndex = signal<number>(-1);
 
   // thesauri entries
   // epi-script-systems
-  public systemEntries?: ThesaurusEntry[];
+  public readonly systemEntries = signal<ThesaurusEntry[] | undefined>(undefined);
   // epi-scripts
-  public scriptEntries?: ThesaurusEntry[];
+  public readonly scriptEntries = signal<ThesaurusEntry[] | undefined>(undefined);
   // epi-script-casings
-  public casingEntries?: ThesaurusEntry[];
+  public readonly casingEntries = signal<ThesaurusEntry[] | undefined>(undefined);
   // epi-script-features
-  public featEntries?: ThesaurusEntry[];
+  public readonly featEntries = signal<ThesaurusEntry[] | undefined>(undefined);
 
   public scripts: FormControl<EpiScript[]>;
 
@@ -114,27 +113,27 @@ export class EpiScriptsPartComponent
   private updateThesauri(thesauri: ThesauriSet): void {
     let key = 'epi-script-systems';
     if (this.hasThesaurus(key)) {
-      this.systemEntries = thesauri[key].entries;
+      this.systemEntries.set(thesauri[key].entries);
     } else {
-      this.systemEntries = undefined;
+      this.systemEntries.set(undefined);
     }
     key = 'epi-scripts';
     if (this.hasThesaurus(key)) {
-      this.scriptEntries = thesauri[key].entries;
+      this.scriptEntries.set(thesauri[key].entries);
     } else {
-      this.scriptEntries = undefined;
+      this.scriptEntries.set(undefined);
     }
     key = 'epi-script-casings';
     if (this.hasThesaurus(key)) {
-      this.casingEntries = thesauri[key].entries;
+      this.casingEntries.set(thesauri[key].entries);
     } else {
-      this.casingEntries = undefined;
+      this.casingEntries.set(undefined);
     }
     key = 'epi-script-features';
     if (this.hasThesaurus(key)) {
-      this.featEntries = thesauri[key].entries;
+      this.featEntries.set(thesauri[key].entries);
     } else {
-      this.featEntries = undefined;
+      this.featEntries.set(undefined);
     }
   }
 
@@ -165,27 +164,27 @@ export class EpiScriptsPartComponent
 
   public addScript(): void {
     const entry: EpiScript = {
-      script: this.scriptEntries?.[0]?.id || '',
+      script: this.scriptEntries()?.[0]?.id || '',
     };
     this.editScript(entry, -1);
   }
 
   public editScript(script: EpiScript, index: number): void {
-    this.editedIndex = index;
-    this.edited = script;
+    this.editedIndex.set(index);
+    this.edited.set(deepCopy(script));
   }
 
   public closeScript(): void {
-    this.editedIndex = -1;
-    this.edited = undefined;
+    this.editedIndex.set(-1);
+    this.edited.set(undefined);
   }
 
   public saveScript(script: EpiScript): void {
     const scripts = [...this.scripts.value];
-    if (this.editedIndex === -1) {
+    if (this.editedIndex() === -1) {
       scripts.push(script);
     } else {
-      scripts.splice(this.editedIndex, 1, script);
+      scripts.splice(this.editedIndex(), 1, script);
     }
     this.scripts.setValue(scripts);
     this.scripts.markAsDirty();
@@ -198,7 +197,7 @@ export class EpiScriptsPartComponent
       .confirm('Confirmation', 'Delete Script?')
       .subscribe((yes: boolean | undefined) => {
         if (yes) {
-          if (this.editedIndex === index) {
+          if (this.editedIndex() === index) {
             this.closeScript();
           }
           const scripts = [...this.scripts.value];

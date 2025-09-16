@@ -14,19 +14,19 @@
         <mat-tab label="general">
           <div class="form-row">
             <!-- material (bound) -->
-            @if (matEntries?.length) {
-              <mat-form-field>
-                <mat-label>material</mat-label>
-                <mat-select [formControl]="material">
-                  @for (e of matEntries; track e.id) {
-                    <mat-option [value]="e.id">{{ e.value }}</mat-option>
-                  }
-                </mat-select>
-                @if ( $any(material).errors?.required && (material.dirty ||
-                  material.touched) ) {
-                  <mat-error>material required</mat-error>
+            @if (matEntries()?.length) {
+            <mat-form-field>
+              <mat-label>material</mat-label>
+              <mat-select [formControl]="material">
+                @for (e of matEntries(); track e.id) {
+                <mat-option [value]="e.id">{{ e.value }}</mat-option>
                 }
-              </mat-form-field>
+              </mat-select>
+              @if ( $any(material).errors?.required && (material.dirty ||
+              material.touched) ) {
+              <mat-error>material required</mat-error>
+              }
+            </mat-form-field>
             }
             <!-- material (free) -->
             @else {
@@ -34,59 +34,57 @@
               <mat-label>material</mat-label>
               <input matInput [formControl]="material" />
               @if ( $any(material).errors?.required && (material.dirty ||
-                material.touched) ) {
-                <mat-error>material required</mat-error>
-                } @if ( $any(material).errors?.maxLength && (material.dirty ||
-                material.touched) ) {
-                <mat-error>material too long</mat-error>
+              material.touched) ) {
+              <mat-error>material required</mat-error>
+              } @if ( $any(material).errors?.maxLength && (material.dirty ||
+              material.touched) ) {
+              <mat-error>material too long</mat-error>
               }
             </mat-form-field>
-          }
-          <!-- objectType (bound) -->
-          @if (objTypeEntries?.length) {
+            }
+            <!-- objectType (bound) -->
+            @if (objTypeEntries()?.length) {
             <mat-form-field>
               <mat-label>object type</mat-label>
               <mat-select [formControl]="objectType">
-                @for (e of objTypeEntries; track e) {
-                  <mat-option [value]="e.id">{{
-                    e.value
-                  }}</mat-option>
+                @for (e of objTypeEntries(); track e) {
+                <mat-option [value]="e.id">{{ e.value }}</mat-option>
                 }
               </mat-select>
               @if ($any(objectType).errors?.required && (objectType.dirty ||
-                objectType.touched)) {
-                <mat-error>objectType required</mat-error>
+              objectType.touched)) {
+              <mat-error>objectType required</mat-error>
               }
             </mat-form-field>
-          } @else {
+            } @else {
             <!-- objectType (free) -->
             <mat-form-field>
               <mat-label>objectType</mat-label>
               <input matInput [formControl]="objectType" />
               @if ($any(objectType).errors?.required && (objectType.dirty ||
-                objectType.touched)) {
-                <mat-error>objectType required</mat-error>
-                } @if ($any(objectType).errors?.maxLength && (objectType.dirty ||
-                objectType.touched)) {
-                <mat-error>objectType too long</mat-error>
+              objectType.touched)) {
+              <mat-error>objectType required</mat-error>
+              } @if ($any(objectType).errors?.maxLength && (objectType.dirty ||
+              objectType.touched)) {
+              <mat-error>objectType too long</mat-error>
               }
             </mat-form-field>
-          }
-          <!-- hasSupportSize -->
-          <mat-checkbox [formControl]="hasSize">size</mat-checkbox>
-        </div>
-        <!-- size -->
-        @if (hasSize.value) {
+            }
+            <!-- hasSupportSize -->
+            <mat-checkbox [formControl]="hasSize">size</mat-checkbox>
+          </div>
+          <!-- size -->
+          @if (hasSize.value) {
           <fieldset>
             <legend>support size</legend>
             <cadmus-mat-physical-size
-              [tagEntries]="szTagEntries"
-              [unitEntries]="szUnitEntries"
-              [dimTagEntries]="szDimTagEntries"
+              [tagEntries]="szTagEntries()"
+              [unitEntries]="szUnitEntries()"
+              [dimTagEntries]="szDimTagEntries()"
               [size]="size.value || undefined"
               (sizeChange)="onSupportSizeChange($event!)"
-              />
-            </fieldset>
+            />
+          </fieldset>
           }
           <!-- note -->
           <div>
@@ -109,149 +107,149 @@
               mat-flat-button
               color="primary"
               (click)="addArea()"
-              >
+            >
               <mat-icon>add_circle</mat-icon> area
             </button>
           </div>
           @if (areas.value.length) {
-            <table>
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>type</th>
-                  <th>size</th>
-                  <th>frame</th>
-                  <th>eid</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (area of areas.value; track area; let i = $index; let first =
-                  $first; let last = $last) {
-                  <tr [class.selected]="area === editedArea">
-                    <td class="fit-width">
-                      <button
-                        type="button"
-                        mat-icon-button
-                        color="primary"
-                        matTooltip="Edit this area"
-                        (click)="editArea(area, i)"
-                        >
-                        <mat-icon class="mat-primary">edit</mat-icon>
-                      </button>
-                      <button
-                        type="button"
-                        mat-icon-button
-                        matTooltip="Move this area up"
-                        [disabled]="first"
-                        (click)="moveAreaUp(i)"
-                        >
-                        <mat-icon>arrow_upward</mat-icon>
-                      </button>
-                      <button
-                        type="button"
-                        mat-icon-button
-                        matTooltip="Move this area down"
-                        [disabled]="last"
-                        (click)="moveAreaDown(i)"
-                        >
-                        <mat-icon>arrow_downward</mat-icon>
-                      </button>
-                      <button
-                        type="button"
-                        mat-icon-button
-                        color="warn"
-                        matTooltip="Delete this area"
-                        (click)="deleteArea(i)"
-                        >
-                        <mat-icon class="mat-warn">remove_circle</mat-icon>
-                      </button>
-                    </td>
-                    <td>
-                      {{
-                      area.type
-                      | flatLookup : textAreaTypeEntries : "id" : "value"
-                      }}
-                    </td>
-                    <td>{{ area.size | physicalSize }}</td>
-                    <td>
-                      {{
-                      area.frameType
-                      | flatLookup : textAreaFrameEntries : "id" : "value"
-                      }}
-                    </td>
-                    <td>{{ area.eid }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-            } @if (editedArea) {
-            <fieldset>
-              <mat-expansion-panel
-                [expanded]="editedArea"
-                [disabled]="!editedArea"
-                >
-                <mat-expansion-panel-header>
-                  <mat-panel-title
-                    >area #{{ editedAreaIndex + 1 }}</mat-panel-title
-                    >
-                  </mat-expansion-panel-header>
-                  <cadmus-epi-text-area
-                    [area]="editedArea"
-                    [featEntries]="textAreaFeatEntries"
-                    [typeEntries]="textAreaTypeEntries"
-                    [frameEntries]="textAreaFrameEntries"
-                    [layoutEntries]="textAreaLayoutEntries"
-                    [szTagEntries]="szTagEntries"
-                    [szUnitEntries]="szUnitEntries"
-                    [szDimTagEntries]="szDimTagEntries"
-                    (areaChange)="saveArea($event!)"
-                    (cancel)="closeArea()"
-                    />
-                  </mat-expansion-panel>
-                </fieldset>
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>type</th>
+                <th>size</th>
+                <th>frame</th>
+                <th>eid</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (area of areas.value; track area; let i = $index; let first =
+              $first; let last = $last) {
+              <tr [class.selected]="i === editedAreaIndex()">
+                <td class="fit-width">
+                  <button
+                    type="button"
+                    mat-icon-button
+                    color="primary"
+                    matTooltip="Edit this area"
+                    (click)="editArea(area, i)"
+                  >
+                    <mat-icon class="mat-primary">edit</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Move this area up"
+                    [disabled]="first"
+                    (click)="moveAreaUp(i)"
+                  >
+                    <mat-icon>arrow_upward</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Move this area down"
+                    [disabled]="last"
+                    (click)="moveAreaDown(i)"
+                  >
+                    <mat-icon>arrow_downward</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    color="warn"
+                    matTooltip="Delete this area"
+                    (click)="deleteArea(i)"
+                  >
+                    <mat-icon class="mat-warn">remove_circle</mat-icon>
+                  </button>
+                </td>
+                <td>
+                  {{
+                    area.type
+                      | flatLookup : textAreaTypeEntries() : "id" : "value"
+                  }}
+                </td>
+                <td>{{ area.size | physicalSize }}</td>
+                <td>
+                  {{
+                    area.frameType
+                      | flatLookup : textAreaFrameEntries() : "id" : "value"
+                  }}
+                </td>
+                <td>{{ area.eid }}</td>
+              </tr>
               }
-            </mat-tab>
+            </tbody>
+          </table>
+          } @if (editedArea()) {
+          <fieldset>
+            <mat-expansion-panel
+              [expanded]="editedArea()"
+              [disabled]="!editedArea()"
+            >
+              <mat-expansion-panel-header>
+                <mat-panel-title
+                  >area #{{ editedAreaIndex() + 1 }}</mat-panel-title
+                >
+              </mat-expansion-panel-header>
+              <cadmus-epi-text-area
+                [area]="editedArea()"
+                [featEntries]="textAreaFeatEntries()"
+                [typeEntries]="textAreaTypeEntries()"
+                [frameEntries]="textAreaFrameEntries()"
+                [layoutEntries]="textAreaLayoutEntries()"
+                [szTagEntries]="szTagEntries()"
+                [szUnitEntries]="szUnitEntries()"
+                [szDimTagEntries]="szDimTagEntries()"
+                (areaChange)="saveArea($event!)"
+                (cancel)="closeArea()"
+              />
+            </mat-expansion-panel>
+          </fieldset>
+          }
+        </mat-tab>
 
-            <!-- FEATURES -->
-            @if (countTypeEntries?.length || featEntries?.length) {
-              <mat-tab label="features">
-                <!-- counts -->
-                @if (countTypeEntries?.length) {
-                  <fieldset>
-                    <legend>counts</legend>
-                    <div>
-                      <cadmus-refs-decorated-counts
-                        [idEntries]="countTypeEntries"
-                        [tagEntries]="countTagEntries"
-                        [counts]="counts.value"
-                        (countsChange)="onCountsChange($event!)"
-                        />
-                      </div>
-                    </fieldset>
-                  }
-                  <!-- features -->
-                  @if (featEntries?.length) {
-                    <fieldset>
-                      <legend>features</legend>
-                      <div>
-                        <cadmus-ui-flag-set
-                          [flags]="featFlags"
-                          [checkedIds]="features.value"
-                          (checkedIdsChange)="onFeatIdsChange($event)"
-                          />
-                        </div>
-                      </fieldset>
-                    }
-                  </mat-tab>
-                }
-              </mat-tab-group>
-            </mat-card-content>
-            <mat-card-actions>
-              <cadmus-close-save-buttons
-                [form]="form"
-                [noSave]="userLevel < 2"
-                (closeRequest)="close()"
-                />
-              </mat-card-actions>
-            </mat-card>
-          </form>
+        <!-- FEATURES -->
+        @if (countTypeEntries()?.length || featEntries()?.length) {
+        <mat-tab label="features">
+          <!-- counts -->
+          @if (countTypeEntries()?.length) {
+          <fieldset>
+            <legend>counts</legend>
+            <div>
+              <cadmus-refs-decorated-counts
+                [idEntries]="countTypeEntries()"
+                [tagEntries]="countTagEntries()"
+                [counts]="counts.value"
+                (countsChange)="onCountsChange($event!)"
+              />
+            </div>
+          </fieldset>
+          }
+          <!-- features -->
+          @if (featEntries()?.length) {
+          <fieldset>
+            <legend>features</legend>
+            <div>
+              <cadmus-ui-flag-set
+                [flags]="featFlags()"
+                [checkedIds]="features.value"
+                (checkedIdsChange)="onFeatIdsChange($event)"
+              />
+            </div>
+          </fieldset>
+          }
+        </mat-tab>
+        }
+      </mat-tab-group>
+    </mat-card-content>
+    <mat-card-actions>
+      <cadmus-close-save-buttons
+        [form]="form"
+        [noSave]="userLevel < 2"
+        (closeRequest)="close()"
+      />
+    </mat-card-actions>
+  </mat-card>
+</form>

@@ -1,7 +1,4 @@
-import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Routes } from '@angular/router';
 
 // cadmus
 import { PendingChangesGuard } from '@myrmidon/cadmus-core';
@@ -31,13 +28,12 @@ import {
   EPI_SUPPORT_FRR_PART_TYPEID,
   EpiSupportFrrPartFeatureComponent,
 } from '@myrmidon/cadmus-part-epigraphy-support-frr';
-import { NgeMonacoModule } from '@cisstech/nge/monaco';
 import {
   EPI_TECHNIQUE_PART_TYPEID,
   EpiTechniquePartFeatureComponent,
 } from '@myrmidon/cadmus-part-epigraphy-technique';
 
-export const RouterModuleForChild = RouterModule.forChild([
+export const CADMUS_PART_EPIGRAPHY_PG_ROUTES: Routes = [
   {
     path: `${EPI_SUPPORT_FRR_PART_TYPEID}/:pid`,
     pathMatch: 'full',
@@ -81,18 +77,4 @@ export const RouterModuleForChild = RouterModule.forChild([
     component: EpiLigaturesFragmentFeatureComponent,
     canDeactivate: [PendingChangesGuard],
   },
-]);
-
-@NgModule({
-  declarations: [],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NgeMonacoModule,
-    // Cadmus
-    RouterModuleForChild,
-  ],
-  exports: [],
-})
-export class CadmusPartEpigraphyPgModule {}
+];

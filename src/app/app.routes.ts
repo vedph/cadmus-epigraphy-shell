@@ -1,12 +1,9 @@
 import { Routes } from '@angular/router';
 
 // myrmidon
-import {
-  AuthJwtAdminGuardService,
-  AuthJwtGuardService,
-} from '@myrmidon/auth-jwt-login';
-import { PendingChangesGuard } from '@myrmidon/cadmus-core';
-import { EditorGuardService } from '@myrmidon/cadmus-api';
+import { jwtAdminGuard, jwtGuard } from '@myrmidon/auth-jwt-login';
+import { pendingChangesGuard } from '@myrmidon/cadmus-core';
+import { editorGuard } from '@myrmidon/cadmus-api';
 
 // locals
 import { HomeComponent } from './home/home.component';
@@ -24,17 +21,17 @@ export const routes: Routes = [
   {
     path: 'reset-password',
     component: ResetPasswordComponent,
-    canActivate: [AuthJwtGuardService],
+    canActivate: [jwtGuard],
   },
   {
     path: 'register-user',
     component: RegisterUserPageComponent,
-    canActivate: [AuthJwtAdminGuardService],
+    canActivate: [jwtAdminGuard],
   },
   {
     path: 'manage-users',
     component: ManageUsersPageComponent,
-    canActivate: [AuthJwtAdminGuardService],
+    canActivate: [jwtAdminGuard],
   },
   // cadmus - items
   {
@@ -43,8 +40,8 @@ export const routes: Routes = [
       import('@myrmidon/cadmus-item-editor').then(
         (module) => module.ItemEditorComponent
       ),
-    canActivate: [AuthJwtGuardService],
-    canDeactivate: [PendingChangesGuard],
+    canActivate: [jwtGuard],
+    canDeactivate: [pendingChangesGuard],
   },
   {
     path: 'items',
@@ -52,7 +49,7 @@ export const routes: Routes = [
       import('@myrmidon/cadmus-item-list').then(
         (module) => module.ItemListComponent
       ),
-    canActivate: [AuthJwtGuardService],
+    canActivate: [jwtGuard],
   },
   {
     path: 'search',
@@ -60,7 +57,7 @@ export const routes: Routes = [
       import('@myrmidon/cadmus-item-search').then(
         (module) => module.ItemSearchComponent
       ),
-    canActivate: [AuthJwtGuardService],
+    canActivate: [jwtGuard],
   },
   // cadmus - thesauri
   {
@@ -69,7 +66,7 @@ export const routes: Routes = [
       import('@myrmidon/cadmus-thesaurus-editor').then(
         (module) => module.ThesaurusEditorFeatureComponent
       ),
-    canActivate: [EditorGuardService],
+    canActivate: [editorGuard],
   },
   {
     path: 'thesauri',
@@ -77,7 +74,7 @@ export const routes: Routes = [
       import('@myrmidon/cadmus-thesaurus-list').then(
         (module) => module.ThesaurusListComponent
       ),
-    canActivate: [EditorGuardService],
+    canActivate: [editorGuard],
   },
   // cadmus - parts
   {
@@ -86,7 +83,7 @@ export const routes: Routes = [
       import('@myrmidon/cadmus-part-general-pg').then(
         (module) => module.CadmusPartGeneralPgModule
       ),
-    canActivate: [AuthJwtGuardService],
+    canActivate: [jwtGuard],
   },
   {
     path: 'items/:iid/philology',
@@ -94,25 +91,25 @@ export const routes: Routes = [
       import('@myrmidon/cadmus-part-philology-pg').then(
         (module) => module.CadmusPartPhilologyPgModule
       ),
-    canActivate: [AuthJwtGuardService],
+    canActivate: [jwtGuard],
   },
   // geography
   {
     path: 'items/:iid/geography',
     loadChildren: () =>
       import('@myrmidon/cadmus-part-geo-pg').then(
-        (module) => module.CadmusPartGeoPgModule
+        (module) => module.CADMUS_PART_GEO_PG_ROUTES
       ),
-    canActivate: [AuthJwtGuardService],
+    canActivate: [jwtGuard],
   },
   // epigraphy
   {
     path: 'items/:iid/epigraphy',
     loadChildren: () =>
       import('@myrmidon/cadmus-part-epigraphy-pg').then(
-        (module) => module.CadmusPartEpigraphyPgModule
+        (module) => module.CADMUS_PART_EPIGRAPHY_PG_ROUTES
       ),
-    canActivate: [AuthJwtGuardService],
+    canActivate: [jwtGuard],
   },
   // cadmus - graph
   {
@@ -121,7 +118,7 @@ export const routes: Routes = [
       import('@myrmidon/cadmus-graph-pg-ex').then(
         (module) => module.GraphEditorExFeatureComponent
       ),
-    canActivate: [AuthJwtGuardService],
+    canActivate: [jwtGuard],
   },
   // cadmus - preview
   {
@@ -130,7 +127,7 @@ export const routes: Routes = [
       import('@myrmidon/cadmus-preview-pg').then(
         (module) => module.CadmusPreviewPgModule
       ),
-    canActivate: [AuthJwtGuardService],
+    canActivate: [jwtGuard],
   },
   // cadmus - flags
   {
@@ -139,7 +136,7 @@ export const routes: Routes = [
       import('@myrmidon/cadmus-flags-pg').then(
         (module) => module.FlagsEditorFeatureComponent
       ),
-    canActivate: [AuthJwtGuardService],
+    canActivate: [jwtGuard],
   },
   // fallback
   { path: '**', component: HomeComponent },
