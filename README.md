@@ -74,7 +74,18 @@ graph LR;
   cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-formula-patterns
 ```
 
-## Setup
+## Current Versions
+
+- cadmus-fr-epigraphy-ligatures: 12.0.0
+- cadmus-part-epigraphy-formula-patterns: 12.0.0
+- cadmus-part-epigraphy-scripts: 13.0.0
+- cadmus-part-epigraphy-signs: 12.0.0
+- cadmus-part-epigraphy-support: 13.0.0
+- cadmus-part-epigraphy-support-frr: 12.0.0
+- cadmus-part-epigraphy-technique: 12.0.0
+- cadmus-part-epigraphy-pg: 14.0.0
+
+## Workspace Setup
 
 Script which created this workspace:
 
@@ -85,15 +96,17 @@ ng add @angular/localize
 
 ng g library @myrmidon/cadmus-fr-epigraphy-ligatures --prefix cadmus --force
 ng g library @myrmidon/cadmus-part-epigraphy-formula-patterns --prefix cadmus --force
-ng g library @myrmidon/cadmus-part-epigraphy-pg --prefix cadmus --force
+ng g library @myrmidon/cadmus-part-epigraphy-scripts --prefix cadmus --force
 ng g library @myrmidon/cadmus-part-epigraphy-signs --prefix cadmus --force
 ng g library @myrmidon/cadmus-part-epigraphy-support --prefix cadmus --force
 ng g library @myrmidon/cadmus-part-epigraphy-support-frr --prefix cadmus --force
 ng g library @myrmidon/cadmus-part-epigraphy-technique --prefix cadmus --force
-ng g library @myrmidon/cadmus-part-epigraphy-scripts --prefix cadmus --force
+ng g library @myrmidon/cadmus-part-epigraphy-pg --prefix cadmus --force
 ```
 
 ## History
+
+### 14.0.0
 
 - 2025-09-16:
   - refactored components for full reactive state.

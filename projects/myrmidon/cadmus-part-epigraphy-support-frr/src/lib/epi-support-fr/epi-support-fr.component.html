@@ -30,22 +30,24 @@
       <!-- location -->
       <fieldset>
         <legend>location</legend>
-        <cadmus-mat-physical-grid-location
-          [allowCustomSize]="true"
-          [allowResize]="true"
-          [presets]="gridPresets()"
-          [location]="location.value || undefined"
-          (locationChange)="onLocationChange($event!)"
-        />
+        <div>
+          <cadmus-mat-physical-grid-location
+            [allowCustomSize]="true"
+            [allowResize]="true"
+            [presets]="gridPresets()"
+            [location]="location.value || undefined"
+            (locationChange)="onLocationChange($event!)"
+          />
+        </div>
 
         <!-- mappings -->
-        <br />
         <div>
           <div>
             <button type="button" mat-flat-button (click)="addMapping()">
               <mat-icon>add</mat-icon> mapping
             </button>
           </div>
+          @if (mappings.value.length) {
           <table>
             <thead>
               <tr>
@@ -65,7 +67,7 @@
                     matTooltip="Remove mapping"
                     (click)="deleteMapping(i)"
                   >
-                    <mat-icon class="mat-warn">clear</mat-icon>
+                    <mat-icon class="mat-warn">remove_circle</mat-icon>
                   </button>
                   <button
                     type="button"
@@ -83,6 +85,7 @@
               }
             </tbody>
           </table>
+          }
 
           <!-- mapping editor -->
           @if (editedMapping()) {

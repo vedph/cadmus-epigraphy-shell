@@ -143,7 +143,7 @@ export class EpiSupportFrComponent {
       columns: fr.columnCount || 0,
       coords: this._gridService.parsePhysicalGridCoords(
         fr.location
-      ) as PhysicalGridCoords[],
+      ) as PhysicalGridCoords[] || [],
     };
     this.location.setValue(location);
     this.mappings.setValue(fr.cellMappings || []);
@@ -161,7 +161,7 @@ export class EpiSupportFrComponent {
       columnCount: this.location.value?.columns || 0,
       location: this.location.value
         ? this._gridService.physicalGridCoordsToString(
-            this.location.value?.coords
+            this.location.value?.coords || []
           )
         : '',
       cellMappings: this.mappings.value?.length
