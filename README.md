@@ -106,6 +106,12 @@ ng g library @myrmidon/cadmus-part-epigraphy-pg --prefix cadmus --force
 
 ## History
 
+### 14.0.1
+
+- 2025-09-19:
+  - updated peer dependencies.
+  - updated packages and routes.
+
 ### 14.0.0
 
 - 2025-09-16:
