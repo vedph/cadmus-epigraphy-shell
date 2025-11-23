@@ -76,14 +76,14 @@ graph LR;
 
 ## Current Versions
 
-- cadmus-fr-epigraphy-ligatures: 12.0.0
-- cadmus-part-epigraphy-formula-patterns: 12.0.0
-- cadmus-part-epigraphy-scripts: 13.0.0
-- cadmus-part-epigraphy-signs: 12.0.0
-- cadmus-part-epigraphy-support: 13.0.0
-- cadmus-part-epigraphy-support-frr: 12.0.0
-- cadmus-part-epigraphy-technique: 12.0.0
-- cadmus-part-epigraphy-pg: 14.0.0
+- cadmus-fr-epigraphy-ligatures: 12.0.1
+- cadmus-part-epigraphy-formula-patterns: 12.0.1
+- cadmus-part-epigraphy-scripts: 13.0.1
+- cadmus-part-epigraphy-signs: 12.0.1
+- cadmus-part-epigraphy-support: 13.0.1
+- cadmus-part-epigraphy-support-frr: 12.0.1
+- cadmus-part-epigraphy-technique: 12.0.1
+- cadmus-part-epigraphy-pg: 14.0.1
 
 ## Workspace Setup
 

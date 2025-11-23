@@ -11,6 +11,7 @@ import { ManageUsersPageComponent } from './manage-users-page/manage-users-page.
 import { RegisterUserPageComponent } from './register-user-page/register-user-page.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { LoginPageComponent } from './login-page/login-page.component';
+import { EditFrameStatsPageComponent } from './edit-frame-stats-page/edit-frame-stats-page.component';
 
 export const routes: Routes = [
   // local home
@@ -32,6 +33,11 @@ export const routes: Routes = [
     path: 'manage-users',
     component: ManageUsersPageComponent,
     canActivate: [jwtAdminGuard],
+  },
+  {
+    path: 'stats',
+    component: EditFrameStatsPageComponent,
+    canActivate: [jwtGuard],
   },
   // cadmus - items
   {
@@ -81,7 +87,7 @@ export const routes: Routes = [
     path: 'items/:iid/general',
     loadChildren: () =>
       import('@myrmidon/cadmus-part-general-pg').then(
-        (module) => module.CADMUS_PART_GENERAL_ROUTES
+        (module) => module.CADMUS_PART_GENERAL_PG_ROUTES
       ),
     canActivate: [jwtGuard],
   },

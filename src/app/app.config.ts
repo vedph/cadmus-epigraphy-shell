@@ -6,7 +6,6 @@ import {
 import { provideRouter, withViewTransitions } from '@angular/router';
 
 import { routes } from './app.routes';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {
   provideHttpClient,
   withInterceptors,
@@ -16,6 +15,7 @@ import {
 import { provideNativeDateAdapter } from '@angular/material/core';
 
 import { NgeMonacoModule } from '@cisstech/nge/monaco';
+import { NgxEchartsModule } from 'ngx-echarts';
 
 import { authJwtInterceptor } from '@myrmidon/auth-jwt-login';
 
@@ -40,13 +40,17 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withViewTransitions()),
-    provideAnimationsAsync(),
     provideHttpClient(
       withInterceptors([authJwtInterceptor]),
       withJsonpSupport()
     ),
     provideNativeDateAdapter(),
     importProvidersFrom(NgeMonacoModule.forRoot({})),
+    importProvidersFrom(
+      NgxEchartsModule.forRoot({
+        echarts: () => import('echarts'),
+      })
+    ),
     // parts and fragments type IDs to editor group keys mappings
     // https://github.com/nrwl/nx/issues/208#issuecomment-384102058
     // inject like: @Inject('partEditorKeys') partEditorKeys: PartEditorKeys
