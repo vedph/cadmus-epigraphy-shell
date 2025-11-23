@@ -106,6 +106,10 @@ ng g library @myrmidon/cadmus-part-epigraphy-pg --prefix cadmus --force
 
 ## History
 
+- 2025-11-23:
+  - ⚠️ upgraded to Angular 21.
+  - migrated to `pnpm`.
+
 ### 14.0.1
 
 - 2025-09-19:
