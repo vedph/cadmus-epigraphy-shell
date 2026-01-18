@@ -26,7 +26,7 @@ import { ThesaurusEntry } from '@myrmidon/cadmus-core';
 import {
   renderLabelFromLastColon,
   ThesaurusTreeComponent,
-} from '@myrmidon/cadmus-ui';
+} from '@myrmidon/cadmus-thesaurus-store';
 
 import { EpiFormulaToken } from '../epi-formula-patterns-part';
 

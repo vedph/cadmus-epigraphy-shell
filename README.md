@@ -77,7 +77,7 @@ graph LR;
 ## Current Versions
 
 - cadmus-fr-epigraphy-ligatures: 12.0.1
-- cadmus-part-epigraphy-formula-patterns: 12.0.1
+- cadmus-part-epigraphy-formula-patterns: 13.0.0
 - cadmus-part-epigraphy-scripts: 13.0.1
 - cadmus-part-epigraphy-signs: 12.0.1
 - cadmus-part-epigraphy-support: 13.0.1
@@ -106,6 +106,9 @@ ng g library @myrmidon/cadmus-part-epigraphy-pg --prefix cadmus --force
 
 ## History
 
+- 2026-01-18:
+  - updated Angular and packages.
+  - updated `@myrmidon/cadmus-part-epigraphy-formula-patterns` to use new `@myrmidon/cadmus-thesaurus-store`.
 - 2025-11-23:
   - ⚠️ upgraded to Angular 21.
   - migrated to `pnpm`.
