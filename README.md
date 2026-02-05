@@ -106,6 +106,7 @@ ng g library @myrmidon/cadmus-part-epigraphy-pg --prefix cadmus --force
 
 ## History
 
+- 2026-02-05: updated Angular and packages.
 - 2026-01-18:
   - updated Angular and packages.
   - updated `@myrmidon/cadmus-part-epigraphy-formula-patterns` to use new `@myrmidon/cadmus-thesaurus-store`.
