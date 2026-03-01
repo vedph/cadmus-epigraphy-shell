@@ -106,6 +106,7 @@ ng g library @myrmidon/cadmus-part-epigraphy-pg --prefix cadmus --force
 
 ## History
 
+- 2026-03-01: updated Angular and packages.
 - 2026-02-25:
   - updated Angular and packages.
   - ⚠️ replaced Leaflet with MapLibre.

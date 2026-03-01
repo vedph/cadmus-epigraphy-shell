@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, OnDestroy, signal } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Thesaurus, ThesaurusEntry } from '@myrmidon/cadmus-core';
 import { Router, RouterModule } from '@angular/router';
 import { take } from 'rxjs/operators';
@@ -33,6 +33,7 @@ import { GeoNamesRefLookupService } from '@myrmidon/cadmus-refs-geonames-lookup'
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit, OnDestroy {
   private _authSub?: Subscription;
@@ -112,7 +113,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   public logout(): void {
-    if (!this.logged) {
+    if (!this.logged()) {
       return;
     }
     this._authService
