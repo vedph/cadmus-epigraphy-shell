@@ -1,12 +1,12 @@
-<cadmus-current-item-bar/>
+<cadmus-current-item-bar />
 <div class="base-text">
   <cadmus-decorated-token-text
-    [baseText]="data?.baseText || ''"
-    [locations]="frLoc ? [frLoc] : []"
+    [baseText]="data()?.baseText || ''"
+    [locations]="frLoc() ? [frLoc()!] : []"
   />
 </div>
 <cadmus-epi-ligatures-fragment
-  [data]="$any(data)"
+  [data]="$any(data())"
   (dataChange)="save($event!.value!)"
   (editorClose)="close()"
   (dirtyChange)="onDirtyChange($event)"

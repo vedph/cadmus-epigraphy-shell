@@ -1,4 +1,9 @@
-import { Component, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 import {
   FormControl,
@@ -56,6 +61,7 @@ import { EpiFormulaTokenPipe } from '../epi-formula-token.pipe';
   selector: 'cadmus-epi-formula-patterns-part',
   templateUrl: './epi-formula-patterns-part.component.html',
   styleUrls: ['./epi-formula-patterns-part.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
     ReactiveFormsModule,
@@ -90,7 +96,7 @@ export class EpiFormulaPatternsPartComponent
   public readonly tagEntries = signal<ThesaurusEntry[] | undefined>(undefined);
   // epi-formula-token-tags
   public readonly tokTagEntries = signal<ThesaurusEntry[] | undefined>(
-    undefined
+    undefined,
   );
 
   public patterns: FormControl<EpiFormulaPattern[]>;
@@ -98,7 +104,7 @@ export class EpiFormulaPatternsPartComponent
   constructor(
     authService: AuthJwtService,
     formBuilder: FormBuilder,
-    private _dialogService: DialogService
+    private _dialogService: DialogService,
   ) {
     super(authService, formBuilder);
     // form
@@ -150,7 +156,7 @@ export class EpiFormulaPatternsPartComponent
   }
 
   protected override onDataSet(
-    data?: EditedObject<EpiFormulaPatternsPart>
+    data?: EditedObject<EpiFormulaPatternsPart>,
   ): void {
     // thesauri
     if (data?.thesauri) {
@@ -163,7 +169,7 @@ export class EpiFormulaPatternsPartComponent
 
   protected getValue(): EpiFormulaPatternsPart {
     let part = this.getEditedPart(
-      EPI_FORMULA_PATTERNS_PART_TYPEID
+      EPI_FORMULA_PATTERNS_PART_TYPEID,
     ) as EpiFormulaPatternsPart;
     part.patterns = this.patterns.value || [];
     return part;

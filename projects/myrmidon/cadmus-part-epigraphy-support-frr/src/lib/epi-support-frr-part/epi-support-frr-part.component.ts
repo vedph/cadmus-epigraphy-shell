@@ -1,4 +1,9 @@
-import { Component, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  signal,
+} from '@angular/core';
 import {
   FormControl,
   FormBuilder,
@@ -16,6 +21,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+
+import { take } from 'rxjs';
 
 import { deepCopy, NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
@@ -44,6 +51,7 @@ import { EpiSupportFrComponent } from '../epi-support-fr/epi-support-fr.componen
  */
 @Component({
   selector: 'cadmus-epi-support-frr-part',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     CommonModule,
@@ -76,7 +84,7 @@ export class EpiSupportFrrPartComponent
   public readonly tagEntries = signal<ThesaurusEntry[] | undefined>(undefined);
   // physical-size-dim-tags
   public readonly dimTagEntries = signal<ThesaurusEntry[] | undefined>(
-    undefined
+    undefined,
   );
 
   public fragments: FormControl<EpiSupportFr[]>;
@@ -84,7 +92,7 @@ export class EpiSupportFrrPartComponent
   constructor(
     authService: AuthJwtService,
     formBuilder: FormBuilder,
-    private _dialogService: DialogService
+    private _dialogService: DialogService,
   ) {
     super(authService, formBuilder);
     // form
@@ -149,7 +157,7 @@ export class EpiSupportFrrPartComponent
 
   protected getValue(): EpiSupportFrrPart {
     let part = this.getEditedPart(
-      EPI_SUPPORT_FRR_PART_TYPEID
+      EPI_SUPPORT_FRR_PART_TYPEID,
     ) as EpiSupportFrrPart;
     part.fragments = this.fragments.value || [];
     return part;
@@ -195,6 +203,7 @@ export class EpiSupportFrrPartComponent
   public deleteFr(index: number): void {
     this._dialogService
       .confirm('Confirmation', 'Delete fragment?')
+      .pipe(take(1))
       .subscribe((yes: boolean | undefined) => {
         if (yes) {
           if (this.editedIndex() === index) {

@@ -1,4 +1,12 @@
-import { Component, effect, input, model, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  input,
+  model,
+  output,
+  signal,
+} from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -40,6 +48,7 @@ import { EpiFormulaTokenPipe } from '../epi-formula-token.pipe';
   selector: 'cadmus-epi-formula-pattern',
   templateUrl: './epi-formula-pattern.component.html',
   styleUrls: ['./epi-formula-pattern.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
     ReactiveFormsModule,
@@ -83,7 +92,10 @@ export class EpiFormulaPatternComponent {
   public tokens: FormControl<EpiFormulaToken[]>;
   public form: FormGroup;
 
-  constructor(formBuilder: FormBuilder, private _dialogService: DialogService) {
+  constructor(
+    formBuilder: FormBuilder,
+    private _dialogService: DialogService,
+  ) {
     // form
     this.eid = formBuilder.control(null, Validators.maxLength(500));
     this.language = formBuilder.control('', {

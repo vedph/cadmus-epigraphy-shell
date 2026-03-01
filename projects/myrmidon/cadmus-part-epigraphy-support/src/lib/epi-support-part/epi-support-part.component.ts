@@ -1,4 +1,4 @@
-import { Component, computed, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, OnInit, signal } from '@angular/core';
 import {
   FormControl,
   FormBuilder,
@@ -27,6 +27,8 @@ import { TitleCasePipe } from '@angular/common';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonModule } from '@angular/material/button';
+
+import { take } from 'rxjs';
 
 import { deepCopy, FlatLookupPipe } from '@myrmidon/ngx-tools';
 import { AuthJwtService } from '@myrmidon/auth-jwt-login';
@@ -78,6 +80,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   selector: 'cadmus-epi-support-part',
   templateUrl: './epi-support-part.component.html',
   styleUrls: ['./epi-support-part.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
     ReactiveFormsModule,
@@ -398,6 +401,7 @@ export class EpiSupportPartComponent
   public deleteArea(index: number): void {
     this._dialogService
       .confirm('Confirmation', 'Delete area?')
+      .pipe(take(1))
       .subscribe((yes: boolean | undefined) => {
         if (yes) {
           if (this.editedAreaIndex() === index) {

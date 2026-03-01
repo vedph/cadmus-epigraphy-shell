@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -10,6 +10,7 @@ import { EpiTechniquePartComponent } from '../epi-technique-part/epi-technique-p
 
 @Component({
   selector: 'cadmus-epi-technique-part-feature',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CurrentItemBarComponent, EpiTechniquePartComponent],
   templateUrl: './epi-technique-part-feature.component.html',
   styleUrl: './epi-technique-part-feature.component.scss',
@@ -24,7 +25,7 @@ export class EpiTechniquePartFeatureComponent
     snackbar: MatSnackBar,
     itemService: ItemService,
     thesaurusService: ThesaurusService,
-    editorService: PartEditorService
+    editorService: PartEditorService,
   ) {
     super(
       router,
@@ -32,7 +33,7 @@ export class EpiTechniquePartFeatureComponent
       snackbar,
       itemService,
       thesaurusService,
-      editorService
+      editorService,
     );
   }
 

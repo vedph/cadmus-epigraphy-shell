@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -12,6 +12,7 @@ import { EpiScriptsPartComponent } from '../epi-scripts-part/epi-scripts-part.co
   selector: 'cadmus-epi-scripts-part-feature',
   templateUrl: './epi-scripts-part-feature.component.html',
   styleUrl: './epi-scripts-part-feature.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CurrentItemBarComponent, EpiScriptsPartComponent],
 })
 export class EpiScriptsPartFeatureComponent

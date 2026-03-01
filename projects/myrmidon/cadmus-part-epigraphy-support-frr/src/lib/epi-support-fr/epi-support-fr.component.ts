@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -41,6 +42,7 @@ import { EpiSupportFrCellMappingComponent } from '../epi-support-fr-cell-mapping
 
 @Component({
   selector: 'cadmus-epi-support-fr',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
     MatButtonModule,
@@ -72,12 +74,12 @@ export class EpiSupportFrComponent {
   public readonly fragmentCancel = output();
 
   public readonly editedMapping = signal<EpiSupportFrCellMapping | undefined>(
-    undefined
+    undefined,
   );
   public readonly editedIndex = signal<number>(-1);
 
   public readonly gridPresets = computed<string[] | undefined>(() =>
-    this.gridPresetEntries()?.map((e) => e.value)
+    this.gridPresetEntries()?.map((e) => e.value),
   );
 
   public id: FormControl<string>;
@@ -91,7 +93,7 @@ export class EpiSupportFrComponent {
 
   constructor(
     formBuilder: FormBuilder,
-    private _gridService: PhysicalGridCoordsService
+    private _gridService: PhysicalGridCoordsService,
   ) {
     // form
     this.id = formBuilder.control<string>('', {
@@ -141,9 +143,10 @@ export class EpiSupportFrComponent {
     const location: PhysicalGridLocation = {
       rows: fr.rowCount || 0,
       columns: fr.columnCount || 0,
-      coords: this._gridService.parsePhysicalGridCoords(
-        fr.location
-      ) as PhysicalGridCoords[] || [],
+      coords:
+        (this._gridService.parsePhysicalGridCoords(
+          fr.location,
+        ) as PhysicalGridCoords[]) || [],
     };
     this.location.setValue(location);
     this.mappings.setValue(fr.cellMappings || []);
@@ -161,7 +164,7 @@ export class EpiSupportFrComponent {
       columnCount: this.location.value?.columns || 0,
       location: this.location.value
         ? this._gridService.physicalGridCoordsToString(
-            this.location.value?.coords || []
+            this.location.value?.coords || [],
           )
         : '',
       cellMappings: this.mappings.value?.length

@@ -1,4 +1,10 @@
-import { Component, computed, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 import {
   FormBuilder,
@@ -52,6 +58,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   selector: 'cadmus-epi-ligatures-fragment',
   templateUrl: './epi-ligatures-fragment.component.html',
   styleUrls: ['./epi-ligatures-fragment.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
     ReactiveFormsModule,
@@ -84,7 +91,7 @@ export class EpiLigaturesFragmentComponent
   public readonly typeEntries = signal<ThesaurusEntry[] | undefined>(undefined);
 
   public readonly typeFlags = computed<Flag[]>(
-    () => this.typeEntries()?.map(entryToFlag) ?? []
+    () => this.typeEntries()?.map(entryToFlag) ?? [],
   );
 
   constructor(authService: AuthJwtService, formBuilder: FormBuilder) {
@@ -141,7 +148,7 @@ export class EpiLigaturesFragmentComponent
   }
 
   protected override onDataSet(
-    data?: EditedObject<EpiLigaturesFragment>
+    data?: EditedObject<EpiLigaturesFragment>,
   ): void {
     // thesauri
     if (data?.thesauri) {

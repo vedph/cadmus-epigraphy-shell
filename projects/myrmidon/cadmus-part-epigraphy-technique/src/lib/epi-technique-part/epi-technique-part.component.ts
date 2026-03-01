@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  OnInit,
+  signal,
+} from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -53,6 +59,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
  */
 @Component({
   selector: 'cadmus-epi-technique-part',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -85,7 +92,7 @@ export class EpiTechniquePartComponent
 
   // epi-technique-groove-types
   public readonly grooveTypeEntries = signal<ThesaurusEntry[] | undefined>(
-    undefined
+    undefined,
   );
   // epi-technique-types
   public readonly techEntries = signal<ThesaurusEntry[] | undefined>(undefined);
@@ -185,7 +192,7 @@ export class EpiTechniquePartComponent
 
   protected getValue(): EpiTechniquePart {
     let part = this.getEditedPart(
-      EPI_TECHNIQUE_PART_TYPEID
+      EPI_TECHNIQUE_PART_TYPEID,
     ) as EpiTechniquePart;
 
     part.grooveType = this.grooveType.value?.trim() || undefined;

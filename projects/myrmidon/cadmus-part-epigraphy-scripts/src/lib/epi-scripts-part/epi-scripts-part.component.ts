@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import {
   FormControl,
   FormBuilder,
@@ -22,6 +22,8 @@ import { MatIcon } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+
+import { take } from 'rxjs';
 
 import { deepCopy, FlatLookupPipe, NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
@@ -48,6 +50,7 @@ import { EpiScriptComponent } from '../epi-script/epi-script.component';
   selector: 'cadmus-epi-scripts-part',
   templateUrl: './epi-scripts-part.component.html',
   styleUrl: './epi-scripts-part.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
     ReactiveFormsModule,
@@ -195,6 +198,7 @@ export class EpiScriptsPartComponent
   public deleteScript(index: number): void {
     this._dialogService
       .confirm('Confirmation', 'Delete Script?')
+      .pipe(take(1))
       .subscribe((yes: boolean | undefined) => {
         if (yes) {
           if (this.editedIndex() === index) {

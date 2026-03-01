@@ -20,74 +20,80 @@
         </button>
       </div>
       @if (patterns.value.length) {
-      <table>
-        <tbody>
-          @for ( pattern of patterns.value; track pattern; let i = $index; let
-          first = $first; let last = $last) {
-          <tr [class.selected]="i === editedIndex()">
-            <td class="fit-width">
-              <button
-                type="button"
-                mat-icon-button
-                matTooltip="Edit this pattern"
-                (click)="editPattern(pattern, i)"
-              >
-                <mat-icon class="mat-primary">edit</mat-icon>
-              </button>
-              <button
-                type="button"
-                mat-icon-button
-                matTooltip="Move this pattern up"
-                [disabled]="first"
-                (click)="movePatternUp(i)"
-              >
-                <mat-icon>arrow_upward</mat-icon>
-              </button>
-              <button
-                type="button"
-                mat-icon-button
-                matTooltip="Move this pattern down"
-                [disabled]="last"
-                (click)="movePatternDown(i)"
-              >
-                <mat-icon>arrow_downward</mat-icon>
-              </button>
-              <button
-                type="button"
-                mat-icon-button
-                matTooltip="Delete this pattern"
-                (click)="deletePattern(i)"
-              >
-                <mat-icon class="mat-warn">remove_circle</mat-icon>
-              </button>
-            </td>
-            <td>
-              <ul>
-                @for (t of pattern.tokens; track t) {
-                <li>
-                  {{ t | epiFormulaToken }}
-                </li>
-                }
-              </ul>
-            </td>
-          </tr>
-          }
-        </tbody>
-      </table>
-      } @if (edited()) {
-      <mat-expansion-panel [disabled]="!edited()" [expanded]="edited()">
-        <mat-expansion-panel-header
-          >Pattern #{{ editedIndex() }}</mat-expansion-panel-header
-        >
-        <cadmus-epi-formula-pattern
-          [langEntries]="langEntries()"
-          [tagEntries]="tagEntries()"
-          [tokTagEntries]="tokTagEntries()"
-          [pattern]="edited()"
-          (editorClose)="closePattern()"
-          (patternChange)="savePattern($event!)"
-        />
-      </mat-expansion-panel>
+        <table>
+          <tbody>
+            @for (
+              pattern of patterns.value;
+              track pattern;
+              let i = $index;
+              let first = $first;
+              let last = $last
+            ) {
+              <tr [class.selected]="i === editedIndex()">
+                <td class="fit-width">
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Edit this pattern"
+                    (click)="editPattern(pattern, i)"
+                  >
+                    <mat-icon class="mat-primary">edit</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Move this pattern up"
+                    [disabled]="first"
+                    (click)="movePatternUp(i)"
+                  >
+                    <mat-icon>arrow_upward</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Move this pattern down"
+                    [disabled]="last"
+                    (click)="movePatternDown(i)"
+                  >
+                    <mat-icon>arrow_downward</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Delete this pattern"
+                    (click)="deletePattern(i)"
+                  >
+                    <mat-icon class="mat-warn">remove_circle</mat-icon>
+                  </button>
+                </td>
+                <td>
+                  <ul>
+                    @for (t of pattern.tokens; track t) {
+                      <li>
+                        {{ t | epiFormulaToken }}
+                      </li>
+                    }
+                  </ul>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+      @if (edited()) {
+        <mat-expansion-panel [disabled]="!edited()" [expanded]="edited()">
+          <mat-expansion-panel-header
+            >Pattern #{{ editedIndex() }}</mat-expansion-panel-header
+          >
+          <cadmus-epi-formula-pattern
+            [langEntries]="langEntries()"
+            [tagEntries]="tagEntries()"
+            [tokTagEntries]="tokTagEntries()"
+            [pattern]="edited()"
+            (editorClose)="closePattern()"
+            (patternChange)="savePattern($event!)"
+          />
+        </mat-expansion-panel>
       }
     </mat-card-content>
     <mat-card-actions>

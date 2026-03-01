@@ -7,9 +7,10 @@
           <mat-label>ID</mat-label>
           <input matInput [formControl]="id" />
           @if ($any(id).errors?.required && (id.dirty || id.touched)) {
-          <mat-error>ID required</mat-error>
-          } @if ($any(id).errors?.maxLength && (id.dirty || id.touched)) {
-          <mat-error>ID too long</mat-error>
+            <mat-error>ID required</mat-error>
+          }
+          @if ($any(id).errors?.maxLength && (id.dirty || id.touched)) {
+            <mat-error>ID too long</mat-error>
           }
         </mat-form-field>
 
@@ -17,9 +18,11 @@
         <mat-form-field>
           <mat-label>shelfmark</mat-label>
           <input matInput [formControl]="shelfmark" />
-          @if ($any(shelfmark).errors?.maxLength && (shelfmark.dirty ||
-          shelfmark.touched)) {
-          <mat-error>shelfmark too long</mat-error>
+          @if (
+            $any(shelfmark).errors?.maxLength &&
+            (shelfmark.dirty || shelfmark.touched)
+          ) {
+            <mat-error>shelfmark too long</mat-error>
           }
         </mat-form-field>
 
@@ -48,63 +51,63 @@
             </button>
           </div>
           @if (mappings.value.length) {
-          <table>
-            <thead>
-              <tr>
-                <th></th>
-                <th>location</th>
-                <th>head</th>
-                <th>tail</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (m of mappings.value; track m; let i = $index) {
-              <tr [class.selected]="i === editedIndex()">
-                <td class="fit-width">
-                  <button
-                    type="button"
-                    mat-icon-button
-                    matTooltip="Remove mapping"
-                    (click)="deleteMapping(i)"
-                  >
-                    <mat-icon class="mat-warn">remove_circle</mat-icon>
-                  </button>
-                  <button
-                    type="button"
-                    mat-icon-button
-                    matTooltip="Edit mapping"
-                    (click)="editMapping(i)"
-                  >
-                    <mat-icon class="mat-primary">edit</mat-icon>
-                  </button>
-                </td>
-                <td>{{ m.location }}</td>
-                <td>{{ m.headText }}</td>
-                <td>{{ m.tailText }}</td>
-              </tr>
-              }
-            </tbody>
-          </table>
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>location</th>
+                  <th>head</th>
+                  <th>tail</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (m of mappings.value; track m; let i = $index) {
+                  <tr [class.selected]="i === editedIndex()">
+                    <td class="fit-width">
+                      <button
+                        type="button"
+                        mat-icon-button
+                        matTooltip="Remove mapping"
+                        (click)="deleteMapping(i)"
+                      >
+                        <mat-icon class="mat-warn">remove_circle</mat-icon>
+                      </button>
+                      <button
+                        type="button"
+                        mat-icon-button
+                        matTooltip="Edit mapping"
+                        (click)="editMapping(i)"
+                      >
+                        <mat-icon class="mat-primary">edit</mat-icon>
+                      </button>
+                    </td>
+                    <td>{{ m.location }}</td>
+                    <td>{{ m.headText }}</td>
+                    <td>{{ m.tailText }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
           }
 
           <!-- mapping editor -->
           @if (editedMapping()) {
-          <mat-expansion-panel
-            [disabled]="!editedMapping()"
-            [expanded]="editedMapping()"
-          >
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                mapping # {{ editedIndex() + 1 }}</mat-panel-title
-              >
-            </mat-expansion-panel-header>
+            <mat-expansion-panel
+              [disabled]="!editedMapping()"
+              [expanded]="editedMapping()"
+            >
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  mapping # {{ editedIndex() + 1 }}</mat-panel-title
+                >
+              </mat-expansion-panel-header>
 
-            <cadmus-epi-support-fr-cell-mapping
-              [mapping]="editedMapping()"
-              (mappingCancel)="closeMapping()"
-              (mappingChange)="onMappingChange($event!)"
-            />
-          </mat-expansion-panel>
+              <cadmus-epi-support-fr-cell-mapping
+                [mapping]="editedMapping()"
+                (mappingCancel)="closeMapping()"
+                (mappingChange)="onMappingChange($event!)"
+              />
+            </mat-expansion-panel>
           }
         </div>
       </fieldset>

@@ -1,5 +1,6 @@
 
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -42,6 +43,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
 
 @Component({
   selector: 'cadmus-epi-text-area',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
     MatButtonModule,

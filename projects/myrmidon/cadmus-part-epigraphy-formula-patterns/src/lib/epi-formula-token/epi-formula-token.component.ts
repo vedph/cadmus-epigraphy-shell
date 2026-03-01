@@ -1,4 +1,11 @@
-import { Component, effect, input, model, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  input,
+  model,
+  output,
+} from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -37,6 +44,7 @@ import { EpiFormulaToken } from '../epi-formula-patterns-part';
   selector: 'cadmus-epi-formula-token',
   templateUrl: './epi-formula-token.component.html',
   styleUrls: ['./epi-formula-token.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
     ReactiveFormsModule,

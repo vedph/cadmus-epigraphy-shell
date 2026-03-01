@@ -1,4 +1,10 @@
-import { Component, effect, model, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  model,
+  output,
+} from '@angular/core';
 
 import {
   FormBuilder,
@@ -18,14 +24,15 @@ import { EpiSupportFrCellMapping } from '../epi-support-frr-part';
 
 @Component({
   selector: 'cadmus-epi-support-fr-cell-mapping',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatTooltipModule
-],
+    MatTooltipModule,
+  ],
   templateUrl: './epi-support-fr-cell-mapping.component.html',
   styleUrl: './epi-support-fr-cell-mapping.component.scss',
 })
@@ -62,6 +69,7 @@ export class EpiSupportFrCellMappingComponent {
       validators: Validators.maxLength(100),
     });
     this.form = formBuilder.group({
+      location: this.location,
       headText: this.headText,
       headTextLoc: this.headTextLoc,
       tailText: this.tailText,

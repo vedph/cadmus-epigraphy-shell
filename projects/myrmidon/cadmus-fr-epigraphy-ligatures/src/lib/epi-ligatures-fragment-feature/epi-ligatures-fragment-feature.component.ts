@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -16,6 +16,7 @@ import { EpiLigaturesFragmentComponent } from '../epi-ligatures-fragment/epi-lig
   selector: 'cadmus-epi-ligatures-fragment-feature',
   templateUrl: './epi-ligatures-fragment-feature.component.html',
   styleUrls: ['./epi-ligatures-fragment-feature.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CurrentItemBarComponent,
     DecoratedTokenTextComponent,
@@ -31,7 +32,7 @@ export class EpiLigaturesFragmentFeatureComponent
     route: ActivatedRoute,
     snackbar: MatSnackBar,
     editorService: FragmentEditorService,
-    libraryRouteService: LibraryRouteService
+    libraryRouteService: LibraryRouteService,
   ) {
     super(router, route, snackbar, editorService, libraryRouteService);
   }

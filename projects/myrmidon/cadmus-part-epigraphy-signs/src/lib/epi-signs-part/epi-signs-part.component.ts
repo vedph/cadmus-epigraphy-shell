@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import {
   FormControl,
   FormBuilder,
@@ -16,6 +16,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+
+import { take } from 'rxjs';
 
 import { deepCopy, EllipsisPipe, NgxToolsValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
@@ -44,6 +46,7 @@ import { EpiSignComponent } from '../epi-sign/epi-sign.component';
  */
 @Component({
   selector: 'cadmus-epi-signs-part',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     CommonModule,
@@ -67,8 +70,8 @@ export class EpiSignsPartComponent
   extends ModelEditorComponentBase<EpiSignsPart>
   implements OnInit
 {
-  public edited = signal<EpiSign | undefined>(undefined);
-  public editedIndex = signal<number>(-1);
+  public readonly edited = signal<EpiSign | undefined>(undefined);
+  public readonly editedIndex = signal<number>(-1);
 
   // epi-signs-measure-names
   public readonly measNameEntries = signal<ThesaurusEntry[] | undefined>(undefined);
@@ -200,6 +203,7 @@ export class EpiSignsPartComponent
   public deleteSign(index: number): void {
     this._dialogService
       .confirm('Confirmation', 'Delete sign?')
+      .pipe(take(1))
       .subscribe((yes: boolean | undefined) => {
         if (yes) {
           if (this.editedIndex() === index) {

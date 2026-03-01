@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -12,6 +12,7 @@ import { EpiFormulaPatternsPartComponent } from '../epi-formula-patterns-part/ep
   selector: 'cadmus-epi-formula-patterns-part-feature',
   templateUrl: './epi-formula-patterns-part-feature.component.html',
   styleUrls: ['./epi-formula-patterns-part-feature.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CurrentItemBarComponent, EpiFormulaPatternsPartComponent],
 })
 export class EpiFormulaPatternsPartFeatureComponent
@@ -24,7 +25,7 @@ export class EpiFormulaPatternsPartFeatureComponent
     snackbar: MatSnackBar,
     itemService: ItemService,
     thesaurusService: ThesaurusService,
-    editorService: PartEditorService
+    editorService: PartEditorService,
   ) {
     super(
       router,
@@ -32,7 +33,7 @@ export class EpiFormulaPatternsPartFeatureComponent
       snackbar,
       itemService,
       thesaurusService,
-      editorService
+      editorService,
     );
   }
 
