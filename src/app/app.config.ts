@@ -1,7 +1,7 @@
 import {
   ApplicationConfig,
   importProvidersFrom,
-  provideZoneChangeDetection,
+  provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
 
@@ -38,18 +38,18 @@ import { PART_EDITOR_KEYS } from './part-editor-keys';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZonelessChangeDetection(),
     provideRouter(routes, withViewTransitions()),
     provideHttpClient(
       withInterceptors([authJwtInterceptor]),
-      withJsonpSupport()
+      withJsonpSupport(),
     ),
     provideNativeDateAdapter(),
     importProvidersFrom(NgeMonacoModule.forRoot({})),
     importProvidersFrom(
       NgxEchartsModule.forRoot({
         echarts: () => import('echarts'),
-      })
+      }),
     ),
     // parts and fragments type IDs to editor group keys mappings
     // https://github.com/nrwl/nx/issues/208#issuecomment-384102058
@@ -85,7 +85,7 @@ export const appConfig: ApplicationConfig = {
         mdBoldCtePlugin: MdBoldCtePlugin,
         mdItalicCtePlugin: MdItalicCtePlugin,
         txtEmojiCtePlugin: TxtEmojiCtePlugin,
-        mdLinkCtePlugin: MdLinkCtePlugin
+        mdLinkCtePlugin: MdLinkCtePlugin,
       ) => {
         return {
           plugins: [

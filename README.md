@@ -106,6 +106,8 @@ ng g library @myrmidon/cadmus-part-epigraphy-pg --prefix cadmus --force
 
 ## History
 
+- 2026-03-17: ⚠️ migrated shell app to zoneless.
+
 ### 14.1.0
 
 - 2026-03-01:
