@@ -7,7 +7,7 @@ import {
   EditFragmentFeatureBase,
   FragmentEditorService,
 } from '@myrmidon/cadmus-state';
-import { CurrentItemBarComponent } from '@myrmidon/cadmus-ui-pg';
+import { CurrentItemBarComponent } from '@myrmidon/cadmus-item-editor';
 import { DecoratedTokenTextComponent } from '@myrmidon/cadmus-ui';
 
 import { EpiLigaturesFragmentComponent } from '../epi-ligatures-fragment/epi-ligatures-fragment.component';
