@@ -19,6 +19,7 @@ import {
 } from '@myrmidon/cadmus-refs-lookup';
 import { ViafRefLookupService } from '@myrmidon/cadmus-refs-viaf-lookup';
 import { GeoNamesRefLookupService } from '@myrmidon/cadmus-refs-geonames-lookup';
+import { ThemeToggleComponent } from '@myrmidon/ngx-mat-tools';
 
 @Component({
   selector: 'app-root',
@@ -30,6 +31,7 @@ import { GeoNamesRefLookupService } from '@myrmidon/cadmus-refs-geonames-lookup'
     MatTooltipModule,
     MatToolbarModule,
     GravatarPipe,
+    ThemeToggleComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],

@@ -1,6 +1,6 @@
 {
   "name": "@myrmidon/cadmus-part-epigraphy-scripts",
-  "version": "13.1.0",
+  "version": "13.1.1",
   "description": "Cadmus - epigraphic scripts components.",
   "keywords": [
     "Cadmus",
@@ -18,9 +18,9 @@
     "@angular/common": "^20.0.0 || ^21.0.0",
     "@angular/core": "^20.0.0 || ^21.0.0",
     "@angular/material": "^20.0.0 || ^21.0.0",
-    "@myrmidon/cadmus-mat-physical-size": "^9.0.11",
-    "@myrmidon/cadmus-refs-decorated-counts": "^9.0.2",
-    "@myrmidon/cadmus-ui-flag-set": "^9.0.3",
+    "@myrmidon/cadmus-mat-physical-size": "^9.0.12",
+    "@myrmidon/cadmus-refs-decorated-counts": "^9.0.3",
+    "@myrmidon/cadmus-ui-flag-set": "^9.0.4",
     "@myrmidon/cadmus-core": "^12.0.3",
     "@myrmidon/cadmus-state": "^15.0.0",
     "@myrmidon/cadmus-ui": "^16.1.0",
