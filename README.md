@@ -106,7 +106,9 @@ ng g library @myrmidon/cadmus-part-epigraphy-pg --prefix cadmus --force
 
 ## History
 
-- 2026-03-18: migrated shell app to M3 themes and added dark theme support to components.
+- 2026-03-18:
+  - 🆕 migrated shell app to M3 themes and added dark theme support to components.
+  - removed `@myrmidon/cadmus-ui-pg`.
 - 2026-03-17: ⚠️ migrated shell app to zoneless.
 
 ### 14.1.0
