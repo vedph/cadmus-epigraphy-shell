@@ -10,11 +10,15 @@ import {
   provideHttpClient,
   withInterceptors,
   withJsonpSupport,
+  withXhr,
 } from '@angular/common/http';
 
 import { provideNativeDateAdapter } from '@angular/material/core';
 
-import { NgeMonacoModule } from '@cisstech/nge/monaco';
+import {
+  DefaultMonacoLoader,
+  NGX_MONACO_LOADER_PROVIDER,
+} from '@jean-merelis/ngx-monaco-editor';
 import { NgxEchartsModule } from 'ngx-echarts';
 
 import { authJwtInterceptor } from '@myrmidon/auth-jwt-login';
@@ -41,16 +45,20 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes, withViewTransitions()),
     provideHttpClient(
+      withXhr(),
       withInterceptors([authJwtInterceptor]),
       withJsonpSupport(),
     ),
     provideNativeDateAdapter(),
-    importProvidersFrom(NgeMonacoModule.forRoot({})),
     importProvidersFrom(
       NgxEchartsModule.forRoot({
         echarts: () => import('echarts'),
       }),
     ),
+    {
+      provide: NGX_MONACO_LOADER_PROVIDER,
+      useFactory: () => new DefaultMonacoLoader(),
+    },
     // parts and fragments type IDs to editor group keys mappings
     // https://github.com/nrwl/nx/issues/208#issuecomment-384102058
     // inject like: @Inject('partEditorKeys') partEditorKeys: PartEditorKeys

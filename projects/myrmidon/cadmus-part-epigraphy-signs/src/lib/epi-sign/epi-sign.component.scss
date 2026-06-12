@@ -1,6 +1,11 @@
 #editor {
   height: 400px;
 }
+#editor ngx-monaco-editor {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 fieldset {
   border: 1px solid var(--mat-sys-on-surface-variant);
   border-radius: 6px;

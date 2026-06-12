@@ -4,9 +4,10 @@
     <mat-label>ID</mat-label>
     <input matInput [formControl]="id" />
     @if ($any(id).errors?.required && (id.dirty || id.touched)) {
-    <mat-error>ID required</mat-error>
-    } @if ($any(id).errors?.maxLength && (id.dirty || id.touched)) {
-    <mat-error>ID too long</mat-error>
+      <mat-error>ID required</mat-error>
+    }
+    @if ($any(id).errors?.maxLength && (id.dirty || id.touched)) {
+      <mat-error>ID too long</mat-error>
     }
   </mat-form-field>
 
@@ -22,9 +23,11 @@
 
   <!-- description -->
   <div id="editor">
-    <nge-monaco-editor
-      style="--editor-height: 100%"
-      (ready)="onEditorInit($event)"
+    <ngx-monaco-editor
+      [formControl]="description"
+      [language]="'markdown'"
+      [options]="editorOptions"
+      (editorInitialized)="onEditorInit($event)"
     />
   </div>
 

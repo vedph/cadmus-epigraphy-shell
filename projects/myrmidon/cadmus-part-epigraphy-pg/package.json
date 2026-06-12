@@ -1,6 +1,6 @@
 {
   "name": "@myrmidon/cadmus-part-epigraphy-pg",
-  "version": "14.0.4",
+  "version": "15.0.0",
   "description": "Cadmus - epigraphic components wrapper.",
   "keywords": [
     "Cadmus",
@@ -15,20 +15,20 @@
     "name": "Daniele Fusi"
   },
   "peerDependencies": {
-    "@angular/common": "^20.0.0 || ^21.0.0",
-    "@angular/core": "^20.0.0 || ^21.0.0",
-    "@angular/material": "^20.0.0 || ^21.0.0",
-    "@myrmidon/cadmus-core": "^12.0.3",
-    "@myrmidon/cadmus-state": "^15.0.0",
-    "@myrmidon/cadmus-ui": "^16.1.1",
-    "@myrmidon/cadmus-item-editor": "^16.1.3",
-    "@myrmidon/cadmus-part-epigraphy-formula-patterns": "^13.1.1",
-    "@myrmidon/cadmus-part-epigraphy-scripts": "^13.1.1",
-    "@myrmidon/cadmus-part-epigraphy-signs": "^12.1.1",
-    "@myrmidon/cadmus-part-epigraphy-support": "^13.1.1",
-    "@myrmidon/cadmus-part-epigraphy-support-frr": "^12.1.1",
-    "@myrmidon/cadmus-part-epigraphy-technique": "^12.1.0",
-    "@myrmidon/cadmus-fr-epigraphy-ligatures": "^12.1.0"
+    "@angular/common": "^22.0.1",
+    "@angular/core": "^22.0.1",
+    "@angular/material": "^22.0.1",
+    "@myrmidon/cadmus-core": "^13.0.0",
+    "@myrmidon/cadmus-state": "^16.0.0",
+    "@myrmidon/cadmus-ui": "^17.0.0",
+    "@myrmidon/cadmus-item-editor": "^17.0.0",
+    "@myrmidon/cadmus-part-epigraphy-formula-patterns": "^13.1.3",
+    "@myrmidon/cadmus-part-epigraphy-scripts": "^13.1.3",
+    "@myrmidon/cadmus-part-epigraphy-signs": "^12.1.3",
+    "@myrmidon/cadmus-part-epigraphy-support": "^13.1.3",
+    "@myrmidon/cadmus-part-epigraphy-support-frr": "^12.1.3",
+    "@myrmidon/cadmus-part-epigraphy-technique": "^12.1.3",
+    "@myrmidon/cadmus-fr-epigraphy-ligatures": "^12.1.2"
   },
   "dependencies": {
     "tslib": "^2.3.0"

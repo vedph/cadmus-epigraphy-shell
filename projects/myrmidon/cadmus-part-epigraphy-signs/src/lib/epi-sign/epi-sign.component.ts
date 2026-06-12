@@ -6,7 +6,6 @@ import {
   Inject,
   input,
   model,
-  OnDestroy,
   Optional,
   output,
 } from '@angular/core';
@@ -18,7 +17,6 @@ import {
   Validators,
 } from '@angular/forms';
 
-
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -27,7 +25,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { NgeMonacoModule } from '@cisstech/nge/monaco';
+import {
+  EditorInitializedEvent,
+  NgxMonacoEditorComponent,
+  StandaloneCodeEditor,
+  StandaloneEditorConstructionOptions,
+} from '@jean-merelis/ngx-monaco-editor';
+
 import {
   PhysicalMeasurement,
   PhysicalMeasurementSetComponent,
@@ -64,18 +68,22 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     MatInputModule,
     MatSelectModule,
     MatTooltipModule,
-    NgeMonacoModule,
+    NgxMonacoEditorComponent,
     FlagSetComponent,
-    PhysicalMeasurementSetComponent
-],
+    PhysicalMeasurementSetComponent,
+  ],
   templateUrl: './epi-sign.component.html',
   styleUrl: './epi-sign.component.scss',
   providers: [CadmusTextEdService],
 })
-export class EpiSignComponent implements OnDestroy {
-  private _editorModel?: monaco.editor.ITextModel;
-  private _editor?: monaco.editor.IStandaloneCodeEditor;
-  private readonly _disposables: monaco.IDisposable[] = [];
+export class EpiSignComponent {
+  private _editor?: StandaloneCodeEditor;
+
+  public readonly editorOptions: StandaloneEditorConstructionOptions = {
+    minimap: { side: 'right' },
+    wordWrap: 'on',
+    automaticLayout: true,
+  };
 
   // flags
   public readonly featFlags = computed<Flag[]>(() => {
@@ -109,7 +117,7 @@ export class EpiSignComponent implements OnDestroy {
     private _editService: CadmusTextEdService,
     @Inject(CADMUS_TEXT_ED_BINDINGS_TOKEN)
     @Optional()
-    private _editorBindings?: CadmusTextEdBindings
+    private _editorBindings?: CadmusTextEdBindings,
   ) {
     // form
     this.id = formBuilder.control('', {
@@ -134,8 +142,21 @@ export class EpiSignComponent implements OnDestroy {
     });
   }
 
-  public ngOnDestroy() {
-    this._disposables.forEach((d) => d.dispose());
+  public onEditorInit(event: EditorInitializedEvent) {
+    this._editor = event.editor;
+    this._editor.focus();
+
+    if (this._editorBindings) {
+      Object.keys(this._editorBindings).forEach((key) => {
+        const n = parseInt(key, 10);
+        console.log(
+          'Binding ' + n + ' to ' + this._editorBindings![key as any],
+        );
+        this._editor!.addCommand(n, () => {
+          this.applyEdit(this._editorBindings![key as any]);
+        });
+      });
+    }
   }
 
   private async applyEdit(selector: string) {
@@ -161,49 +182,6 @@ export class EpiSignComponent implements OnDestroy {
     ]);
   }
 
-  private updateEditorContent(description: string | null) {
-    if (this._editorModel) {
-      this._editorModel.setValue(description || '');
-    }
-  }
-
-  public onEditorInit(editor: monaco.editor.IEditor) {
-    editor.updateOptions({
-      minimap: {
-        side: 'right',
-      },
-      wordWrap: 'on',
-      automaticLayout: true,
-    });
-    this._editorModel =
-      this._editorModel || monaco.editor.createModel('', 'markdown');
-    editor.setModel(this._editorModel);
-    this._editor = editor as monaco.editor.IStandaloneCodeEditor;
-
-    this._disposables.push(
-      this._editorModel.onDidChangeContent((e) => {
-        this.description.setValue(this._editorModel!.getValue());
-        this.description.markAsDirty();
-        this.description.updateValueAndValidity();
-      })
-    );
-
-    if (this._editorBindings) {
-      Object.keys(this._editorBindings).forEach((key) => {
-        const n = parseInt(key, 10);
-        console.log(
-          'Binding ' + n + ' to ' + this._editorBindings![key as any]
-        );
-        this._editor!.addCommand(n, () => {
-          this.applyEdit(this._editorBindings![key as any]);
-        });
-      });
-    }
-
-    // update the editor content if the description is already available
-    this.updateEditorContent(this.description.value);
-  }
-
   private updateForm(sign: EpiSign | undefined | null): void {
     if (!sign) {
       this.form.reset();
@@ -213,12 +191,9 @@ export class EpiSignComponent implements OnDestroy {
     this.id.setValue(sign.id || '');
     this.features.setValue(sign.features || []);
     this.description.setValue(sign.description || null);
-    // this._editorModel?.setValue(sign.description || '');
     this.measurements.setValue(sign.measurements || []);
 
     this.form.markAsPristine();
-
-    this.updateEditorContent(sign.description || null);
   }
 
   private getSign(): EpiSign {
