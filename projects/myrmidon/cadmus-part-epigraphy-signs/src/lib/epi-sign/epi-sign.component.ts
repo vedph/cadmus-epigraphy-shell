@@ -149,9 +149,6 @@ export class EpiSignComponent {
     if (this._editorBindings) {
       Object.keys(this._editorBindings).forEach((key) => {
         const n = parseInt(key, 10);
-        console.log(
-          'Binding ' + n + ' to ' + this._editorBindings![key as any],
-        );
         this._editor!.addCommand(n, () => {
           this.applyEdit(this._editorBindings![key as any]);
         });

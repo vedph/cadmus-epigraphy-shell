@@ -57,7 +57,7 @@ export const appConfig: ApplicationConfig = {
     ),
     {
       provide: NGX_MONACO_LOADER_PROVIDER,
-      useFactory: () => new DefaultMonacoLoader(),
+      useFactory: () => new DefaultMonacoLoader({ paths: { vs: '/vs' } }),
     },
     // parts and fragments type IDs to editor group keys mappings
     // https://github.com/nrwl/nx/issues/208#issuecomment-384102058

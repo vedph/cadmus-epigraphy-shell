@@ -96,7 +96,7 @@
     "echarts": "^6.1.0",
     "maplibre-gl": "^5.24.0",
     "marked": "^18.0.5",
-    "monaco-editor": "^0.53.0",
+    "monaco-editor": "^0.47.0",
     "ngx-echarts": "^22.0.0",
     "ngx-markdown": "^22.0.0",
     "rxjs": "~7.8.0",
