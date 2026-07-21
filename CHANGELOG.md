@@ -1,5 +1,6 @@
 # History
 
+- 2026-07-21: updated Angular and packages.
 - 2026-06-12: ⚠️ migrated to new Monaco wrapper.
 - 2026-03-18:
   - 🆕 migrated shell app to M3 themes and added dark theme support to components.
