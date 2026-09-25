@@ -18,3 +18,5 @@ minimumReleaseAgeExclude:
   - '@myrmidon/cadmus-part-geo-asserted-toponyms@11.1.4'
   - '@myrmidon/cadmus-part-geo-pg@11.0.4'
   - '@myrmidon/cadmus-geo-location@1.0.1'
+  - '@rollup/rollup-win32-arm64-msvc@4.63.5'
+  - maplibre-gl@6.11.2

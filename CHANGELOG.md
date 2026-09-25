@@ -1,5 +1,6 @@
 # History
 
+- 2026-09-25: updated Angular and packages.
 - 2026-07-27: ⚠️ upgraded to Maplibre v6.
 - 2026-07-21: updated Angular and packages.
 - 2026-06-12: ⚠️ migrated to new Monaco wrapper.
