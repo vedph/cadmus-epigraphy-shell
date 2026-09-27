@@ -25,6 +25,7 @@ import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import {
   CloseSaveButtonsComponent,
   ModelEditorComponentBase,
+  HelpLinkComponent,
 } from '@myrmidon/cadmus-ui';
 import {
   ThesauriSet,
@@ -62,6 +63,7 @@ import { EpiSignComponent } from '../epi-sign/epi-sign.component';
     EllipsisPipe,
     EpiSignComponent,
     CloseSaveButtonsComponent,
+    HelpLinkComponent
   ],
   templateUrl: './epi-signs-part.component.html',
   styleUrl: './epi-signs-part.component.scss',

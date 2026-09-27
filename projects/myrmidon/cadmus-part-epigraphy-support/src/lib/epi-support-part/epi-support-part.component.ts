@@ -52,6 +52,7 @@ import {
 import {
   CloseSaveButtonsComponent,
   ModelEditorComponentBase,
+  HelpLinkComponent
 } from '@myrmidon/cadmus-ui';
 
 import {
@@ -111,6 +112,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     EpiTextAreaComponent,
     FlatLookupPipe,
     PhysicalSizePipe,
+    HelpLinkComponent,
   ],
 })
 export class EpiSupportPartComponent

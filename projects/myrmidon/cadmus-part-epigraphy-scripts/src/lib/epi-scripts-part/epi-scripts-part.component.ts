@@ -32,6 +32,7 @@ import { ThesauriSet, ThesaurusEntry, EditedObject } from '@myrmidon/cadmus-core
 import {
   ModelEditorComponentBase,
   CloseSaveButtonsComponent,
+  HelpLinkComponent,
 } from '@myrmidon/cadmus-ui';
 
 import {
@@ -68,6 +69,7 @@ import { EpiScriptComponent } from '../epi-script/epi-script.component';
     FlatLookupPipe,
     EpiScriptComponent,
     CloseSaveButtonsComponent,
+    HelpLinkComponent,
   ],
 })
 export class EpiScriptsPartComponent

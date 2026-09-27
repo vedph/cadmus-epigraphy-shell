@@ -30,6 +30,7 @@ import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import {
   CloseSaveButtonsComponent,
   ModelEditorComponentBase,
+  HelpLinkComponent,
 } from '@myrmidon/cadmus-ui';
 import {
   ThesauriSet,
@@ -67,6 +68,7 @@ import { EpiSupportFrComponent } from '../epi-support-fr/epi-support-fr.componen
     PhysicalSizePipe,
     EpiSupportFrComponent,
     CloseSaveButtonsComponent,
+    HelpLinkComponent,
   ],
   templateUrl: './epi-support-frr-part.component.html',
   styleUrl: './epi-support-frr-part.component.scss',

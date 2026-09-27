@@ -37,6 +37,7 @@ import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import {
   CloseSaveButtonsComponent,
   ModelEditorComponentBase,
+  HelpLinkComponent,
 } from '@myrmidon/cadmus-ui';
 import {
   ThesauriSet,
@@ -81,6 +82,7 @@ import { EpiFormulaTokenPipe } from '../epi-formula-token.pipe';
     EpiFormulaTokenPipe,
     TitleCasePipe,
     CloseSaveButtonsComponent,
+    HelpLinkComponent,
   ],
 })
 export class EpiFormulaPatternsPartComponent

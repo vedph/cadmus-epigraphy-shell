@@ -39,6 +39,7 @@ import {
 import {
   CloseSaveButtonsComponent,
   ModelEditorComponentBase,
+  HelpLinkComponent,
 } from '@myrmidon/cadmus-ui';
 
 import {
@@ -77,6 +78,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     MatTooltipModule,
     FlagSetComponent,
     CloseSaveButtonsComponent,
+    HelpLinkComponent,
   ],
   templateUrl: './epi-technique-part.component.html',
   styleUrl: './epi-technique-part.component.scss',

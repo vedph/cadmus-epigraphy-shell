@@ -7,6 +7,7 @@
       <mat-card-title>{{
         (modelName() | titlecase) || "Epigraphic Signs Part"
       }}</mat-card-title>
+      <cadmus-help-link [url]="helpUrl()" />
     </mat-card-header>
     <mat-card-content>
       <div id="toolbar">
@@ -20,74 +21,80 @@
         </button>
       </div>
       @if (signs.value.length) {
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>ID</th>
-            <th>description</th>
-            <th>features</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (sign of signs.value; track sign.id; let i = $index; let first =
-          $first; let last = $last) {
-          <tr [class.selected]="i === editedIndex()">
-            <td class="fit-width">
-              <button
-                type="button"
-                mat-icon-button
-                matTooltip="Edit this sign"
-                (click)="editSign(sign, i)"
-              >
-                <mat-icon class="mat-primary">edit</mat-icon>
-              </button>
-              <button
-                type="button"
-                mat-icon-button
-                matTooltip="Move this sign up"
-                [disabled]="first"
-                (click)="moveSignUp(i)"
-              >
-                <mat-icon>arrow_upward</mat-icon>
-              </button>
-              <button
-                type="button"
-                mat-icon-button
-                matTooltip="Move this sign down"
-                [disabled]="last"
-                (click)="moveSignDown(i)"
-              >
-                <mat-icon>arrow_downward</mat-icon>
-              </button>
-              <button
-                type="button"
-                mat-icon-button
-                matTooltip="Delete this sign"
-                (click)="deleteSign(i)"
-              >
-                <mat-icon class="mat-warn">remove_circle</mat-icon>
-              </button>
-            </td>
-            <td>{{ sign.id }}</td>
-            <td>{{ sign.description | ellipsis }}</td>
-            <td>{{ sign.features?.join(", ") }}</td>
-          </tr>
-          }
-        </tbody>
-      </table>
-      } @if (edited()) {
-      <mat-expansion-panel [expanded]="edited()" [disabled]="!edited()">
-        <cadmus-epi-sign
-          [featEntries]="featEntries()"
-          [measNameEntries]="measNameEntries()"
-          [measUnitEntries]="measUnitEntries()"
-          [measDimTagEntries]="measDimTagEntries()"
-          [sign]="edited()"
-          (signChange)="saveSign($event!)"
-          (signCancel)="closeSign()"
-        />
-      </mat-expansion-panel>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>ID</th>
+              <th>description</th>
+              <th>features</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (
+              sign of signs.value;
+              track sign.id;
+              let i = $index;
+              let first = $first;
+              let last = $last
+            ) {
+              <tr [class.selected]="i === editedIndex()">
+                <td class="fit-width">
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Edit this sign"
+                    (click)="editSign(sign, i)"
+                  >
+                    <mat-icon class="mat-primary">edit</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Move this sign up"
+                    [disabled]="first"
+                    (click)="moveSignUp(i)"
+                  >
+                    <mat-icon>arrow_upward</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Move this sign down"
+                    [disabled]="last"
+                    (click)="moveSignDown(i)"
+                  >
+                    <mat-icon>arrow_downward</mat-icon>
+                  </button>
+                  <button
+                    type="button"
+                    mat-icon-button
+                    matTooltip="Delete this sign"
+                    (click)="deleteSign(i)"
+                  >
+                    <mat-icon class="mat-warn">remove_circle</mat-icon>
+                  </button>
+                </td>
+                <td>{{ sign.id }}</td>
+                <td>{{ sign.description | ellipsis }}</td>
+                <td>{{ sign.features?.join(", ") }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+      @if (edited()) {
+        <mat-expansion-panel [expanded]="edited()" [disabled]="!edited()">
+          <cadmus-epi-sign
+            [featEntries]="featEntries()"
+            [measNameEntries]="measNameEntries()"
+            [measUnitEntries]="measUnitEntries()"
+            [measDimTagEntries]="measDimTagEntries()"
+            [sign]="edited()"
+            (signChange)="saveSign($event!)"
+            (signCancel)="closeSign()"
+          />
+        </mat-expansion-panel>
       }
     </mat-card-content>
     <mat-card-actions>

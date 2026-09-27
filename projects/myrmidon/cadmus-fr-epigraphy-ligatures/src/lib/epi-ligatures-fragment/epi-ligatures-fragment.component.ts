@@ -39,6 +39,7 @@ import {
 import {
   ModelEditorComponentBase,
   CloseSaveButtonsComponent,
+  HelpLinkComponent,
 } from '@myrmidon/cadmus-ui';
 
 import { EpiLigaturesFragment } from '../epi-ligatures-fragment';
@@ -76,6 +77,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     MatCardActions,
     TitleCasePipe,
     CloseSaveButtonsComponent,
+    HelpLinkComponent,
   ],
 })
 export class EpiLigaturesFragmentComponent
