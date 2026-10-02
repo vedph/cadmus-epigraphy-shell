@@ -9,7 +9,7 @@
       <mat-error>location required</mat-error>
     }
     @if (
-      $any(location).errors?.maxLength && (location.dirty || location.touched)
+      $any(location).errors?.maxlength && (location.dirty || location.touched)
     ) {
       <mat-error>location too long</mat-error>
     }
@@ -21,7 +21,7 @@
       <mat-label>head loc.</mat-label>
       <input matInput [formControl]="headTextLoc" />
       @if (
-        $any(headTextLoc).errors?.maxLength &&
+        $any(headTextLoc).errors?.maxlength &&
         (headTextLoc.dirty || headTextLoc.touched)
       ) {
         <mat-error>head loc. too long</mat-error>
@@ -33,7 +33,7 @@
       <mat-label>head text</mat-label>
       <input matInput [formControl]="headText" />
       @if (
-        $any(headText).errors?.maxLength && (headText.dirty || headText.touched)
+        $any(headText).errors?.maxlength && (headText.dirty || headText.touched)
       ) {
         <mat-error>head text too long</mat-error>
       }
@@ -46,7 +46,7 @@
       <mat-label>tail loc.</mat-label>
       <input matInput [formControl]="tailTextLoc" />
       @if (
-        $any(tailTextLoc).errors?.maxLength &&
+        $any(tailTextLoc).errors?.maxlength &&
         (tailTextLoc.dirty || tailTextLoc.touched)
       ) {
         <mat-error>tail loc. too long</mat-error>
@@ -58,7 +58,7 @@
       <mat-label>tail text</mat-label>
       <input matInput [formControl]="tailText" />
       @if (
-        $any(tailText).errors?.maxLength && (tailText.dirty || tailText.touched)
+        $any(tailText).errors?.maxlength && (tailText.dirty || tailText.touched)
       ) {
         <mat-error>tail text too long</mat-error>
       }

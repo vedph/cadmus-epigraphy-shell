@@ -20,6 +20,10 @@
       - patterns part editor: the edited pattern header showed a 0-based number (`#-1` for a new pattern), unlike the 1-based token header.
       - token editor: an empty note was saved as an empty string rather than being omitted.
       - pattern editor: guard against a pattern without tokens.
+    - `@myrmidon/cadmus-part-epigraphy-support-frr`:
+      - fragment and cell mapping editors: same `maxLength` error key bug; empty shelfmark and mapping head/tail texts and locations were saved as empty strings rather than being omitted.
+      - fragments part and fragment editors: same edited index bug when deleting or moving fragments (or deleting cell mappings) while editing one.
+      - the `physical-grid-presets` thesaurus, supported by the fragment editor for grid size presets, was neither requested by the part feature nor passed by the part editor (it is optional, so nothing changes when it is not defined).
 - 2026-09-27:
   - 🆕 added help links to part editors.
   - updated packages.

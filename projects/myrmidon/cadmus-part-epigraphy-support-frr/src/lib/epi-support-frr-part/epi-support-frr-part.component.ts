@@ -48,7 +48,8 @@ import { EpiSupportFrComponent } from '../epi-support-fr/epi-support-fr.componen
 
 /**
  * EpiSupportFrrPart editor component.
- * Thesauri: physical-size-units, physical-size-tags, physical-size-dim-tags.
+ * Thesauri: physical-size-units, physical-size-tags, physical-size-dim-tags,
+ * physical-grid-presets (all optional).
  */
 @Component({
   selector: 'cadmus-epi-support-frr-part',
@@ -86,6 +87,10 @@ export class EpiSupportFrrPartComponent
   public readonly tagEntries = signal<ThesaurusEntry[] | undefined>(undefined);
   // physical-size-dim-tags
   public readonly dimTagEntries = signal<ThesaurusEntry[] | undefined>(
+    undefined,
+  );
+  // physical-grid-presets
+  public readonly gridPresetEntries = signal<ThesaurusEntry[] | undefined>(
     undefined,
   );
 
@@ -135,6 +140,13 @@ export class EpiSupportFrrPartComponent
       this.dimTagEntries.set(thesauri[key].entries);
     } else {
       this.dimTagEntries.set(undefined);
+    }
+
+    key = 'physical-grid-presets';
+    if (this.hasThesaurus(key)) {
+      this.gridPresetEntries.set(thesauri[key].entries);
+    } else {
+      this.gridPresetEntries.set(undefined);
     }
   }
 
@@ -210,6 +222,9 @@ export class EpiSupportFrrPartComponent
         if (yes) {
           if (this.editedIndex() === index) {
             this.closeFr();
+          } else if (this.editedIndex() > index) {
+            // keep the edited index pointing to the edited fragment
+            this.editedIndex.set(this.editedIndex() - 1);
           }
           const fragments = [...this.fragments.value];
           fragments.splice(index, 1);
@@ -220,6 +235,18 @@ export class EpiSupportFrrPartComponent
       });
   }
 
+  /**
+   * Keep the edited index pointing to the edited fragment when the fragments
+   * at the specified indexes are swapped.
+   */
+  private swapEditedIndex(a: number, b: number): void {
+    if (this.editedIndex() === a) {
+      this.editedIndex.set(b);
+    } else if (this.editedIndex() === b) {
+      this.editedIndex.set(a);
+    }
+  }
+
   public moveFrUp(index: number): void {
     if (index < 1) {
       return;
@@ -228,6 +255,7 @@ export class EpiSupportFrrPartComponent
     const fragments = [...this.fragments.value];
     fragments.splice(index, 1);
     fragments.splice(index - 1, 0, fr);
+    this.swapEditedIndex(index, index - 1);
     this.fragments.setValue(fragments);
     this.fragments.markAsDirty();
     this.fragments.updateValueAndValidity();
@@ -241,6 +269,7 @@ export class EpiSupportFrrPartComponent
     const fragments = [...this.fragments.value];
     fragments.splice(index, 1);
     fragments.splice(index + 1, 0, fr);
+    this.swapEditedIndex(index, index + 1);
     this.fragments.setValue(fragments);
     this.fragments.markAsDirty();
     this.fragments.updateValueAndValidity();

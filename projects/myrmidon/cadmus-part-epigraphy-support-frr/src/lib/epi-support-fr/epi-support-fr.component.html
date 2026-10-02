@@ -9,7 +9,7 @@
           @if ($any(id).errors?.required && (id.dirty || id.touched)) {
             <mat-error>ID required</mat-error>
           }
-          @if ($any(id).errors?.maxLength && (id.dirty || id.touched)) {
+          @if ($any(id).errors?.maxlength && (id.dirty || id.touched)) {
             <mat-error>ID too long</mat-error>
           }
         </mat-form-field>
@@ -19,7 +19,7 @@
           <mat-label>shelfmark</mat-label>
           <input matInput [formControl]="shelfmark" />
           @if (
-            $any(shelfmark).errors?.maxLength &&
+            $any(shelfmark).errors?.maxlength &&
             (shelfmark.dirty || shelfmark.touched)
           ) {
             <mat-error>shelfmark too long</mat-error>

@@ -157,7 +157,7 @@ export class EpiSupportFrComponent {
   private getFragment(): EpiSupportFr {
     return {
       id: this.id.value?.trim(),
-      shelfmark: this.shelfmark.value?.trim(),
+      shelfmark: this.shelfmark.value?.trim() || undefined,
       isLost: this.lost.value || undefined,
       size: this.size.value || undefined,
       rowCount: this.location.value?.rows || 0,
@@ -206,6 +206,9 @@ export class EpiSupportFrComponent {
   public deleteMapping(index: number): void {
     if (this.editedIndex() === index) {
       this.closeMapping();
+    } else if (this.editedIndex() > index) {
+      // keep the edited index pointing to the edited mapping
+      this.editedIndex.set(this.editedIndex() - 1);
     }
     const mappings = [...this.mappings.value];
     mappings.splice(index, 1);

@@ -43,6 +43,7 @@ export class EpiSupportFrrPartFeatureComponent
       'physical-size-units',
       'physical-size-tags',
       'physical-size-dim-tags',
+      'physical-grid-presets',
     ];
   }
 }

@@ -98,10 +98,10 @@ export class EpiSupportFrCellMappingComponent {
   private getMapping(): EpiSupportFrCellMapping {
     return {
       location: this.location.value?.trim(),
-      headText: this.headText.value?.trim(),
-      headTextLoc: this.headTextLoc.value?.trim(),
-      tailText: this.tailText.value?.trim(),
-      tailTextLoc: this.tailTextLoc.value?.trim(),
+      headText: this.headText.value?.trim() || undefined,
+      headTextLoc: this.headTextLoc.value?.trim() || undefined,
+      tailText: this.tailText.value?.trim() || undefined,
+      tailTextLoc: this.tailTextLoc.value?.trim() || undefined,
     };
   }
 
