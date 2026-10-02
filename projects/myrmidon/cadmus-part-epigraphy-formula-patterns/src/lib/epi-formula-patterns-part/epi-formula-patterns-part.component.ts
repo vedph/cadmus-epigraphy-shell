@@ -216,6 +216,9 @@ export class EpiFormulaPatternsPartComponent
         if (yes) {
           if (this.editedIndex() === index) {
             this.closePattern();
+          } else if (this.editedIndex() > index) {
+            // keep the edited index pointing to the edited pattern
+            this.editedIndex.set(this.editedIndex() - 1);
           }
           const patterns = [...this.patterns.value];
           patterns.splice(index, 1);
@@ -226,6 +229,18 @@ export class EpiFormulaPatternsPartComponent
       });
   }
 
+  /**
+   * Keep the edited index pointing to the edited pattern when the patterns
+   * at the specified indexes are swapped.
+   */
+  private swapEditedIndex(a: number, b: number): void {
+    if (this.editedIndex() === a) {
+      this.editedIndex.set(b);
+    } else if (this.editedIndex() === b) {
+      this.editedIndex.set(a);
+    }
+  }
+
   public movePatternUp(index: number): void {
     if (index < 1) {
       return;
@@ -234,6 +249,7 @@ export class EpiFormulaPatternsPartComponent
     const patterns = [...this.patterns.value];
     patterns.splice(index, 1);
     patterns.splice(index - 1, 0, pattern);
+    this.swapEditedIndex(index, index - 1);
     this.patterns.setValue(patterns);
     this.patterns.markAsDirty();
     this.patterns.updateValueAndValidity();
@@ -247,6 +263,7 @@ export class EpiFormulaPatternsPartComponent
     const patterns = [...this.patterns.value];
     patterns.splice(index, 1);
     patterns.splice(index + 1, 0, pattern);
+    this.swapEditedIndex(index, index + 1);
     this.patterns.setValue(patterns);
     this.patterns.markAsDirty();
     this.patterns.updateValueAndValidity();

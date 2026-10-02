@@ -176,7 +176,7 @@ export class EpiFormulaTokenComponent {
         .filter((s: string) => s),
       isOptional: this.optional.value ? true : undefined,
       isPlaceholder: this.placeholder.value ? true : undefined,
-      note: this.note.value?.trim(),
+      note: this.note.value?.trim() || undefined,
     };
   }
 

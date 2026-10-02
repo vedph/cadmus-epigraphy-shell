@@ -14,6 +14,12 @@
     - `@myrmidon/cadmus-part-epigraphy-signs`:
       - sign editor: same `maxLength` error key bug; an empty description was saved as an empty string rather than being omitted.
       - signs part editor: same edited index bug when deleting or moving signs while editing one.
+    - `@myrmidon/cadmus-part-epigraphy-formula-patterns`:
+      - pattern and token editors: same `maxLength` error key bug.
+      - patterns part and pattern editors: same edited index bug when deleting or moving patterns/tokens while editing one.
+      - patterns part editor: the edited pattern header showed a 0-based number (`#-1` for a new pattern), unlike the 1-based token header.
+      - token editor: an empty note was saved as an empty string rather than being omitted.
+      - pattern editor: guard against a pattern without tokens.
 - 2026-09-27:
   - 🆕 added help links to part editors.
   - updated packages.

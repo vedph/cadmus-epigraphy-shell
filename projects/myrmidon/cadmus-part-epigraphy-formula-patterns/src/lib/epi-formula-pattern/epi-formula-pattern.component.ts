@@ -129,7 +129,7 @@ export class EpiFormulaPatternComponent {
     this.eid.setValue(pattern.eid || null);
     this.language.setValue(pattern.language);
     this.tag.setValue(pattern.tag || null);
-    this.tokens.setValue(pattern.tokens);
+    this.tokens.setValue(pattern.tokens || []);
     this.form.markAsPristine();
   }
   public addToken(): void {
@@ -171,6 +171,9 @@ export class EpiFormulaPatternComponent {
         if (yes) {
           if (this.editedIndex() === index) {
             this.closeToken();
+          } else if (this.editedIndex() > index) {
+            // keep the edited index pointing to the edited token
+            this.editedIndex.set(this.editedIndex() - 1);
           }
           const tokens = [...this.tokens.value];
           tokens.splice(index, 1);
@@ -181,6 +184,18 @@ export class EpiFormulaPatternComponent {
       });
   }
 
+  /**
+   * Keep the edited index pointing to the edited token when the tokens
+   * at the specified indexes are swapped.
+   */
+  private swapEditedIndex(a: number, b: number): void {
+    if (this.editedIndex() === a) {
+      this.editedIndex.set(b);
+    } else if (this.editedIndex() === b) {
+      this.editedIndex.set(a);
+    }
+  }
+
   public moveTokenUp(index: number): void {
     if (index < 1) {
       return;
@@ -189,6 +204,7 @@ export class EpiFormulaPatternComponent {
     const tokens = [...this.tokens.value];
     tokens.splice(index, 1);
     tokens.splice(index - 1, 0, token);
+    this.swapEditedIndex(index, index - 1);
     this.tokens.setValue(tokens);
     this.tokens.markAsDirty();
     this.tokens.updateValueAndValidity();
@@ -202,6 +218,7 @@ export class EpiFormulaPatternComponent {
     const tokens = [...this.tokens.value];
     tokens.splice(index, 1);
     tokens.splice(index + 1, 0, token);
+    this.swapEditedIndex(index, index + 1);
     this.tokens.setValue(tokens);
     this.tokens.markAsDirty();
     this.tokens.updateValueAndValidity();

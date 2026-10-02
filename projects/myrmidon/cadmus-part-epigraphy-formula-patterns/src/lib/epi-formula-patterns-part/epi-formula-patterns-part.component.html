@@ -84,7 +84,7 @@
       @if (edited()) {
         <mat-expansion-panel [disabled]="!edited()" [expanded]="edited()">
           <mat-expansion-panel-header
-            >Pattern #{{ editedIndex() }}</mat-expansion-panel-header
+            >Pattern #{{ editedIndex() + 1 }}</mat-expansion-panel-header
           >
           <cadmus-epi-formula-pattern
             [langEntries]="langEntries()"
