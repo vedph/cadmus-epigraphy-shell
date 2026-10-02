@@ -1,10 +1,10 @@
 {
   "name": "@myrmidon/cadmus-part-epigraphy-technique",
-  "version": "13.0.1",
+  "version": "13.0.2",
   "peerDependencies": {
-    "@angular/common": "^22.2.0",
-    "@angular/core": "^22.2.0",
-    "@angular/material": "^22.2.0",
+    "@angular/common": "^22.2.1",
+    "@angular/core": "^22.2.1",
+    "@angular/material": "^22.2.1",
     "@myrmidon/cadmus-ui-flag-set": "^10.0.2",
     "@myrmidon/cadmus-core": "^13.0.1",
     "@myrmidon/cadmus-state": "^16.0.1",
