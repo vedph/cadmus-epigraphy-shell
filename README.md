@@ -74,6 +74,18 @@ graph LR;
   cadmus-part-epigraphy-pg --> cadmus-part-epigraphy-formula-patterns
 ```
 
+## Testing
+
+Tests use [Vitest](https://vitest.dev) via the Angular unit test builder (jsdom environment, zoneless):
+
+- `ng test <project> --watch=false` runs the tests of a single project, e.g. `ng test @myrmidon/cadmus-part-epigraphy-scripts --watch=false`. Add `--coverage` for a coverage report (in `coverage/`).
+- `npm run test:lib` runs the tests of all the libraries.
+- `npm run test:all` runs the tests of the shell app and of all the libraries.
+
+⚠️ `@myrmidon/cadmus-part-epigraphy-pg` imports the other libraries from `dist`, so build them first (`npm run build:lib`).
+
+Global test setup (jsdom polyfills) is in `test-setup.ts`. The pnpm setting `extendNodePath: false` (in `pnpm-workspace.yaml`) is required: otherwise the test builder finds a transitive `zone.js` and tries to load it, while the workspace is zoneless.
+
 ## Current Versions
 
 - cadmus-fr-epigraphy-ligatures: 13.0.0
