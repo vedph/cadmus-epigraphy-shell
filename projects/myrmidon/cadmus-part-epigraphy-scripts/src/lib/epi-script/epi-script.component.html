@@ -22,7 +22,7 @@
         <input matInput [formControl]="system" />
         @if ($any(system).errors?.required && (system.dirty || system.touched)) {
           <mat-error>system required</mat-error>
-          } @if ($any(system).errors?.maxLength && (system.dirty || system.touched))
+          } @if ($any(system).errors?.maxlength && (system.dirty || system.touched))
           {
           <mat-error>system too long</mat-error>
         }
@@ -40,7 +40,7 @@
             }}</mat-option>
           }
         </mat-select>
-        @if ($any(script).errors?.required && (scriptCtl.dirty ||
+        @if ($any(scriptCtl).errors?.required && (scriptCtl.dirty ||
           scriptCtl.touched)) {
           <mat-error>script required</mat-error>
         }
@@ -50,10 +50,10 @@
       <mat-form-field>
         <mat-label>script</mat-label>
         <input matInput [formControl]="scriptCtl" />
-        @if ($any(script).errors?.required && (scriptCtl.dirty ||
+        @if ($any(scriptCtl).errors?.required && (scriptCtl.dirty ||
           scriptCtl.touched)) {
           <mat-error>script required</mat-error>
-          } @if ($any(script).errors?.maxLength && (scriptCtl.dirty ||
+          } @if ($any(scriptCtl).errors?.maxlength && (scriptCtl.dirty ||
           scriptCtl.touched)) {
           <mat-error>script too long</mat-error>
         }
@@ -82,7 +82,7 @@
         <input matInput [formControl]="casing" />
         @if ($any(casing).errors?.required && (casing.dirty || casing.touched)) {
           <mat-error>casing required</mat-error>
-          } @if ($any(casing).errors?.maxLength && (casing.dirty || casing.touched))
+          } @if ($any(casing).errors?.maxlength && (casing.dirty || casing.touched))
           {
           <mat-error>casing too long</mat-error>
         }
@@ -109,7 +109,7 @@
       <mat-form-field class="long-text">
         <mat-label>note</mat-label>
         <textarea rows="3" matInput [formControl]="note"></textarea>
-        @if ($any(note).errors?.maxLength && (note.dirty || note.touched)) {
+        @if ($any(note).errors?.maxlength && (note.dirty || note.touched)) {
           <mat-error>note too long</mat-error>
         }
       </mat-form-field>

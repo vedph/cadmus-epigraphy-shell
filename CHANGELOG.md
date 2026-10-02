@@ -8,6 +8,9 @@
   - 🐛 fixed bugs found while testing:
     - `@myrmidon/cadmus-fr-epigraphy-ligatures`: max length error messages were never displayed, as the template checked for error key `maxLength` while `Validators.maxLength` sets `maxlength`.
     - `@myrmidon/cadmus-part-epigraphy-technique`: same `maxLength` error key bug (groove, note).
+    - `@myrmidon/cadmus-part-epigraphy-scripts`:
+      - script editor: "script required" and "script too long" errors were never displayed, as the template checked errors on the `script` model signal rather than on the `scriptCtl` form control; plus the same `maxLength` error key bug.
+      - scripts part editor: deleting or moving scripts while editing one did not update the edited index, so that saving the edited script replaced the wrong script (or appended it) and highlighted the wrong row.
 - 2026-09-27:
   - 🆕 added help links to part editors.
   - updated packages.

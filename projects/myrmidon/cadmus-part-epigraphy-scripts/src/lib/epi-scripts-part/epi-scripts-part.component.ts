@@ -205,6 +205,9 @@ export class EpiScriptsPartComponent
         if (yes) {
           if (this.editedIndex() === index) {
             this.closeScript();
+          } else if (this.editedIndex() > index) {
+            // keep the edited index pointing to the edited script
+            this.editedIndex.set(this.editedIndex() - 1);
           }
           const scripts = [...this.scripts.value];
           scripts.splice(index, 1);
@@ -215,6 +218,18 @@ export class EpiScriptsPartComponent
       });
   }
 
+  /**
+   * Keep the edited index pointing to the edited script when the scripts
+   * at the specified indexes are swapped.
+   */
+  private swapEditedIndex(a: number, b: number): void {
+    if (this.editedIndex() === a) {
+      this.editedIndex.set(b);
+    } else if (this.editedIndex() === b) {
+      this.editedIndex.set(a);
+    }
+  }
+
   public moveScriptUp(index: number): void {
     if (index < 1) {
       return;
@@ -223,6 +238,7 @@ export class EpiScriptsPartComponent
     const scripts = [...this.scripts.value];
     scripts.splice(index, 1);
     scripts.splice(index - 1, 0, script);
+    this.swapEditedIndex(index, index - 1);
     this.scripts.setValue(scripts);
     this.scripts.markAsDirty();
     this.scripts.updateValueAndValidity();
@@ -236,6 +252,7 @@ export class EpiScriptsPartComponent
     const scripts = [...this.scripts.value];
     scripts.splice(index, 1);
     scripts.splice(index + 1, 0, script);
+    this.swapEditedIndex(index, index + 1);
     this.scripts.setValue(scripts);
     this.scripts.markAsDirty();
     this.scripts.updateValueAndValidity();
