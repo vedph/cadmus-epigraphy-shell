@@ -260,14 +260,14 @@ importers:
         specifier: ^18.0.4
         version: 18.0.4(fef043b7fedbac6ed5deea01e259344d)
       '@myrmidon/cadmus-part-geo-asserted-locations':
-        specifier: ^12.1.5
-        version: 12.1.5(90b8cc0e496610ad6d3a3c46e18a613c)
+        specifier: ^12.1.6
+        version: 12.1.6(90b8cc0e496610ad6d3a3c46e18a613c)
       '@myrmidon/cadmus-part-geo-asserted-toponyms':
         specifier: ^11.1.5
         version: 11.1.5(45424e96affbd8992e78411651164734)
       '@myrmidon/cadmus-part-geo-pg':
         specifier: ^11.0.5
-        version: 11.0.5(9ef9c9dc4b1be9a03fc488499edbfefd)
+        version: 11.0.5(dfcc212df81a2ec91bc045a48547ac3e)
       '@myrmidon/cadmus-part-philology-pg':
         specifier: ^18.0.1
         version: 18.0.1(4da2b6d323864358c3286bbf85ec48b2)
@@ -1458,12 +1458,12 @@ packages:
       '@myrmidon/ngx-mat-tools': ^3.0.1
       '@myrmidon/ngx-tools': ^3.0.2
 
-  '@myrmidon/cadmus-part-geo-asserted-locations@12.1.5':
-    resolution: {integrity: sha512-6N8QnpWWLN9sbqwbrCFu5g1UlJCcaYRkbKnnH1rAs/X2t/xVqYFTTSxHROx/8ZRV6GZC3fITjkkkEFMRHdC9XA==}
+  '@myrmidon/cadmus-part-geo-asserted-locations@12.1.6':
+    resolution: {integrity: sha512-2E02VT4CaXzNf79NARKzYC2vOgh0V6RpEsGmPrsBnFfWgZdjcWezrjSv0AOWiGccvu0jIJweVdBozBos075nfQ==}
     peerDependencies:
-      '@angular/common': ^22.2.0
-      '@angular/core': ^22.2.0
-      '@angular/material': ^22.2.0
+      '@angular/common': ^22.2.1
+      '@angular/core': ^22.2.1
+      '@angular/material': ^22.2.1
       '@myrmidon/cadmus-core': ^13.0.1
       '@myrmidon/cadmus-geo-location': ^1.0.3
       '@myrmidon/cadmus-item-editor': ^18.0.1
@@ -5682,7 +5682,7 @@ snapshots:
       marked: 18.0.14
       tslib: 2.8.1
 
-  '@myrmidon/cadmus-part-geo-asserted-locations@12.1.5(90b8cc0e496610ad6d3a3c46e18a613c)':
+  '@myrmidon/cadmus-part-geo-asserted-locations@12.1.6(90b8cc0e496610ad6d3a3c46e18a613c)':
     dependencies:
       '@angular/common': 22.2.1(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2)
       '@angular/core': 22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2)(zone.js@0.16.2)
@@ -5708,14 +5708,14 @@ snapshots:
       '@myrmidon/cadmus-ui': 18.0.1(e1c53039b38c5a110413c3d4f61ac9c7)
       tslib: 2.8.1
 
-  '@myrmidon/cadmus-part-geo-pg@11.0.5(9ef9c9dc4b1be9a03fc488499edbfefd)':
+  '@myrmidon/cadmus-part-geo-pg@11.0.5(dfcc212df81a2ec91bc045a48547ac3e)':
     dependencies:
       '@angular/common': 22.2.1(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2)
       '@angular/core': 22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2)(zone.js@0.16.2)
       '@angular/material': 22.2.1(638b438571a7ba1a63c3e5dc25d8128b)
       '@myrmidon/cadmus-core': 13.0.1(@angular/common@22.2.1(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2)(zone.js@0.16.2))(@myrmidon/ngx-tools@3.0.2(@angular/common@22.2.1(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/forms@22.2.1(@angular/common@22.2.1(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.2.1(@angular/animations@22.2.1(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2)(zone.js@0.16.2)))(@angular/common@22.2.1(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.1(@angular/compiler@22.2.1)(rxjs@7.8.2)(zone.js@0.16.2)))(rxjs@7.8.2)))
       '@myrmidon/cadmus-item-editor': 18.0.1(c6e6544a0f9ad0eebaa1f8f25818b1ea)
-      '@myrmidon/cadmus-part-geo-asserted-locations': 12.1.5(90b8cc0e496610ad6d3a3c46e18a613c)
+      '@myrmidon/cadmus-part-geo-asserted-locations': 12.1.6(90b8cc0e496610ad6d3a3c46e18a613c)
       '@myrmidon/cadmus-part-geo-asserted-toponyms': 11.1.5(45424e96affbd8992e78411651164734)
       '@myrmidon/cadmus-state': 16.0.1(b93ea2b59829a41b123196d23b638b23)
       '@myrmidon/cadmus-ui': 18.0.1(e1c53039b38c5a110413c3d4f61ac9c7)

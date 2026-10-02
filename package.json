@@ -51,7 +51,7 @@
     "@myrmidon/cadmus-mat-physical-state": "^10.0.2",
     "@myrmidon/cadmus-part-general-pg": "^18.0.1",
     "@myrmidon/cadmus-part-general-ui": "^18.0.4",
-    "@myrmidon/cadmus-part-geo-asserted-locations": "^12.1.5",
+    "@myrmidon/cadmus-part-geo-asserted-locations": "^12.1.6",
     "@myrmidon/cadmus-part-geo-asserted-toponyms": "^11.1.5",
     "@myrmidon/cadmus-part-geo-pg": "^11.0.5",
     "@myrmidon/cadmus-part-philology-pg": "^18.0.1",
