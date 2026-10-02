@@ -4,6 +4,9 @@
   - updated Angular and packages.
   - ⚠️ migrated library tests from Karma/Jasmine to Vitest (`@angular/build:unit-test`, jsdom), removing all Karma/Jasmine packages. Set pnpm `extendNodePath: false` so that the test builder does not pick up a transitive `zone.js` (the workspace is zoneless). Added shared `test-setup.ts` (jsdom polyfills) and `test:lib`/`test:all` scripts.
   - fixed stale app test stubs (missing providers, Jasmine-only `waitForAsync`, assertions on nonexistent `title`).
+  - 🆕 added full unit tests for all library components.
+  - 🐛 fixed bugs found while testing:
+    - `@myrmidon/cadmus-fr-epigraphy-ligatures`: max length error messages were never displayed, as the template checked for error key `maxLength` while `Validators.maxLength` sets `maxlength`.
 - 2026-09-27:
   - 🆕 added help links to part editors.
   - updated packages.
