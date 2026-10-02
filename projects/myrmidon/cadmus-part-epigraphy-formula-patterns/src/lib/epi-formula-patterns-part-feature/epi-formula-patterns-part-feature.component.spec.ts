@@ -86,10 +86,12 @@ describe('EpiFormulaPatternsPartFeatureComponent', () => {
     component = fixture.componentInstance;
     // the snackbar may come from the standalone injector (MatSnackBarModule
     // imported by the editor), so spy on the instance actually injected
-    vi.spyOn(
-      fixture.debugElement.injector.get(MatSnackBar),
-      'open',
-    ).mockImplementation(snackbar.open as any);
+    const injectedSnackbar = fixture.debugElement.injector.get(MatSnackBar);
+    if (injectedSnackbar !== (snackbar as unknown)) {
+      vi.spyOn(injectedSnackbar, 'open').mockImplementation(
+        snackbar.open as any,
+      );
+    }
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
