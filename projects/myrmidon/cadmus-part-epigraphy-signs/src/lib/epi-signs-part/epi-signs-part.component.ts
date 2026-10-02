@@ -210,6 +210,9 @@ export class EpiSignsPartComponent
         if (yes) {
           if (this.editedIndex() === index) {
             this.closeSign();
+          } else if (this.editedIndex() > index) {
+            // keep the edited index pointing to the edited sign
+            this.editedIndex.set(this.editedIndex() - 1);
           }
           const entries = [...this.signs.value];
           entries.splice(index, 1);
@@ -220,6 +223,18 @@ export class EpiSignsPartComponent
       });
   }
 
+  /**
+   * Keep the edited index pointing to the edited sign when the signs
+   * at the specified indexes are swapped.
+   */
+  private swapEditedIndex(a: number, b: number): void {
+    if (this.editedIndex() === a) {
+      this.editedIndex.set(b);
+    } else if (this.editedIndex() === b) {
+      this.editedIndex.set(a);
+    }
+  }
+
   public moveSignUp(index: number): void {
     if (index < 1) {
       return;
@@ -228,6 +243,7 @@ export class EpiSignsPartComponent
     const signs = [...this.signs.value];
     signs.splice(index, 1);
     signs.splice(index - 1, 0, sign);
+    this.swapEditedIndex(index, index - 1);
     this.signs.setValue(signs);
     this.signs.markAsDirty();
     this.signs.updateValueAndValidity();
@@ -241,6 +257,7 @@ export class EpiSignsPartComponent
     const signs = [...this.signs.value];
     signs.splice(index, 1);
     signs.splice(index + 1, 0, sign);
+    this.swapEditedIndex(index, index + 1);
     this.signs.setValue(signs);
     this.signs.markAsDirty();
     this.signs.updateValueAndValidity();

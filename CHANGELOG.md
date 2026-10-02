@@ -11,6 +11,9 @@
     - `@myrmidon/cadmus-part-epigraphy-scripts`:
       - script editor: "script required" and "script too long" errors were never displayed, as the template checked errors on the `script` model signal rather than on the `scriptCtl` form control; plus the same `maxLength` error key bug.
       - scripts part editor: deleting or moving scripts while editing one did not update the edited index, so that saving the edited script replaced the wrong script (or appended it) and highlighted the wrong row.
+    - `@myrmidon/cadmus-part-epigraphy-signs`:
+      - sign editor: same `maxLength` error key bug; an empty description was saved as an empty string rather than being omitted.
+      - signs part editor: same edited index bug when deleting or moving signs while editing one.
 - 2026-09-27:
   - 🆕 added help links to part editors.
   - updated packages.

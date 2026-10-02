@@ -197,7 +197,7 @@ export class EpiSignComponent {
     return {
       id: this.id.value.trim(),
       features: this.features.value.length ? this.features.value : undefined,
-      description: this.description.value?.trim(),
+      description: this.description.value?.trim() || undefined,
       measurements: this.measurements.value.length
         ? this.measurements.value
         : undefined,
