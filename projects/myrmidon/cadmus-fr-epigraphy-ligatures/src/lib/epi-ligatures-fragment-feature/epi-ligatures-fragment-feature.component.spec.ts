@@ -206,9 +206,11 @@ describe('EpiLigaturesFragmentFeatureComponent', () => {
     expect(saved.fragments.length).toBe(2);
     expect((saved.fragments[1] as EpiLigaturesFragment).eid).toBe('e2');
     expect(saved.fragments[0]).toEqual(data.layerPart!.fragments[0]);
-    expect(snackbar.open).toHaveBeenCalledWith('Fragment saved', 'OK', {
-      duration: 3000,
-    });
+    await vi.waitFor(() =>
+      expect(snackbar.open).toHaveBeenCalledWith('Fragment saved', 'OK', {
+        duration: 3000,
+      }),
+    );
   });
 
   it('should navigate back to the layer part on close', () => {
@@ -222,7 +224,8 @@ describe('EpiLigaturesFragmentFeatureComponent', () => {
   it('should report load errors', async () => {
     editorService.load.mockRejectedValue(new Error('boom'));
     component.ngOnInit();
-    await fixture.whenStable();
-    expect(snackbar.open).toHaveBeenCalledWith('boom', 'OK');
+    await vi.waitFor(() =>
+      expect(snackbar.open).toHaveBeenCalledWith('boom', 'OK'),
+    );
   });
 });

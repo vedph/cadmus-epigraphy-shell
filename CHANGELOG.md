@@ -7,6 +7,7 @@
   - 🆕 added full unit tests for all library components.
   - 🐛 fixed bugs found while testing:
     - `@myrmidon/cadmus-fr-epigraphy-ligatures`: max length error messages were never displayed, as the template checked for error key `maxLength` while `Validators.maxLength` sets `maxlength`.
+    - `@myrmidon/cadmus-part-epigraphy-technique`: same `maxLength` error key bug (groove, note).
 - 2026-09-27:
   - 🆕 added help links to part editors.
   - updated packages.

@@ -30,7 +30,7 @@
               <mat-label>groove</mat-label>
               <input matInput [formControl]="grooveType" />
               @if (
-                $any(grooveType).errors?.maxLength &&
+                $any(grooveType).errors?.maxlength &&
                 (grooveType.dirty || grooveType.touched)
               ) {
                 <mat-error>groove too long</mat-error>
@@ -68,7 +68,7 @@
           <mat-form-field class="long-text">
             <mat-label>note</mat-label>
             <input matInput [formControl]="note" />
-            @if ($any(note).errors?.maxLength && (note.dirty || note.touched)) {
+            @if ($any(note).errors?.maxlength && (note.dirty || note.touched)) {
               <mat-error>note too long</mat-error>
             }
           </mat-form-field>
