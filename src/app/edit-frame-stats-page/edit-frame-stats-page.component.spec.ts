@@ -1,5 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { provideEchartsCore } from 'ngx-echarts';
+
 import { EditFrameStatsPageComponent } from './edit-frame-stats-page.component';
 
 describe('EditFrameStatsPageComponent', () => {
@@ -8,7 +13,13 @@ describe('EditFrameStatsPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditFrameStatsPageComponent]
+      imports: [EditFrameStatsPageComponent],
+      providers: [
+        provideNativeDateAdapter(),
+        provideEchartsCore({ echarts: () => import('echarts') }),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     })
     .compileComponents();
 

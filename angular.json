@@ -96,7 +96,8 @@
           "options": {
             "tsConfig": "tsconfig.spec.json",
             "buildTarget": ":build:testing",
-            "runner": "vitest"
+            "runner": "vitest",
+            "setupFiles": ["test-setup.ts"]
           }
         }
       }
@@ -123,10 +124,11 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "projects/myrmidon/cadmus-fr-epigraphy-ligatures/tsconfig.spec.json",
-            "polyfills": []
+            "runner": "vitest",
+            "setupFiles": ["test-setup.ts"]
           }
         }
       }
@@ -153,10 +155,11 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "projects/myrmidon/cadmus-part-epigraphy-formula-patterns/tsconfig.spec.json",
-            "polyfills": []
+            "runner": "vitest",
+            "setupFiles": ["test-setup.ts"]
           }
         }
       }
@@ -183,10 +186,11 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "projects/myrmidon/cadmus-part-epigraphy-pg/tsconfig.spec.json",
-            "polyfills": []
+            "runner": "vitest",
+            "setupFiles": ["test-setup.ts"]
           }
         }
       }
@@ -213,10 +217,11 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "projects/myrmidon/cadmus-part-epigraphy-signs/tsconfig.spec.json",
-            "polyfills": []
+            "runner": "vitest",
+            "setupFiles": ["test-setup.ts"]
           }
         }
       }
@@ -243,10 +248,11 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "projects/myrmidon/cadmus-part-epigraphy-support/tsconfig.spec.json",
-            "polyfills": []
+            "runner": "vitest",
+            "setupFiles": ["test-setup.ts"]
           }
         }
       }
@@ -273,10 +279,11 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "projects/myrmidon/cadmus-part-epigraphy-support-frr/tsconfig.spec.json",
-            "polyfills": []
+            "runner": "vitest",
+            "setupFiles": ["test-setup.ts"]
           }
         }
       }
@@ -303,10 +310,11 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "projects/myrmidon/cadmus-part-epigraphy-technique/tsconfig.spec.json",
-            "polyfills": []
+            "runner": "vitest",
+            "setupFiles": ["test-setup.ts"]
           }
         }
       }
@@ -333,10 +341,11 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "projects/myrmidon/cadmus-part-epigraphy-scripts/tsconfig.spec.json",
-            "polyfills": []
+            "runner": "vitest",
+            "setupFiles": ["test-setup.ts"]
           }
         }
       }
