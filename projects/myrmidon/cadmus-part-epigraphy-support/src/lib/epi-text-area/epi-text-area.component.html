@@ -22,7 +22,7 @@
         <input matInput [formControl]="type" />
         @if ($any(type).errors?.required && (type.dirty || type.touched)) {
           <mat-error>type required</mat-error>
-          } @if ($any(type).errors?.maxLength && (type.dirty || type.touched)) {
+          } @if ($any(type).errors?.maxlength && (type.dirty || type.touched)) {
           <mat-error>type too long</mat-error>
         }
       </mat-form-field>
@@ -46,7 +46,7 @@
       <mat-form-field>
         <mat-label>layout</mat-label>
         <input matInput [formControl]="layout" />
-        @if ($any(layout).errors?.maxLength && (layout.dirty || layout.touched)) {
+        @if ($any(layout).errors?.maxlength && (layout.dirty || layout.touched)) {
           <mat-error>layout too long</mat-error>
         }
       </mat-form-field>
@@ -56,7 +56,7 @@
     <mat-form-field>
       <mat-label>eid</mat-label>
       <input matInput [formControl]="eid" />
-      @if ($any(eid).errors?.maxLength && (eid.dirty || eid.touched)) {
+      @if ($any(eid).errors?.maxlength && (eid.dirty || eid.touched)) {
         <mat-error>eid too long</mat-error>
       }
     </mat-form-field>
@@ -119,7 +119,7 @@
               @if ($any(frameType).errors?.required && (frameType.dirty ||
                 frameType.touched)) {
                 <mat-error>frame type required</mat-error>
-                } @if ($any(frameType).errors?.maxLength && (frameType.dirty ||
+                } @if ($any(frameType).errors?.maxlength && (frameType.dirty ||
                 frameType.touched)) {
                 <mat-error>frame type too long</mat-error>
               }
@@ -130,7 +130,7 @@
             <mat-form-field class="long-text">
               <mat-label>description</mat-label>
               <textarea matInput [formControl]="frameDescription" rows="3"></textarea>
-              @if ($any(frameDescription).errors?.maxLength && (frameDescription.dirty
+              @if ($any(frameDescription).errors?.maxlength && (frameDescription.dirty
                 || frameDescription.touched)) {
                 <mat-error>description too long</mat-error>
               }
@@ -144,7 +144,7 @@
         <mat-form-field class="long-text">
           <mat-label>note</mat-label>
           <textarea matInput [formControl]="note" rows="3"></textarea>
-          @if ($any(note).errors?.maxLength && (note.dirty || note.touched)) {
+          @if ($any(note).errors?.maxlength && (note.dirty || note.touched)) {
             <mat-error>note too long</mat-error>
           }
         </mat-form-field>

@@ -43,7 +43,7 @@
                   <mat-error>material required</mat-error>
                 }
                 @if (
-                  $any(material).errors?.maxLength &&
+                  $any(material).errors?.maxlength &&
                   (material.dirty || material.touched)
                 ) {
                   <mat-error>material too long</mat-error>
@@ -78,7 +78,7 @@
                   <mat-error>objectType required</mat-error>
                 }
                 @if (
-                  $any(objectType).errors?.maxLength &&
+                  $any(objectType).errors?.maxlength &&
                   (objectType.dirty || objectType.touched)
                 ) {
                   <mat-error>objectType too long</mat-error>

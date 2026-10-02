@@ -8,6 +8,7 @@ import {
   model,
   output,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
   FormControl,
@@ -134,6 +135,12 @@ export class EpiTextAreaComponent {
       note: this.note,
     });
 
+    // frame type is required only when there is a frame, so revalidate it
+    // whenever the frame toggle changes
+    this.hasFrame.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.frameType.updateValueAndValidity());
+
     // when model changes, update form
     effect(() => {
       this.updateForm(this.area());
@@ -152,7 +159,9 @@ export class EpiTextAreaComponent {
     this.hasSize.setValue(area.size ? true : false);
     this.size.setValue(area.size || null);
     this.features.setValue(area.features || []);
-    this.hasFrame.setValue(area.frameType ? true : false);
+    this.hasFrame.setValue(
+      area.frameType || area.frameDescription ? true : false,
+    );
     this.frameType.setValue(area.frameType || null);
     this.frameDescription.setValue(area.frameDescription || null);
     this.note.setValue(area.note || null);

@@ -355,7 +355,7 @@ export class EpiSupportPartComponent
     let part = this.getEditedPart(EPI_SUPPORT_PART_TYPEID) as EpiSupportPart;
 
     part.material = this.material.value?.trim();
-    part.objectType = this.objectType.value?.trim();
+    part.objectType = this.objectType.value?.trim() || undefined;
     part.size =
       this.hasSize.value && this.size.value ? this.size.value : undefined;
     part.counts = this.counts.value || undefined;
@@ -408,6 +408,9 @@ export class EpiSupportPartComponent
         if (yes) {
           if (this.editedAreaIndex() === index) {
             this.closeArea();
+          } else if (this.editedAreaIndex() > index) {
+            // keep the edited index pointing to the edited area
+            this.editedAreaIndex.set(this.editedAreaIndex() - 1);
           }
           const entries = [...this.areas.value];
           entries.splice(index, 1);
@@ -418,6 +421,18 @@ export class EpiSupportPartComponent
       });
   }
 
+  /**
+   * Keep the edited area index pointing to the edited area when the areas
+   * at the specified indexes are swapped.
+   */
+  private swapEditedAreaIndex(a: number, b: number): void {
+    if (this.editedAreaIndex() === a) {
+      this.editedAreaIndex.set(b);
+    } else if (this.editedAreaIndex() === b) {
+      this.editedAreaIndex.set(a);
+    }
+  }
+
   public moveAreaUp(index: number): void {
     if (index < 1) {
       return;
@@ -426,6 +441,7 @@ export class EpiSupportPartComponent
     const areas = [...this.areas.value];
     areas.splice(index, 1);
     areas.splice(index - 1, 0, area);
+    this.swapEditedAreaIndex(index, index - 1);
     this.areas.setValue(areas);
     this.areas.markAsDirty();
     this.areas.updateValueAndValidity();
@@ -439,6 +455,7 @@ export class EpiSupportPartComponent
     const areas = [...this.areas.value];
     areas.splice(index, 1);
     areas.splice(index + 1, 0, area);
+    this.swapEditedAreaIndex(index, index + 1);
     this.areas.setValue(areas);
     this.areas.markAsDirty();
     this.areas.updateValueAndValidity();

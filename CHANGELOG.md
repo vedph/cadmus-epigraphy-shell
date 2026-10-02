@@ -24,6 +24,10 @@
       - fragment and cell mapping editors: same `maxLength` error key bug; empty shelfmark and mapping head/tail texts and locations were saved as empty strings rather than being omitted.
       - fragments part and fragment editors: same edited index bug when deleting or moving fragments (or deleting cell mappings) while editing one.
       - the `physical-grid-presets` thesaurus, supported by the fragment editor for grid size presets, was neither requested by the part feature nor passed by the part editor (it is optional, so nothing changes when it is not defined).
+    - `@myrmidon/cadmus-part-epigraphy-support`:
+      - support part and text area editors: same `maxLength` error key bug.
+      - text area editor: the frame type is required only when the frame is checked, but toggling the frame checkbox did not revalidate it, so that a frame without type could be saved; and as the frame toggle was derived from the frame type only, such a frame's description was then silently dropped at the next edit. Now the frame type is revalidated when toggling the frame, and an area with just a frame description is treated as framed.
+      - support part editor: same edited index bug when deleting or moving text areas while editing one; an empty object type was saved as an empty string rather than being omitted.
 - 2026-09-27:
   - 🆕 added help links to part editors.
   - updated packages.
