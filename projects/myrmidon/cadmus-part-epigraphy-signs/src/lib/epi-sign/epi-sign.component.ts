@@ -5,17 +5,13 @@ import {
   effect,
   Inject,
   input,
+  linkedSignal,
   model,
   Optional,
   output,
+  untracked,
 } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormField, form, maxLength, required } from '@angular/forms/signals';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -43,6 +39,12 @@ import {
 } from '@myrmidon/cadmus-text-ed';
 import { ThesaurusEntry } from '@myrmidon/cadmus-core';
 import { Flag, FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
+import {
+  copyFormValue,
+  isImplicitSubmission,
+  setFieldFromChild,
+  setFieldFromEditor,
+} from '@myrmidon/cadmus-ui';
 
 import { EpiSign } from '../epi-signs-part';
 
@@ -53,6 +55,33 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   };
 }
 
+interface EpiSignControls {
+  id: string;
+  features: string[];
+  description: string;
+  measurements: PhysicalMeasurement[];
+}
+
+function toDraft(sign?: EpiSign | null): EpiSignControls {
+  return {
+    id: sign?.id || '',
+    features: [...(sign?.features || [])],
+    description: sign?.description || '',
+    measurements: copyFormValue(sign?.measurements || []),
+  };
+}
+
+function toModel(draft: EpiSignControls): EpiSign {
+  return {
+    id: draft.id.trim(),
+    features: draft.features.length ? [...draft.features] : undefined,
+    description: draft.description.trim() || undefined,
+    measurements: draft.measurements.length
+      ? copyFormValue(draft.measurements)
+      : undefined,
+  };
+}
+
 /**
  * Epigraphic sign editor component.
  */
@@ -60,7 +89,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   selector: 'cadmus-epi-sign',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ReactiveFormsModule,
+    FormField,
     MatButtonModule,
     MatExpansionModule,
     MatFormFieldModule,
@@ -106,40 +135,51 @@ export class EpiSignComponent {
 
   public readonly signCancel = output();
 
-  public id: FormControl<string>;
-  public features: FormControl<string[]>;
-  public description: FormControl<string | null>;
-  public measurements: FormControl<PhysicalMeasurement[]>;
-  public form: FormGroup;
+  /**
+   * The editable draft, derived from the sign. The echo of our own save,
+   * normalized by toModel, keeps the draft instead of rebuilding it.
+   */
+  private readonly _draft = linkedSignal<EpiSign | undefined, EpiSignControls>(
+    {
+      source: () => this.sign(),
+      computation: (sign, previous) =>
+        previous &&
+        JSON.stringify(sign) === JSON.stringify(toModel(previous.value))
+          ? previous.value
+          : toDraft(sign),
+    },
+  );
+
+  public readonly form = form(this._draft, (p) => {
+    required(p.id);
+    maxLength(p.id, 100);
+    maxLength(p.description, 10000);
+  });
+
+  /**
+   * Set a text field from its editor. See setFieldFromEditor.
+   */
+  public readonly setFieldFromEditor = setFieldFromEditor;
 
   constructor(
-    formBuilder: FormBuilder,
     private _editService: CadmusTextEdService,
     @Inject(CADMUS_TEXT_ED_BINDINGS_TOKEN)
     @Optional()
     private _editorBindings?: CadmusTextEdBindings,
   ) {
-    // form
-    this.id = formBuilder.control('', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.maxLength(100)],
-    });
-    this.features = formBuilder.control([], { nonNullable: true });
-    this.description = formBuilder.control(null, {
-      validators: Validators.maxLength(10000),
-    });
-    this.measurements = formBuilder.control([], { nonNullable: true });
-
-    this.form = formBuilder.group({
-      id: this.id,
-      features: this.features,
-      description: this.description,
-      measurements: this.measurements,
-    });
-
+    // clear the interaction state when the draft mirrors the sign again
     effect(() => {
-      this.updateForm(this.sign());
+      const draft = this._draft();
+      untracked(() => {
+        if (this.isDraftInSync(draft)) {
+          this.form().reset();
+        }
+      });
     });
+  }
+
+  private isDraftInSync(draft: EpiSignControls): boolean {
+    return JSON.stringify(draft) === JSON.stringify(toDraft(this.sign()));
   }
 
   public onEditorInit(event: EditorInitializedEvent) {
@@ -179,41 +219,30 @@ export class EpiSignComponent {
     ]);
   }
 
-  private updateForm(sign: EpiSign | undefined | null): void {
-    if (!sign) {
-      this.form.reset();
-      return;
-    }
-
-    this.id.setValue(sign.id || '');
-    this.features.setValue(sign.features || []);
-    this.description.setValue(sign.description || null);
-    this.measurements.setValue(sign.measurements || []);
-
-    this.form.markAsPristine();
-  }
-
-  private getSign(): EpiSign {
-    return {
-      id: this.id.value.trim(),
-      features: this.features.value.length ? this.features.value : undefined,
-      description: this.description.value?.trim() || undefined,
-      measurements: this.measurements.value.length
-        ? this.measurements.value
-        : undefined,
-    };
-  }
-
   public onFeatIdsChange(ids: string[]): void {
-    this.features.setValue(ids);
-    this.features.markAsDirty();
-    this.features.updateValueAndValidity();
+    setFieldFromChild(this.form.features, [...ids]);
   }
 
   public onMeasurementsChange(measurements: PhysicalMeasurement[]): void {
-    this.measurements.setValue(measurements);
-    this.measurements.markAsDirty();
-    this.measurements.updateValueAndValidity();
+    setFieldFromChild(
+      this.form.measurements,
+      copyFormValue(measurements || []),
+    );
+  }
+
+  /**
+   * Enter in a text input saves, as the implicit submission of the former
+   * form did, unless the save button is disabled.
+   */
+  public onEnterKey(event: Event): void {
+    if (!isImplicitSubmission(event)) {
+      return;
+    }
+    event.preventDefault();
+    if (this.form().invalid() || !this.form().dirty()) {
+      return;
+    }
+    this.save();
   }
 
   public cancel(): void {
@@ -221,9 +250,11 @@ export class EpiSignComponent {
   }
 
   public save(): void {
-    if (this.form.invalid) {
+    if (this.form().invalid()) {
+      this.form().markAsTouched();
       return;
     }
-    this.sign.set(this.getSign());
+    this.sign.set(toModel(this._draft()));
+    this.form().reset();
   }
 }

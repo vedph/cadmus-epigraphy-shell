@@ -16,6 +16,12 @@ import {
 import { EpiFormulaPatternComponent } from '../epi-formula-pattern/epi-formula-pattern.component';
 import { EpiFormulaPatternsPartComponent } from './epi-formula-patterns-part.component';
 
+// the form tags the objects in its arrays with an identity Symbol:
+// compare their plain data only
+function plain<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value));
+}
+
 const THESAURI: ThesauriSet = {
   'epi-formula-pattern-languages': {
     id: 'epi-formula-pattern-languages@en',
@@ -89,7 +95,7 @@ describe('EpiFormulaPatternsPartComponent', () => {
   }
 
   function eids(): (string | undefined)[] {
-    return component.patterns.value.map((p) => p.eid);
+    return component.form.patterns().value().map((p) => p.eid);
   }
 
   beforeEach(async () => {
@@ -133,8 +139,8 @@ describe('EpiFormulaPatternsPartComponent', () => {
 
   it('should create with an invalid empty form', () => {
     expect(component).toBeTruthy();
-    expect(component.patterns.value).toEqual([]);
-    expect(component.form.invalid).toBe(true);
+    expect(plain(component.form.patterns().value())).toEqual([]);
+    expect(component.form().invalid()).toBe(true);
     expect(fixture.nativeElement.querySelector('table')).toBeNull();
   });
 
@@ -149,9 +155,9 @@ describe('EpiFormulaPatternsPartComponent', () => {
     expect(component.langEntries()?.length).toBe(2);
     expect(component.tagEntries()?.length).toBe(1);
     expect(component.tokTagEntries()?.length).toBe(1);
-    expect(component.patterns.value).toEqual(createPatterns());
-    expect(component.form.valid).toBe(true);
-    expect(component.form.pristine).toBe(true);
+    expect(plain(component.form.patterns().value())).toEqual(createPatterns());
+    expect(component.form().valid()).toBe(true);
+    expect(component.form().dirty()).toBe(false);
   });
 
   it('should render patterns with their tokens', () => {
@@ -175,14 +181,14 @@ describe('EpiFormulaPatternsPartComponent', () => {
   it('should reset form when data has no value', () => {
     setData({ value: createPart(), thesauri: THESAURI });
     setData({ value: null, thesauri: THESAURI });
-    expect(component.patterns.value).toEqual([]);
+    expect(plain(component.form.patterns().value())).toEqual([]);
   });
 
   it('should default patterns to empty array when missing', () => {
     const part = createPart();
     part.patterns = undefined as unknown as EpiFormulaPattern[];
     setData({ value: part, thesauri: {} });
-    expect(component.patterns.value).toEqual([]);
+    expect(plain(component.form.patterns().value())).toEqual([]);
   });
 
   it('should add a new pattern', () => {
@@ -209,12 +215,12 @@ describe('EpiFormulaPatternsPartComponent', () => {
 
   it('should edit a copy of a pattern', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editPattern(component.patterns.value[1], 1);
+    component.editPattern(component.form.patterns().value()[1], 1);
     fixture.detectChanges();
     expect(component.edited()).toEqual(createPatterns()[1]);
-    expect(component.edited()).not.toBe(component.patterns.value[1]);
+    expect(component.edited()).not.toBe(component.form.patterns().value()[1]);
     expect(getRows()[1].classList.contains('selected')).toBe(true);
-    expect(getChildEditor()!.eid.value).toBe('b');
+    expect(getChildEditor()!.form.eid().value()).toBe('b');
     const header: HTMLElement = fixture.nativeElement.querySelector(
       'mat-expansion-panel-header',
     );
@@ -235,26 +241,27 @@ describe('EpiFormulaPatternsPartComponent', () => {
     component.dirtyChange.subscribe(spy);
     component.addPattern();
     component.savePattern({ language: 'lat', tokens: [] });
-    expect(component.patterns.value.length).toBe(1);
-    expect(component.patterns.dirty).toBe(true);
-    expect(component.form.valid).toBe(true);
+    expect(component.form.patterns().value().length).toBe(1);
+    expect(component.form.patterns().dirty()).toBe(true);
+    expect(component.form().valid()).toBe(true);
     expect(component.edited()).toBeUndefined();
+    fixture.detectChanges();
     expect(spy).toHaveBeenCalledWith(true);
   });
 
   it('should replace an edited pattern', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editPattern(component.patterns.value[1], 1);
+    component.editPattern(component.form.patterns().value()[1], 1);
     component.savePattern({ eid: 'z', language: 'lat', tokens: [] });
     expect(eids()).toEqual(['a', 'z', 'c']);
   });
 
   it('should save pattern from child editor', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editPattern(component.patterns.value[2], 2);
+    component.editPattern(component.form.patterns().value()[2], 2);
     fixture.detectChanges();
     const editor = getChildEditor()!;
-    editor.eid.setValue('c2');
+    editor.form.eid().value.set('c2');
     editor.save();
     fixture.detectChanges();
     expect(eids()).toEqual(['a', 'b', 'c2']);
@@ -266,7 +273,7 @@ describe('EpiFormulaPatternsPartComponent', () => {
     component.deletePattern(1);
     expect(dialogService.confirm).toHaveBeenCalled();
     expect(eids()).toEqual(['a', 'c']);
-    expect(component.patterns.dirty).toBe(true);
+    expect(component.form.patterns().dirty()).toBe(true);
   });
 
   it('should not delete a pattern without confirmation', () => {
@@ -278,14 +285,14 @@ describe('EpiFormulaPatternsPartComponent', () => {
 
   it('should close the editor when deleting the edited pattern', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editPattern(component.patterns.value[1], 1);
+    component.editPattern(component.form.patterns().value()[1], 1);
     component.deletePattern(1);
     expect(component.edited()).toBeUndefined();
   });
 
   it('should keep edited pattern when deleting a previous pattern', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editPattern(component.patterns.value[2], 2);
+    component.editPattern(component.form.patterns().value()[2], 2);
     component.deletePattern(0);
     expect(component.editedIndex()).toBe(1);
     component.savePattern({ eid: 'c2', language: 'grc', tokens: [] });
@@ -297,17 +304,17 @@ describe('EpiFormulaPatternsPartComponent', () => {
     component.movePatternUp(0);
     component.movePatternDown(2);
     expect(eids()).toEqual(['a', 'b', 'c']);
-    expect(component.patterns.dirty).toBe(false);
+    expect(component.form.patterns().dirty()).toBe(false);
     component.movePatternUp(2);
     expect(eids()).toEqual(['a', 'c', 'b']);
     component.movePatternDown(0);
     expect(eids()).toEqual(['c', 'a', 'b']);
-    expect(component.patterns.dirty).toBe(true);
+    expect(component.form.patterns().dirty()).toBe(true);
   });
 
   it('should keep edited pattern when moving patterns', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editPattern(component.patterns.value[2], 2);
+    component.editPattern(component.form.patterns().value()[2], 2);
     component.movePatternUp(2);
     expect(component.editedIndex()).toBe(1);
     component.movePatternDown(0);
@@ -363,5 +370,61 @@ describe('EpiFormulaPatternsPartComponent', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     component.save();
     expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should save a model whose patterns carry no Symbol tags', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    const spy = vi.fn();
+    component.data.subscribe(spy);
+    expect(
+      Object.getOwnPropertySymbols(component.form.patterns().value()[0])
+        .length,
+    ).toBeGreaterThan(0);
+    component.movePatternDown(0);
+    component.save();
+    const part = (spy.mock.calls[0][0] as EditedObject<EpiFormulaPatternsPart>)
+      .value!;
+    for (const pattern of part.patterns) {
+      expect(Object.getOwnPropertySymbols(pattern)).toEqual([]);
+    }
+  });
+
+  it('should not tag or change the patterns of the bound part', () => {
+    const part = createPart();
+    setData({ value: part, thesauri: THESAURI });
+    component.editPattern(component.form.patterns().value()[0], 0);
+    expect(Object.getOwnPropertySymbols(component.edited()!)).toEqual([]);
+    component.savePattern({ language: 'grc', tokens: [] });
+    component.save();
+    expect(part.patterns).toEqual(createPatterns());
+    for (const pattern of part.patterns) {
+      expect(Object.getOwnPropertySymbols(pattern)).toEqual([]);
+    }
+  });
+
+  it('should stay pristine when data is bound, and when it is bound again', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    expect(component.isDirty()).toBe(false);
+    component.movePatternDown(0);
+    expect(component.isDirty()).toBe(true);
+    setData({ value: createPart(), thesauri: THESAURI });
+    expect(component.isDirty()).toBe(false);
+  });
+
+  it('should render no <form> of its own with the nested editors open', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    component.editPattern(component.form.patterns().value()[0], 0);
+    fixture.detectChanges();
+    const editor = getChildEditor()!;
+    editor.editToken(editor.form.tokens().value()[0], 0);
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('cadmus-epi-formula-token'),
+    ).toBeTruthy();
+    const forms = Array.from(
+      fixture.nativeElement.querySelectorAll('form') as NodeListOf<HTMLElement>,
+    );
+    // only the thesaurus tree's own filter form
+    expect(forms.every((f) => f.closest('cadmus-thesaurus-tree'))).toBe(true);
   });
 });

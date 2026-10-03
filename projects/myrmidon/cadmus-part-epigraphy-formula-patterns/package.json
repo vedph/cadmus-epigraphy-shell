@@ -1,6 +1,6 @@
 {
   "name": "@myrmidon/cadmus-part-epigraphy-formula-patterns",
-  "version": "14.0.2",
+  "version": "16.0.0",
   "description": "Cadmus - epigraphic formula components.",
   "keywords": [
     "Cadmus",
@@ -18,11 +18,11 @@
     "@angular/common": "^22.2.1",
     "@angular/core": "^22.2.1",
     "@angular/material": "^22.2.1",
-    "@myrmidon/cadmus-mat-physical-size": "^10.0.2",
-    "@myrmidon/cadmus-refs-decorated-counts": "^10.0.2",
-    "@myrmidon/cadmus-ui-flag-set": "^10.0.2",
-    "@myrmidon/cadmus-ui": "^18.0.1",
-    "@myrmidon/cadmus-item-editor": "^18.0.1"
+    "@myrmidon/cadmus-mat-physical-size": "^10.0.4",
+    "@myrmidon/cadmus-refs-decorated-counts": "^10.0.3",
+    "@myrmidon/cadmus-ui-flag-set": "^10.0.3",
+    "@myrmidon/cadmus-ui": "^20.0.0",
+    "@myrmidon/cadmus-item-editor": "^20.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

@@ -1,111 +1,110 @@
-<form [formGroup]="form" (submit)="save()">
-  <mat-card>
-    <mat-card-header>
-      <div mat-card-avatar>
-        <mat-icon>picture_in_picture</mat-icon>
-      </div>
-      <mat-card-title>{{
-        (modelName() | titlecase) || "Epigraphic Support Fragments Part"
-      }}</mat-card-title>
-      <cadmus-help-link [url]="helpUrl()" />
-    </mat-card-header>
-    <mat-card-content>
-      <div id="toolbar">
-        <button
-          type="button"
-          mat-flat-button
-          class="mat-primary"
-          (click)="addFr()"
-        >
-          <mat-icon>add_circle</mat-icon> fragment
-        </button>
-      </div>
-      @if (fragments.value.length) {
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th>ID</th>
-              <th>size</th>
-              <th>location</th>
+<mat-card>
+  <mat-card-header>
+    <div mat-card-avatar>
+      <mat-icon>picture_in_picture</mat-icon>
+    </div>
+    <mat-card-title>{{
+      (modelName() | titlecase) || "Epigraphic Support Fragments Part"
+    }}</mat-card-title>
+    <cadmus-help-link [url]="helpUrl()" />
+  </mat-card-header>
+  <mat-card-content>
+    <div id="toolbar">
+      <button
+        type="button"
+        mat-flat-button
+        class="mat-primary"
+        (click)="addFr()"
+      >
+        <mat-icon>add_circle</mat-icon> fragment
+      </button>
+    </div>
+    @if (form.fragments().value().length) {
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>ID</th>
+            <th>size</th>
+            <th>location</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (
+            fr of form.fragments().value();
+            track fr.id;
+            let i = $index;
+            let first = $first;
+            let last = $last
+          ) {
+            <tr [class.selected]="i === editedIndex()">
+              <td class="fit-width">
+                <button
+                  type="button"
+                  mat-icon-button
+                  matTooltip="Edit this fragment"
+                  (click)="editFr(fr, i)"
+                >
+                  <mat-icon class="mat-primary">edit</mat-icon>
+                </button>
+                <button
+                  type="button"
+                  mat-icon-button
+                  matTooltip="Move this fragment up"
+                  [disabled]="first"
+                  (click)="moveFrUp(i)"
+                >
+                  <mat-icon>arrow_upward</mat-icon>
+                </button>
+                <button
+                  type="button"
+                  mat-icon-button
+                  matTooltip="Move this fragment down"
+                  [disabled]="last"
+                  (click)="moveFrDown(i)"
+                >
+                  <mat-icon>arrow_downward</mat-icon>
+                </button>
+                <button
+                  type="button"
+                  mat-icon-button
+                  matTooltip="Delete this fragment"
+                  (click)="deleteFr(i)"
+                >
+                  <mat-icon class="mat-warn">remove_circle</mat-icon>
+                </button>
+              </td>
+              <td>{{ fr.id }}</td>
+              <td>{{ fr.size | physicalSize }}</td>
+              <td>{{ fr.location }}</td>
             </tr>
-          </thead>
-          <tbody>
-            @for (
-              fr of fragments.value;
-              track fr.id;
-              let i = $index;
-              let first = $first;
-              let last = $last
-            ) {
-              <tr [class.selected]="i === editedIndex()">
-                <td class="fit-width">
-                  <button
-                    type="button"
-                    mat-icon-button
-                    matTooltip="Edit this fragment"
-                    (click)="editFr(fr, i)"
-                  >
-                    <mat-icon class="mat-primary">edit</mat-icon>
-                  </button>
-                  <button
-                    type="button"
-                    mat-icon-button
-                    matTooltip="Move this fragment up"
-                    [disabled]="first"
-                    (click)="moveFrUp(i)"
-                  >
-                    <mat-icon>arrow_upward</mat-icon>
-                  </button>
-                  <button
-                    type="button"
-                    mat-icon-button
-                    matTooltip="Move this fragment down"
-                    [disabled]="last"
-                    (click)="moveFrDown(i)"
-                  >
-                    <mat-icon>arrow_downward</mat-icon>
-                  </button>
-                  <button
-                    type="button"
-                    mat-icon-button
-                    matTooltip="Delete this fragment"
-                    (click)="deleteFr(i)"
-                  >
-                    <mat-icon class="mat-warn">remove_circle</mat-icon>
-                  </button>
-                </td>
-                <td>{{ fr.id }}</td>
-                <td>{{ fr.size | physicalSize }}</td>
-                <td>{{ fr.location }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      }
-      @if (edited()) {
-        <mat-expansion-panel [expanded]="edited()" [disabled]="!edited()">
-          <mat-expansion-panel-header>
-            <mat-panel-title> fragment </mat-panel-title>
-          </mat-expansion-panel-header>
-          <cadmus-epi-support-fr
-            [tagEntries]="tagEntries()"
-            [unitEntries]="unitEntries()"
-            [dimTagEntries]="dimTagEntries()"
-            [gridPresetEntries]="gridPresetEntries()"
-            [fragment]="edited()"
-            (fragmentChange)="saveFr($event!)"
-            (fragmentCancel)="closeFr()"
-          />
-        </mat-expansion-panel>
-      }
-    </mat-card-content>
-    <mat-card-actions>
-      <cadmus-close-save-buttons
-        [form]="form"
-        [noSave]="userLevel < 2"
-        (closeRequest)="close()"
-      />
-    </mat-card-actions>
-  </mat-card>
-</form>
+          }
+        </tbody>
+      </table>
+    }
+    @if (edited()) {
+      <mat-expansion-panel [expanded]="edited()" [disabled]="!edited()">
+        <mat-expansion-panel-header>
+          <mat-panel-title> fragment </mat-panel-title>
+        </mat-expansion-panel-header>
+        <cadmus-epi-support-fr
+          [tagEntries]="tagEntries()"
+          [unitEntries]="unitEntries()"
+          [dimTagEntries]="dimTagEntries()"
+          [gridPresetEntries]="gridPresetEntries()"
+          [fragment]="edited()"
+          (fragmentChange)="saveFr($event!)"
+          (fragmentCancel)="closeFr()"
+        />
+      </mat-expansion-panel>
+    }
+  </mat-card-content>
+  <mat-card-actions>
+    <cadmus-close-save-buttons
+      [form]="form"
+      [noSave]="userLevel < 2"
+      (closeRequest)="close()"
+      (saveRequest)="save()"
+    />
+  </mat-card-actions>
+</mat-card>

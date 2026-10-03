@@ -159,13 +159,15 @@ describe('EpiScriptsPartFeatureComponent', () => {
     await setup('p1');
     const editor = getEditor();
     expect(editor.identity()).toEqual(component.identity());
-    expect(editor.scripts.value).toEqual([{ system: 'lat', script: 'cap' }]);
+    expect(JSON.parse(JSON.stringify(editor.form.scripts().value()))).toEqual([{ system: 'lat', script: 'cap' }]);
   });
 
   it('should track editor dirty state', async () => {
     await setup('p1');
     const editor = getEditor();
     editor.saveScript({ script: 'unc' });
+    // dirtyChange is emitted by an effect
+    fixture.detectChanges();
     expect(component.dirty()).toBe(true);
     expect(component.canDeactivate()).toBe(false);
   });

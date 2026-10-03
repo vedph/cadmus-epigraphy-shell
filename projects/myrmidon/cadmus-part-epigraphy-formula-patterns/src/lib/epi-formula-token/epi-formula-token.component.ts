@@ -1,19 +1,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   input,
+  linkedSignal,
   model,
   output,
+  untracked,
 } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormField, form, maxLength, required } from '@angular/forms/signals';
 
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatIconButton } from '@angular/material/button';
@@ -27,7 +23,7 @@ import {
 } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 
-import { NgxToolsValidators } from '@myrmidon/ngx-tools';
+import { NgxToolsSignalValidators } from '@myrmidon/ngx-tools';
 
 import { ThesaurusEntry } from '@myrmidon/cadmus-core';
 import {
@@ -36,6 +32,37 @@ import {
 } from '@myrmidon/cadmus-thesaurus-store';
 
 import { EpiFormulaToken } from '../epi-formula-patterns-part';
+
+interface EpiFormulaTokenControls {
+  optional: boolean;
+  placeholder: boolean;
+  tags: string[];
+  values: string;
+  note: string;
+}
+
+function toDraft(token?: EpiFormulaToken | null): EpiFormulaTokenControls {
+  return {
+    optional: token?.isOptional || false,
+    placeholder: token?.isPlaceholder || false,
+    tags: [...(token?.tags || [])],
+    values: (token?.values || []).join('\n'),
+    note: token?.note || '',
+  };
+}
+
+function toModel(draft: EpiFormulaTokenControls): EpiFormulaToken {
+  return {
+    tags: [...draft.tags],
+    values: draft.values
+      .split('\n')
+      .map((s) => s.trim())
+      .filter((s) => s),
+    isOptional: draft.optional ? true : undefined,
+    isPlaceholder: draft.placeholder ? true : undefined,
+    note: draft.note.trim() || undefined,
+  };
+}
 
 /**
  * Epigraphic formula pattern's token editor.
@@ -46,8 +73,7 @@ import { EpiFormulaToken } from '../epi-formula-patterns-part';
   styleUrls: ['./epi-formula-token.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    FormsModule,
-    ReactiveFormsModule,
+    FormField,
     MatCheckbox,
     MatIconButton,
     MatTooltip,
@@ -69,115 +95,99 @@ export class EpiFormulaTokenComponent {
   // epi-formula-token-tags
   public readonly tagEntries = input<ThesaurusEntry[]>();
 
-  public editorClose = output();
+  public readonly editorClose = output();
 
-  public optional: FormControl<boolean>;
-  public placeholder: FormControl<boolean>;
-  public tags: FormControl<ThesaurusEntry[]>;
-  public values: FormControl<string>;
-  public note: FormControl<string | null>;
-  public form: FormGroup;
+  /**
+   * The editable draft, derived from the token. The echo of our own save,
+   * normalized by toModel, keeps the draft instead of rebuilding it.
+   */
+  private readonly _draft = linkedSignal<
+    EpiFormulaToken | undefined,
+    EpiFormulaTokenControls
+  >({
+    source: () => this.token(),
+    computation: (token, previous) =>
+      previous &&
+      JSON.stringify(token) === JSON.stringify(toModel(previous.value))
+        ? previous.value
+        : toDraft(token),
+  });
 
-  constructor(formBuilder: FormBuilder) {
-    // form
-    this.optional = formBuilder.control(false, { nonNullable: true });
-    this.placeholder = formBuilder.control(false, { nonNullable: true });
-    this.tags = formBuilder.control([], {
-      validators: NgxToolsValidators.strictMinLengthValidator(1),
-      nonNullable: true,
-    });
-    this.values = formBuilder.control('', {
-      validators: [Validators.required, Validators.maxLength(500)],
-      nonNullable: true,
-    });
-    this.note = formBuilder.control(null, Validators.maxLength(1000));
-    this.form = formBuilder.group({
-      optional: this.optional,
-      placeholder: this.placeholder,
-      tags: this.tags,
-      values: this.values,
-      note: this.note,
-    });
+  public readonly form = form(this._draft, (p) => {
+    NgxToolsSignalValidators.strictMinLength(p.tags, 1);
+    required(p.values);
+    maxLength(p.values, 500);
+    maxLength(p.note, 1000);
+  });
 
+  /**
+   * The labels of the tags, from their thesaurus entries; a tag with no
+   * entry is labeled with its ID.
+   */
+  public readonly tagLabels = computed<string[]>(() => {
+    const entries = this.tagEntries();
+    return this.form
+      .tags()
+      .value()
+      .map((id) => entries?.find((e) => e.id === id)?.value ?? id);
+  });
+
+  constructor() {
+    // clear the interaction state when the draft mirrors the token again
     effect(() => {
-      this.updateForm(this.token());
+      const draft = this._draft();
+      untracked(() => {
+        if (this.isDraftInSync(draft)) {
+          this.form().reset();
+        }
+      });
     });
   }
 
-  private updateForm(pattern: EpiFormulaToken | undefined): void {
-    if (!pattern) {
-      this.form.reset();
-      return;
-    }
-    this.optional.setValue(pattern.isOptional || false);
-    this.placeholder.setValue(pattern.isPlaceholder || false);
-    this.tags.setValue(
-      pattern.tags.map(
-        (t) => this.tagEntries()?.find((e) => e.id === t) || { id: t, value: t }
-      )
-    );
-    this.values.setValue(pattern.values.join('\n'));
-    this.note.setValue(pattern.note || null);
-    this.form.markAsPristine();
+  private isDraftInSync(draft: EpiFormulaTokenControls): boolean {
+    return JSON.stringify(draft) === JSON.stringify(toDraft(this.token()));
+  }
+
+  private setTags(tags: string[]): void {
+    this.form.tags().value.set(tags);
+    this.form.tags().markAsDirty();
   }
 
   public onEntryChange(entry: ThesaurusEntry): void {
     // append the new tag if not already present
-    if (this.tags.value?.some((e: ThesaurusEntry) => e.id === entry.id)) {
+    const tags = this.form.tags().value();
+    if (tags.includes(entry.id)) {
       return;
     }
-    const tags = [...this.tags.value];
-    tags.push(entry);
-    this.tags.setValue(tags);
-    this.tags.markAsDirty();
-    this.tags.updateValueAndValidity();
+    this.setTags([...tags, entry.id]);
   }
 
   public removeTag(index: number): void {
-    const tags = [...this.tags.value];
+    const tags = [...this.form.tags().value()];
     tags.splice(index, 1);
-    this.tags.setValue(tags);
-    this.tags.markAsDirty();
-    this.tags.updateValueAndValidity();
+    this.setTags(tags);
   }
 
   public moveTagUp(index: number): void {
     if (index < 1) {
       return;
     }
-    const tags = [...this.tags.value];
-    const e = tags[index];
+    const tags = [...this.form.tags().value()];
+    const t = tags[index];
     tags[index] = tags[index - 1];
-    tags[index - 1] = e;
-    this.tags.setValue(tags);
-    this.tags.markAsDirty();
-    this.tags.updateValueAndValidity();
+    tags[index - 1] = t;
+    this.setTags(tags);
   }
 
   public moveTagDown(index: number): void {
-    if (index + 1 >= this.tags.value.length) {
+    const tags = [...this.form.tags().value()];
+    if (index + 1 >= tags.length) {
       return;
     }
-    const tags = [...this.tags.value];
-    const e = tags[index];
+    const t = tags[index];
     tags[index] = tags[index + 1];
-    tags[index + 1] = e;
-    this.tags.setValue(tags);
-    this.tags.markAsDirty();
-    this.tags.updateValueAndValidity();
-  }
-
-  private getToken(): EpiFormulaToken {
-    return {
-      tags: this.tags.value.map((e: ThesaurusEntry) => e.id),
-      values: this.values.value
-        .split('\n')
-        .map((s: string) => s.trim())
-        .filter((s: string) => s),
-      isOptional: this.optional.value ? true : undefined,
-      isPlaceholder: this.placeholder.value ? true : undefined,
-      note: this.note.value?.trim() || undefined,
-    };
+    tags[index + 1] = t;
+    this.setTags(tags);
   }
 
   public cancel(): void {
@@ -185,10 +195,12 @@ export class EpiFormulaTokenComponent {
   }
 
   public save(): void {
-    if (this.form.invalid) {
+    if (this.form().invalid()) {
+      this.form().markAsTouched();
       return;
     }
-    this.token.set(this.getToken());
+    this.token.set(toModel(this._draft()));
+    this.form().reset();
   }
 
   public renderLabel(label: string): string {

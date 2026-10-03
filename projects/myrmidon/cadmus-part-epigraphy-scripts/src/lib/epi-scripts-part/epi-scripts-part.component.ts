@@ -1,12 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import {
-  FormControl,
-  FormBuilder,
-  FormGroup,
-  UntypedFormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  linkedSignal,
+  signal,
+} from '@angular/core';
 
 import {
   MatCard,
@@ -25,14 +24,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { take } from 'rxjs';
 
-import { deepCopy, FlatLookupPipe, NgxToolsValidators } from '@myrmidon/ngx-tools';
+import { FlatLookupPipe, NgxToolsSignalValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
-import { AuthJwtService } from '@myrmidon/auth-jwt-login';
-import { ThesauriSet, ThesaurusEntry, EditedObject } from '@myrmidon/cadmus-core';
+import { ThesaurusEntry } from '@myrmidon/cadmus-core';
 import {
   ModelEditorComponentBase,
   CloseSaveButtonsComponent,
   HelpLinkComponent,
+  copyFormValue,
 } from '@myrmidon/cadmus-ui';
 
 import {
@@ -41,6 +40,16 @@ import {
   EpiScriptsPart,
 } from '../epi-scripts-part';
 import { EpiScriptComponent } from '../epi-script/epi-script.component';
+
+interface EpiScriptsPartControls {
+  scripts: EpiScript[];
+}
+
+function toDraft(part?: EpiScriptsPart | null): EpiScriptsPartControls {
+  return {
+    scripts: copyFormValue(part?.scripts || []),
+  };
+}
 
 /**
  * EpiScripts part editor component.
@@ -53,8 +62,6 @@ import { EpiScriptComponent } from '../epi-script/epi-script.component';
   styleUrl: './epi-scripts-part.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    FormsModule,
-    ReactiveFormsModule,
     MatButtonModule,
     MatCard,
     MatCardHeader,
@@ -72,99 +79,45 @@ import { EpiScriptComponent } from '../epi-script/epi-script.component';
     HelpLinkComponent,
   ],
 })
-export class EpiScriptsPartComponent
-  extends ModelEditorComponentBase<EpiScriptsPart>
-  implements OnInit
-{
+export class EpiScriptsPartComponent extends ModelEditorComponentBase<EpiScriptsPart> {
+  private readonly _dialogService = inject(DialogService);
+
   public readonly edited = signal<EpiScript | undefined>(undefined);
   public readonly editedIndex = signal<number>(-1);
 
+  private readonly _draft = linkedSignal(() => toDraft(this.data()?.value));
+  public readonly form = this.createForm(this._draft, (p) => {
+    // at least 1 entry
+    NgxToolsSignalValidators.strictMinLength(p.scripts, 1);
+  });
+
   // thesauri entries
   // epi-script-systems
-  public readonly systemEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+  public readonly systemEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['epi-script-systems']?.entries,
+  );
   // epi-scripts
-  public readonly scriptEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+  public readonly scriptEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['epi-scripts']?.entries,
+  );
   // epi-script-casings
-  public readonly casingEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+  public readonly casingEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['epi-script-casings']?.entries,
+  );
   // epi-script-features
-  public readonly featEntries = signal<ThesaurusEntry[] | undefined>(undefined);
-
-  public scripts: FormControl<EpiScript[]>;
-
-  constructor(
-    authService: AuthJwtService,
-    formBuilder: FormBuilder,
-    private _dialogService: DialogService
-  ) {
-    super(authService, formBuilder);
-    // form
-    this.scripts = formBuilder.control([], {
-      // at least 1 entry
-      validators: NgxToolsValidators.strictMinLengthValidator(1),
-      nonNullable: true,
-    });
-  }
-
-  public override ngOnInit(): void {
-    super.ngOnInit();
-  }
-
-  protected buildForm(formBuilder: FormBuilder): FormGroup | UntypedFormGroup {
-    return formBuilder.group({
-      scripts: this.scripts,
-    });
-  }
-
-  private updateThesauri(thesauri: ThesauriSet): void {
-    let key = 'epi-script-systems';
-    if (this.hasThesaurus(key)) {
-      this.systemEntries.set(thesauri[key].entries);
-    } else {
-      this.systemEntries.set(undefined);
-    }
-    key = 'epi-scripts';
-    if (this.hasThesaurus(key)) {
-      this.scriptEntries.set(thesauri[key].entries);
-    } else {
-      this.scriptEntries.set(undefined);
-    }
-    key = 'epi-script-casings';
-    if (this.hasThesaurus(key)) {
-      this.casingEntries.set(thesauri[key].entries);
-    } else {
-      this.casingEntries.set(undefined);
-    }
-    key = 'epi-script-features';
-    if (this.hasThesaurus(key)) {
-      this.featEntries.set(thesauri[key].entries);
-    } else {
-      this.featEntries.set(undefined);
-    }
-  }
-
-  private updateForm(part?: EpiScriptsPart | null): void {
-    if (!part) {
-      this.form.reset();
-      return;
-    }
-    this.scripts.setValue(part.scripts || []);
-    this.form.markAsPristine();
-  }
-
-  protected override onDataSet(data?: EditedObject<EpiScriptsPart>): void {
-    // thesauri
-    if (data?.thesauri) {
-      this.updateThesauri(data.thesauri);
-    }
-
-    // form
-    this.updateForm(data?.value);
-  }
+  public readonly featEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['epi-script-features']?.entries,
+  );
 
   protected getValue(): EpiScriptsPart {
-    let part = this.getEditedPart(EPI_SCRIPTS_PART_TYPEID) as EpiScriptsPart;
-    part.scripts = this.scripts.value || [];
+    const part = this.getEditedPart(EPI_SCRIPTS_PART_TYPEID) as EpiScriptsPart;
+    part.scripts = copyFormValue(this._draft().scripts);
     return part;
+  }
+
+  private setScripts(scripts: EpiScript[]): void {
+    this.form.scripts().value.set(scripts);
+    this.form.scripts().markAsDirty();
   }
 
   public addScript(): void {
@@ -176,7 +129,7 @@ export class EpiScriptsPartComponent
 
   public editScript(script: EpiScript, index: number): void {
     this.editedIndex.set(index);
-    this.edited.set(deepCopy(script));
+    this.edited.set(copyFormValue(script));
   }
 
   public closeScript(): void {
@@ -185,15 +138,13 @@ export class EpiScriptsPartComponent
   }
 
   public saveScript(script: EpiScript): void {
-    const scripts = [...this.scripts.value];
+    const scripts = [...this.form.scripts().value()];
     if (this.editedIndex() === -1) {
-      scripts.push(script);
+      scripts.push(copyFormValue(script));
     } else {
-      scripts.splice(this.editedIndex(), 1, script);
+      scripts.splice(this.editedIndex(), 1, copyFormValue(script));
     }
-    this.scripts.setValue(scripts);
-    this.scripts.markAsDirty();
-    this.scripts.updateValueAndValidity();
+    this.setScripts(scripts);
     this.closeScript();
   }
 
@@ -209,11 +160,9 @@ export class EpiScriptsPartComponent
             // keep the edited index pointing to the edited script
             this.editedIndex.set(this.editedIndex() - 1);
           }
-          const scripts = [...this.scripts.value];
+          const scripts = [...this.form.scripts().value()];
           scripts.splice(index, 1);
-          this.scripts.setValue(scripts);
-          this.scripts.markAsDirty();
-          this.scripts.updateValueAndValidity();
+          this.setScripts(scripts);
         }
       });
   }
@@ -234,27 +183,23 @@ export class EpiScriptsPartComponent
     if (index < 1) {
       return;
     }
-    const script = this.scripts.value[index];
-    const scripts = [...this.scripts.value];
+    const scripts = [...this.form.scripts().value()];
+    const script = scripts[index];
     scripts.splice(index, 1);
     scripts.splice(index - 1, 0, script);
     this.swapEditedIndex(index, index - 1);
-    this.scripts.setValue(scripts);
-    this.scripts.markAsDirty();
-    this.scripts.updateValueAndValidity();
+    this.setScripts(scripts);
   }
 
   public moveScriptDown(index: number): void {
-    if (index + 1 >= this.scripts.value.length) {
+    const scripts = [...this.form.scripts().value()];
+    if (index + 1 >= scripts.length) {
       return;
     }
-    const script = this.scripts.value[index];
-    const scripts = [...this.scripts.value];
+    const script = scripts[index];
     scripts.splice(index, 1);
     scripts.splice(index + 1, 0, script);
     this.swapEditedIndex(index, index + 1);
-    this.scripts.setValue(scripts);
-    this.scripts.markAsDirty();
-    this.scripts.updateValueAndValidity();
+    this.setScripts(scripts);
   }
 }

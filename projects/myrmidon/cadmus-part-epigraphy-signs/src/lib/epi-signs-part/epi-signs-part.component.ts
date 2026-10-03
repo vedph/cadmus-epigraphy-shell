@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import {
-  FormControl,
-  FormBuilder,
-  FormGroup,
-  UntypedFormGroup,
-  ReactiveFormsModule,
-} from '@angular/forms';
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  linkedSignal,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -15,23 +15,20 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { take } from 'rxjs';
 
-import { deepCopy, EllipsisPipe, NgxToolsValidators } from '@myrmidon/ngx-tools';
+import { EllipsisPipe, NgxToolsSignalValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
-import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import {
   CloseSaveButtonsComponent,
   ModelEditorComponentBase,
   HelpLinkComponent,
+  copyFormValue,
 } from '@myrmidon/cadmus-ui';
-import {
-  ThesauriSet,
-  ThesaurusEntry,
-  EditedObject,
-} from '@myrmidon/cadmus-core';
+import { ThesaurusEntry } from '@myrmidon/cadmus-core';
 
 import {
   EPI_SIGNS_PART_TYPEID,
@@ -39,6 +36,16 @@ import {
   EpiSignsPart,
 } from '../epi-signs-part';
 import { EpiSignComponent } from '../epi-sign/epi-sign.component';
+
+interface EpiSignsPartControls {
+  signs: EpiSign[];
+}
+
+function toDraft(part?: EpiSignsPart | null): EpiSignsPartControls {
+  return {
+    signs: copyFormValue(part?.signs || []),
+  };
+}
 
 /**
  * EpiSignsPart editor component.
@@ -50,8 +57,6 @@ import { EpiSignComponent } from '../epi-sign/epi-sign.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    CommonModule,
-    ReactiveFormsModule,
     MatButtonModule,
     MatCardModule,
     MatExpansionModule,
@@ -63,106 +68,50 @@ import { EpiSignComponent } from '../epi-sign/epi-sign.component';
     EllipsisPipe,
     EpiSignComponent,
     CloseSaveButtonsComponent,
-    HelpLinkComponent
+    HelpLinkComponent,
   ],
   templateUrl: './epi-signs-part.component.html',
   styleUrl: './epi-signs-part.component.scss',
 })
-export class EpiSignsPartComponent
-  extends ModelEditorComponentBase<EpiSignsPart>
-  implements OnInit
-{
+export class EpiSignsPartComponent extends ModelEditorComponentBase<EpiSignsPart> {
+  private readonly _dialogService = inject(DialogService);
+  private readonly _snackbar = inject(MatSnackBar);
+
   public readonly edited = signal<EpiSign | undefined>(undefined);
   public readonly editedIndex = signal<number>(-1);
 
+  private readonly _draft = linkedSignal(() => toDraft(this.data()?.value));
+  public readonly form = this.createForm(this._draft, (p) => {
+    // at least 1 entry
+    NgxToolsSignalValidators.strictMinLength(p.signs, 1);
+  });
+
   // epi-signs-measure-names
-  public readonly measNameEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+  public readonly measNameEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['epi-signs-measure-names']?.entries,
+  );
   // physical-size-units
-  public readonly measUnitEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+  public readonly measUnitEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['physical-size-units']?.entries,
+  );
   // physical-size-dim-tags
-  public readonly measDimTagEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+  public readonly measDimTagEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['physical-size-dim-tags']?.entries,
+  );
   // epi-signs-features
-  public readonly featEntries = signal<ThesaurusEntry[] | undefined>(undefined);
-
-  public signs: FormControl<EpiSign[]>;
-
-  constructor(
-    authService: AuthJwtService,
-    formBuilder: FormBuilder,
-    private _dialogService: DialogService
-  ) {
-    super(authService, formBuilder);
-    // form
-    this.signs = formBuilder.control([], {
-      // at least 1 entry
-      validators: NgxToolsValidators.strictMinLengthValidator(1),
-      nonNullable: true,
-    });
-  }
-
-  public override ngOnInit(): void {
-    super.ngOnInit();
-  }
-
-  protected buildForm(formBuilder: FormBuilder): FormGroup | UntypedFormGroup {
-    return formBuilder.group({
-      entries: this.signs,
-    });
-  }
-
-  private updateThesauri(thesauri: ThesauriSet): void {
-    let key = 'epi-signs-measure-names';
-    if (this.hasThesaurus(key)) {
-      this.measNameEntries.set(thesauri[key].entries);
-    } else {
-      this.measNameEntries.set(undefined);
-    }
-
-    key = 'physical-size-units';
-    if (this.hasThesaurus(key)) {
-      this.measUnitEntries.set(thesauri[key].entries);
-    } else {
-      this.measUnitEntries.set(undefined);
-    }
-
-    key = 'physical-size-dim-tags';
-    if (this.hasThesaurus(key)) {
-      this.measDimTagEntries.set(thesauri[key].entries);
-    } else {
-      this.measDimTagEntries.set(undefined);
-    }
-
-    key = 'epi-signs-features';
-    if (this.hasThesaurus(key)) {
-      this.featEntries.set(thesauri[key].entries);
-    } else {
-      this.featEntries.set(undefined);
-    }
-  }
-
-  private updateForm(part?: EpiSignsPart | null): void {
-    if (!part) {
-      this.form.reset();
-      return;
-    }
-    this.signs.setValue(part.signs || []);
-    this.form.markAsPristine();
-  }
-
-  protected override onDataSet(data?: EditedObject<EpiSignsPart>): void {
-    // thesauri
-    if (data?.thesauri) {
-      this.updateThesauri(data.thesauri);
-    }
-
-    // form
-    this.updateForm(data?.value);
-  }
+  public readonly featEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['epi-signs-features']?.entries,
+  );
 
   protected getValue(): EpiSignsPart {
-    let part = this.getEditedPart(EPI_SIGNS_PART_TYPEID) as EpiSignsPart;
-    part.signs = this.signs.value || [];
+    const part = this.getEditedPart(EPI_SIGNS_PART_TYPEID) as EpiSignsPart;
+    part.signs = copyFormValue(this._draft().signs);
     return part;
+  }
+
+  private setSigns(signs: EpiSign[]): void {
+    this.form.signs().value.set(signs);
+    this.form.signs().markAsDirty();
   }
 
   public addSign(): void {
@@ -174,7 +123,7 @@ export class EpiSignsPartComponent
 
   public editSign(entry: EpiSign, index: number): void {
     this.editedIndex.set(index);
-    this.edited.set(deepCopy(entry));
+    this.edited.set(copyFormValue(entry));
   }
 
   public closeSign(): void {
@@ -182,23 +131,27 @@ export class EpiSignsPartComponent
     this.edited.set(undefined);
   }
 
+  /**
+   * Save the edited sign. A sign whose ID belongs to another sign is
+   * rejected with an error message, leaving the sign editor open: the
+   * user must change its ID, or delete the other sign.
+   */
   public saveSign(sign: EpiSign): void {
-    const signs = [...this.signs.value];
-
-    // if fr.id already exists, replace it
-    const i = signs.findIndex((s) => s.id === sign.id);
-    if (i > -1) {
-      this.editedIndex.set(i);
+    const signs = [...this.form.signs().value()];
+    if (signs.some((s, i) => i !== this.editedIndex() && s.id === sign.id)) {
+      this._snackbar.open(
+        `A sign with ID "${sign.id}" already exists: change the ID or delete that sign.`,
+        'OK',
+        { duration: 5000 },
+      );
+      return;
     }
-
     if (this.editedIndex() === -1) {
-      signs.push(sign);
+      signs.push(copyFormValue(sign));
     } else {
-      signs.splice(this.editedIndex(), 1, sign);
+      signs.splice(this.editedIndex(), 1, copyFormValue(sign));
     }
-    this.signs.setValue(signs);
-    this.signs.markAsDirty();
-    this.signs.updateValueAndValidity();
+    this.setSigns(signs);
     this.closeSign();
   }
 
@@ -214,11 +167,9 @@ export class EpiSignsPartComponent
             // keep the edited index pointing to the edited sign
             this.editedIndex.set(this.editedIndex() - 1);
           }
-          const entries = [...this.signs.value];
-          entries.splice(index, 1);
-          this.signs.setValue(entries);
-          this.signs.markAsDirty();
-          this.signs.updateValueAndValidity();
+          const signs = [...this.form.signs().value()];
+          signs.splice(index, 1);
+          this.setSigns(signs);
         }
       });
   }
@@ -239,27 +190,23 @@ export class EpiSignsPartComponent
     if (index < 1) {
       return;
     }
-    const sign = this.signs.value[index];
-    const signs = [...this.signs.value];
+    const signs = [...this.form.signs().value()];
+    const sign = signs[index];
     signs.splice(index, 1);
     signs.splice(index - 1, 0, sign);
     this.swapEditedIndex(index, index - 1);
-    this.signs.setValue(signs);
-    this.signs.markAsDirty();
-    this.signs.updateValueAndValidity();
+    this.setSigns(signs);
   }
 
   public moveSignDown(index: number): void {
-    if (index + 1 >= this.signs.value.length) {
+    const signs = [...this.form.signs().value()];
+    if (index + 1 >= signs.length) {
       return;
     }
-    const sign = this.signs.value[index];
-    const signs = [...this.signs.value];
+    const sign = signs[index];
     signs.splice(index, 1);
     signs.splice(index + 1, 0, sign);
     this.swapEditedIndex(index, index + 1);
-    this.signs.setValue(signs);
-    this.signs.markAsDirty();
-    this.signs.updateValueAndValidity();
+    this.setSigns(signs);
   }
 }

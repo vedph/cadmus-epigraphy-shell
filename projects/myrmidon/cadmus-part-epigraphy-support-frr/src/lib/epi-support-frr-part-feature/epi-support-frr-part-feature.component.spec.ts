@@ -159,13 +159,15 @@ describe('EpiSupportFrrPartFeatureComponent', () => {
     await setup('p1');
     const editor = getEditor();
     expect(editor.identity()).toEqual(component.identity());
-    expect(editor.fragments.value).toEqual([{ id: 'a', location: 'A1' }]);
+    expect(JSON.parse(JSON.stringify(editor.form.fragments().value()))).toEqual([{ id: 'a', location: 'A1' }]);
   });
 
   it('should track editor dirty state', async () => {
     await setup('p1');
     const editor = getEditor();
     editor.saveFr({ id: 'b' });
+    // dirtyChange is emitted by an effect
+    fixture.detectChanges();
     expect(component.dirty()).toBe(true);
     expect(component.canDeactivate()).toBe(false);
   });

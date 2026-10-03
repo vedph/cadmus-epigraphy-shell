@@ -76,6 +76,15 @@ describe('EpiTechniquePartComponent', () => {
     ).map((e) => e.textContent!.trim());
   }
 
+  function getSaveButton(): HTMLButtonElement | undefined {
+    const buttons: HTMLElement = fixture.nativeElement.querySelector(
+      'cadmus-close-save-buttons',
+    );
+    return Array.from(buttons.querySelectorAll('button')).find((b) =>
+      b.textContent?.includes('save'),
+    );
+  }
+
   beforeEach(async () => {
     const user = { userName: 'zeus', roles: ['operator'] } as unknown as User;
     user$ = new BehaviorSubject<User | null>(user);
@@ -115,10 +124,10 @@ describe('EpiTechniquePartComponent', () => {
 
   it('should create with an empty valid form', () => {
     expect(component).toBeTruthy();
-    expect(component.form.valid).toBe(true);
-    expect(component.grooveType.value).toBeNull();
-    expect(component.techniques.value).toEqual([]);
-    expect(component.tools.value).toEqual([]);
+    expect(component.form().valid()).toBe(true);
+    expect(component.form.grooveType().value()).toBe('');
+    expect(component.form.techniques().value()).toEqual([]);
+    expect(component.form.tools().value()).toEqual([]);
     expect(component.userLevel).toBe(2);
   });
 
@@ -137,7 +146,7 @@ describe('EpiTechniquePartComponent', () => {
     ).toBe(0);
   });
 
-  it('should load thesauri and part from data', () => {
+  it('should load thesauri and part from data, staying pristine', () => {
     setData({ value: createPart(), thesauri: THESAURI });
 
     expect(component.grooveTypeEntries()?.length).toBe(2);
@@ -152,11 +161,19 @@ describe('EpiTechniquePartComponent', () => {
       { id: 'chisel', label: 'chisel' },
       { id: 'brush', label: 'brush' },
     ]);
-    expect(component.grooveType.value).toBe('v');
-    expect(component.techniques.value).toEqual(['incision']);
-    expect(component.tools.value).toEqual(['chisel']);
-    expect(component.note.value).toBe('a note');
-    expect(component.form.pristine).toBe(true);
+    expect(component.form.grooveType().value()).toBe('v');
+    expect(component.form.techniques().value()).toEqual(['incision']);
+    expect(component.form.tools().value()).toEqual(['chisel']);
+    expect(component.form.note().value()).toBe('a note');
+    expect(component.isDirty()).toBe(false);
+  });
+
+  it('should not change the arrays of the bound part', () => {
+    const part = createPart();
+    setData({ value: part, thesauri: THESAURI });
+    component.onTechIdsChange(['relief']);
+    component.save();
+    expect(part.techniques).toEqual(['incision']);
   });
 
   it('should render select and flag sets with thesauri', () => {
@@ -188,19 +205,39 @@ describe('EpiTechniquePartComponent', () => {
     delete part.tools;
     delete part.note;
     setData({ value: part, thesauri: {} });
-    expect(component.grooveType.value).toBeNull();
-    expect(component.techniques.value).toEqual([]);
-    expect(component.tools.value).toEqual([]);
-    expect(component.note.value).toBeNull();
+    expect(component.form.grooveType().value()).toBe('');
+    expect(component.form.techniques().value()).toEqual([]);
+    expect(component.form.tools().value()).toEqual([]);
+    expect(component.form.note().value()).toBe('');
   });
 
   it('should reset form when data has no value', () => {
     setData({ value: createPart(), thesauri: THESAURI });
     setData({ value: null, thesauri: THESAURI });
-    expect(component.grooveType.value).toBeNull();
-    expect(component.techniques.value).toEqual([]);
-    expect(component.tools.value).toEqual([]);
-    expect(component.note.value).toBeNull();
+    expect(component.form.grooveType().value()).toBe('');
+    expect(component.form.techniques().value()).toEqual([]);
+    expect(component.form.tools().value()).toEqual([]);
+    expect(component.form.note().value()).toBe('');
+  });
+
+  it('should become dirty when typing, and pristine on new data', () => {
+    setData({ value: createPart(), thesauri: {} });
+    const dirtySpy = vi.fn();
+    component.dirtyChange.subscribe(dirtySpy);
+
+    // groove, note
+    const input: HTMLInputElement =
+      fixture.nativeElement.querySelectorAll('input')[1];
+    input.value = 'typed';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(component.form.note().value()).toBe('typed');
+    expect(component.isDirty()).toBe(true);
+
+    setData({ value: createPart(), thesauri: {} });
+    expect(component.form.note().value()).toBe('a note');
+    expect(component.isDirty()).toBe(false);
+    expect(dirtySpy.mock.calls.map((c) => c[0])).toEqual([true, false]);
   });
 
   it('should update techniques and tools from flags', () => {
@@ -208,13 +245,21 @@ describe('EpiTechniquePartComponent', () => {
     component.dirtyChange.subscribe(dirtySpy);
 
     component.onTechIdsChange(['relief']);
-    expect(component.techniques.value).toEqual(['relief']);
-    expect(component.techniques.dirty).toBe(true);
+    expect(component.form.techniques().value()).toEqual(['relief']);
+    expect(component.form.techniques().dirty()).toBe(true);
+    fixture.detectChanges();
     expect(dirtySpy).toHaveBeenCalledWith(true);
 
     component.onToolIdsChange(['brush', 'chisel']);
-    expect(component.tools.value).toEqual(['brush', 'chisel']);
-    expect(component.tools.dirty).toBe(true);
+    expect(component.form.tools().value()).toEqual(['brush', 'chisel']);
+    expect(component.form.tools().dirty()).toBe(true);
+  });
+
+  it('should stay pristine when flags emit the bound ids', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    component.onTechIdsChange(['incision']);
+    component.onToolIdsChange(['chisel']);
+    expect(component.isDirty()).toBe(false);
   });
 
   it('should update techniques when a checkbox is clicked', () => {
@@ -226,25 +271,29 @@ describe('EpiTechniquePartComponent', () => {
     // second tool (brush)
     inputs[4].click();
     fixture.detectChanges();
-    expect(component.techniques.value).toEqual(['incision', 'relief']);
-    expect(component.tools.value).toEqual(['chisel', 'brush']);
+    expect(component.form.techniques().value()).toEqual([
+      'incision',
+      'relief',
+    ]);
+    expect(component.form.tools().value()).toEqual(['chisel', 'brush']);
+    expect(component.isDirty()).toBe(true);
   });
 
   it('should validate max lengths', () => {
-    component.grooveType.setValue('x'.repeat(51));
-    expect(component.grooveType.hasError('maxlength')).toBe(true);
-    component.grooveType.setValue('x'.repeat(50));
-    expect(component.grooveType.valid).toBe(true);
-    component.note.setValue('x'.repeat(5001));
-    expect(component.note.hasError('maxlength')).toBe(true);
-    expect(component.form.invalid).toBe(true);
+    component.form.grooveType().value.set('x'.repeat(51));
+    expect(component.form.grooveType().getError('maxLength')).toBeTruthy();
+    component.form.grooveType().value.set('x'.repeat(50));
+    expect(component.form.grooveType().valid()).toBe(true);
+    component.form.note().value.set('x'.repeat(5001));
+    expect(component.form.note().getError('maxLength')).toBeTruthy();
+    expect(component.form().invalid()).toBe(true);
   });
 
   it('should show error messages for too long values', () => {
-    component.grooveType.setValue('x'.repeat(51));
-    component.grooveType.markAsTouched();
-    component.note.setValue('x'.repeat(5001));
-    component.note.markAsTouched();
+    component.form.grooveType().value.set('x'.repeat(51));
+    component.form.grooveType().markAsTouched();
+    component.form.note().value.set('x'.repeat(5001));
+    component.form.note().markAsTouched();
     fixture.detectChanges();
     expect(getErrors()).toEqual(['groove too long', 'note too long']);
   });
@@ -254,10 +303,10 @@ describe('EpiTechniquePartComponent', () => {
     const spy = vi.fn();
     component.data.subscribe(spy);
 
-    component.grooveType.setValue('u');
+    component.form.grooveType().value.set('u');
     component.onTechIdsChange(['incision', 'paint']);
     component.onToolIdsChange(['brush']);
-    component.note.setValue('  new note  ');
+    component.form.note().value.set('  new note  ');
     component.save();
 
     expect(spy).toHaveBeenCalledTimes(1);
@@ -269,7 +318,7 @@ describe('EpiTechniquePartComponent', () => {
     expect(part.techniques).toEqual(['incision', 'paint']);
     expect(part.tools).toEqual(['brush']);
     expect(part.note).toBe('new note');
-    expect(component.form.pristine).toBe(true);
+    expect(component.isDirty()).toBe(false);
   });
 
   it('should save empty values as undefined', () => {
@@ -277,10 +326,10 @@ describe('EpiTechniquePartComponent', () => {
     const spy = vi.fn();
     component.data.subscribe(spy);
 
-    component.grooveType.setValue('  ');
+    component.form.grooveType().value.set('  ');
     component.onTechIdsChange([]);
     component.onToolIdsChange([]);
-    component.note.setValue(' ');
+    component.form.note().value.set(' ');
     component.save();
 
     const part = (spy.mock.calls[0][0] as EditedObject<EpiTechniquePart>)
@@ -294,7 +343,7 @@ describe('EpiTechniquePartComponent', () => {
   it('should save a new part using identity', () => {
     const spy = vi.fn();
     component.data.subscribe(spy);
-    component.grooveType.setValue('v');
+    component.form.grooveType().value.set('v');
     component.save();
 
     const part = (spy.mock.calls[0][0] as EditedObject<EpiTechniquePart>)
@@ -305,22 +354,40 @@ describe('EpiTechniquePartComponent', () => {
     expect(part.grooveType).toBe('v');
   });
 
-  it('should not save when form is invalid', () => {
+  it('should not save an invalid form, and mark it as touched', () => {
     const spy = vi.fn();
     component.data.subscribe(spy);
     vi.spyOn(console, 'warn').mockImplementation(() => {});
-    component.note.setValue('x'.repeat(5001));
+    component.form.note().value.set('x'.repeat(5001));
     component.save();
     expect(spy).not.toHaveBeenCalled();
+    expect(component.form.note().touched()).toBe(true);
   });
 
-  it('should save on form submit', () => {
+  it('should save from the save button', () => {
     setData({ value: createPart(), thesauri: THESAURI });
     const spy = vi.fn();
     component.data.subscribe(spy);
-    const form: HTMLFormElement = fixture.nativeElement.querySelector('form');
-    form.dispatchEvent(new Event('submit'));
+    component.onTechIdsChange(['relief']);
+    fixture.detectChanges();
+
+    getSaveButton()!.click();
+
     expect(spy).toHaveBeenCalledTimes(1);
+    const part = (spy.mock.calls[0][0] as EditedObject<EpiTechniquePart>)
+      .value!;
+    expect(part.techniques).toEqual(['relief']);
+  });
+
+  it('should disable the save button while the form is invalid', () => {
+    component.form.note().value.set('x'.repeat(5001));
+    fixture.detectChanges();
+    expect(getSaveButton()!.disabled).toBe(true);
+  });
+
+  it('should render no <form>', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    expect(fixture.nativeElement.querySelector('form')).toBeNull();
   });
 
   it('should emit editorClose on close', () => {
@@ -333,7 +400,8 @@ describe('EpiTechniquePartComponent', () => {
   it('should disable form when disabled', () => {
     fixture.componentRef.setInput('disabled', true);
     fixture.detectChanges();
-    expect(component.form.disabled).toBe(true);
+    expect(component.form().disabled()).toBe(true);
+    expect(component.form.note().disabled()).toBe(true);
   });
 
   it('should reset user level on logout', () => {

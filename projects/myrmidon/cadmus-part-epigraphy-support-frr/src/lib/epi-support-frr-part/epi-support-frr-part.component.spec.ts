@@ -1,6 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import {
+  MatSnackBar,
+  MatSnackBarRef,
+  TextOnlySnackBar,
+} from '@angular/material/snack-bar';
 import { BehaviorSubject, of } from 'rxjs';
 
 import { AuthJwtService, User } from '@myrmidon/auth-jwt-login';
@@ -15,6 +20,12 @@ import {
 } from '../epi-support-frr-part';
 import { EpiSupportFrComponent } from '../epi-support-fr/epi-support-fr.component';
 import { EpiSupportFrrPartComponent } from './epi-support-frr-part.component';
+
+// the form tags the objects in its arrays with an identity Symbol:
+// compare their plain data only
+function plain<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value));
+}
 
 const THESAURI: ThesauriSet = {
   'physical-size-units': {
@@ -78,7 +89,9 @@ describe('EpiSupportFrrPartComponent', () => {
 
   function getRows(): HTMLTableRowElement[] {
     return Array.from(
-      fixture.nativeElement.querySelectorAll('mat-card-content > table > tbody > tr'),
+      fixture.nativeElement.querySelectorAll(
+        'mat-card-content > table > tbody > tr',
+      ),
     );
   }
 
@@ -89,7 +102,19 @@ describe('EpiSupportFrrPartComponent', () => {
   }
 
   function ids(): string[] {
-    return component.fragments.value.map((f) => f.id);
+    return component.form
+      .fragments()
+      .value()
+      .map((f) => f.id);
+  }
+
+  function spyOnSnackbar() {
+    const snackbar = fixture.debugElement.injector.get(MatSnackBar);
+    return vi
+      .spyOn(snackbar, 'open')
+      .mockReturnValue(
+        undefined as unknown as MatSnackBarRef<TextOnlySnackBar>,
+      );
   }
 
   beforeEach(async () => {
@@ -133,8 +158,8 @@ describe('EpiSupportFrrPartComponent', () => {
 
   it('should create with an invalid empty form', () => {
     expect(component).toBeTruthy();
-    expect(component.fragments.value).toEqual([]);
-    expect(component.form.invalid).toBe(true);
+    expect(plain(component.form.fragments().value())).toEqual([]);
+    expect(component.form().invalid()).toBe(true);
     expect(fixture.nativeElement.querySelector('table')).toBeNull();
   });
 
@@ -150,9 +175,11 @@ describe('EpiSupportFrrPartComponent', () => {
     expect(component.tagEntries()?.length).toBe(1);
     expect(component.dimTagEntries()?.length).toBe(1);
     expect(component.gridPresetEntries()?.length).toBe(1);
-    expect(component.fragments.value).toEqual(createFragments());
-    expect(component.form.valid).toBe(true);
-    expect(component.form.pristine).toBe(true);
+    expect(plain(component.form.fragments().value())).toEqual(
+      createFragments(),
+    );
+    expect(component.form().valid()).toBe(true);
+    expect(component.form().dirty()).toBe(false);
   });
 
   it('should render fragments', () => {
@@ -179,14 +206,14 @@ describe('EpiSupportFrrPartComponent', () => {
   it('should reset form when data has no value', () => {
     setData({ value: createPart(), thesauri: THESAURI });
     setData({ value: null, thesauri: THESAURI });
-    expect(component.fragments.value).toEqual([]);
+    expect(plain(component.form.fragments().value())).toEqual([]);
   });
 
   it('should default fragments to empty array when missing', () => {
     const part = createPart();
     part.fragments = undefined as unknown as EpiSupportFr[];
     setData({ value: part, thesauri: {} });
-    expect(component.fragments.value).toEqual([]);
+    expect(plain(component.form.fragments().value())).toEqual([]);
   });
 
   it('should add a new fragment passing thesauri to editor', () => {
@@ -208,12 +235,12 @@ describe('EpiSupportFrrPartComponent', () => {
 
   it('should edit a copy of a fragment', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editFr(component.fragments.value[1], 1);
+    component.editFr(component.form.fragments().value()[1], 1);
     fixture.detectChanges();
     expect(component.edited()).toEqual(createFragments()[1]);
-    expect(component.edited()).not.toBe(component.fragments.value[1]);
+    expect(component.edited()).not.toBe(component.form.fragments().value()[1]);
     expect(getRows()[1].classList.contains('selected')).toBe(true);
-    expect(getChildEditor()!.id.value).toBe('b');
+    expect(getChildEditor()!.form.id().value()).toBe('b');
   });
 
   it('should close edited fragment on child cancel', () => {
@@ -231,37 +258,93 @@ describe('EpiSupportFrrPartComponent', () => {
     component.dirtyChange.subscribe(spy);
     component.addFr();
     component.saveFr({ id: 'x' });
-    expect(component.fragments.value).toEqual([{ id: 'x' }]);
-    expect(component.fragments.dirty).toBe(true);
-    expect(component.form.valid).toBe(true);
+    expect(plain(component.form.fragments().value())).toEqual([{ id: 'x' }]);
+    expect(component.form.fragments().dirty()).toBe(true);
+    expect(component.form().valid()).toBe(true);
     expect(component.edited()).toBeUndefined();
+    fixture.detectChanges();
     expect(spy).toHaveBeenCalledWith(true);
   });
 
-  it('should replace an existing fragment with the same ID when adding', () => {
+  it('should reject a new fragment with the ID of another fragment', () => {
     setData({ value: createPart(), thesauri: THESAURI });
+    const open = spyOnSnackbar();
     component.addFr();
     component.saveFr({ id: 'b', note: 'new b' });
+    expect(plain(component.form.fragments().value())).toEqual(
+      createFragments(),
+    );
+    expect(component.form().dirty()).toBe(false);
+    expect(open).toHaveBeenCalledOnce();
+    expect(open.mock.calls[0][0]).toContain('"b" already exists');
+    // the editor stays open, to let the user change the ID
+    expect(component.edited()).toBeTruthy();
+    expect(component.editedIndex()).toBe(-1);
+  });
+
+  it('should reject an edited fragment given the ID of another fragment', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    const open = spyOnSnackbar();
+    component.editFr(component.form.fragments().value()[2], 2);
+    component.saveFr({ id: 'a' });
+    expect(plain(component.form.fragments().value())).toEqual(
+      createFragments(),
+    );
+    expect(open).toHaveBeenCalledOnce();
+    expect(component.editedIndex()).toBe(2);
+    expect(component.edited()).toBeTruthy();
+  });
+
+  it('should save an edited fragment keeping its own ID', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    const open = spyOnSnackbar();
+    component.editFr(component.form.fragments().value()[1], 1);
+    component.saveFr({ id: 'b', note: 'new b' });
     expect(ids()).toEqual(['a', 'b', 'c']);
-    expect(component.fragments.value[1].note).toBe('new b');
+    expect(component.form.fragments().value()[1].note).toBe('new b');
+    expect(open).not.toHaveBeenCalled();
+  });
+
+  it('should let the user fix a rejected ID in the child editor', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    const open = spyOnSnackbar();
+    component.addFr();
+    fixture.detectChanges();
+    const editor = getChildEditor()!;
+    editor.form.id().value.set('a');
+    editor.form.id().markAsDirty();
+    editor.save();
+    fixture.detectChanges();
+    expect(open).toHaveBeenCalledOnce();
+    expect(ids()).toEqual(['a', 'b', 'c']);
+    expect(getChildEditor()).toBe(editor);
+    expect(editor.form.id().value()).toBe('a');
+
+    editor.form.id().value.set('d');
+    editor.form.id().markAsDirty();
+    editor.save();
+    fixture.detectChanges();
+    expect(ids()).toEqual(['a', 'b', 'c', 'd']);
+    expect(getChildEditor()).toBeUndefined();
+    expect(open).toHaveBeenCalledOnce();
   });
 
   it('should replace an edited fragment', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editFr(component.fragments.value[1], 1);
+    component.editFr(component.form.fragments().value()[1], 1);
     component.saveFr({ id: 'z' });
     expect(ids()).toEqual(['a', 'z', 'c']);
   });
 
   it('should save fragment from child editor', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editFr(component.fragments.value[2], 2);
+    component.editFr(component.form.fragments().value()[2], 2);
     fixture.detectChanges();
     const editor = getChildEditor()!;
-    editor.note.setValue('gamma');
+    editor.form.note().value.set('gamma');
     editor.save();
     fixture.detectChanges();
-    expect(component.fragments.value[2]).toEqual({
+    expect(plain(component.form.fragments().value()[2])).toEqual({
       id: 'c',
       shelfmark: undefined,
       isLost: undefined,
@@ -280,7 +363,7 @@ describe('EpiSupportFrrPartComponent', () => {
     component.deleteFr(1);
     expect(dialogService.confirm).toHaveBeenCalled();
     expect(ids()).toEqual(['a', 'c']);
-    expect(component.fragments.dirty).toBe(true);
+    expect(component.form.fragments().dirty()).toBe(true);
   });
 
   it('should not delete a fragment without confirmation', () => {
@@ -292,14 +375,14 @@ describe('EpiSupportFrrPartComponent', () => {
 
   it('should close the editor when deleting the edited fragment', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editFr(component.fragments.value[1], 1);
+    component.editFr(component.form.fragments().value()[1], 1);
     component.deleteFr(1);
     expect(component.edited()).toBeUndefined();
   });
 
   it('should keep edited fragment when deleting a previous fragment', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editFr(component.fragments.value[2], 2);
+    component.editFr(component.form.fragments().value()[2], 2);
     component.deleteFr(0);
     expect(component.editedIndex()).toBe(1);
     component.saveFr({ id: 'c2' });
@@ -311,17 +394,17 @@ describe('EpiSupportFrrPartComponent', () => {
     component.moveFrUp(0);
     component.moveFrDown(2);
     expect(ids()).toEqual(['a', 'b', 'c']);
-    expect(component.fragments.dirty).toBe(false);
+    expect(component.form.fragments().dirty()).toBe(false);
     component.moveFrUp(2);
     expect(ids()).toEqual(['a', 'c', 'b']);
     component.moveFrDown(0);
     expect(ids()).toEqual(['c', 'a', 'b']);
-    expect(component.fragments.dirty).toBe(true);
+    expect(component.form.fragments().dirty()).toBe(true);
   });
 
   it('should keep edited fragment when moving fragments', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editFr(component.fragments.value[0], 0);
+    component.editFr(component.form.fragments().value()[0], 0);
     component.moveFrDown(0);
     expect(component.editedIndex()).toBe(1);
     component.moveFrUp(1);
@@ -379,5 +462,56 @@ describe('EpiSupportFrrPartComponent', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     component.save();
     expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should save a model whose fragments carry no Symbol tags', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    const spy = vi.fn();
+    component.data.subscribe(spy);
+    expect(
+      Object.getOwnPropertySymbols(component.form.fragments().value()[0])
+        .length,
+    ).toBeGreaterThan(0);
+    component.moveFrDown(0);
+    component.save();
+    const part = (spy.mock.calls[0][0] as EditedObject<EpiSupportFrrPart>)
+      .value!;
+    for (const fr of part.fragments) {
+      expect(Object.getOwnPropertySymbols(fr)).toEqual([]);
+    }
+  });
+
+  it('should not tag or change the fragments of the bound part', () => {
+    const part = createPart();
+    setData({ value: part, thesauri: THESAURI });
+    component.editFr(component.form.fragments().value()[0], 0);
+    expect(Object.getOwnPropertySymbols(component.edited()!)).toEqual([]);
+    component.saveFr({ id: 'a', note: 'changed' });
+    component.save();
+    expect(part.fragments).toEqual(createFragments());
+    for (const fr of part.fragments) {
+      expect(Object.getOwnPropertySymbols(fr)).toEqual([]);
+    }
+  });
+
+  it('should stay pristine when data is bound, and when it is bound again', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    expect(component.isDirty()).toBe(false);
+    component.moveFrDown(0);
+    expect(component.isDirty()).toBe(true);
+    setData({ value: createPart(), thesauri: THESAURI });
+    expect(component.isDirty()).toBe(false);
+  });
+
+  it('should render no <form> with the fragment and mapping editors open', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    component.editFr(component.form.fragments().value()[0], 0);
+    fixture.detectChanges();
+    getChildEditor()!.addMapping();
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('cadmus-epi-support-fr-cell-mapping'),
+    ).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('form')).toBeNull();
   });
 });

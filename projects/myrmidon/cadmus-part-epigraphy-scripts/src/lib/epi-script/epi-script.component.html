@@ -1,29 +1,24 @@
-<form [formGroup]="form" (submit)="save()">
+<div (keydown.enter)="onEnterKey($event)">
   <div class="form-row">
     <!-- system (bound) -->
     @if (systemEntries()?.length) {
       <mat-form-field>
         <mat-label>system</mat-label>
-        <mat-select [formControl]="system">
+        <mat-select [formField]="form.system">
           @for (e of systemEntries(); track e) {
-            <mat-option [value]="e.id">{{
-              e.value
-            }}</mat-option>
+            <mat-option [value]="e.id">{{ e.value }}</mat-option>
           }
         </mat-select>
-        @if ($any(system).errors?.required && (system.dirty || system.touched)) {
-          <mat-error>system required</mat-error>
-        }
       </mat-form-field>
     } @else {
       <!-- system (free) -->
       <mat-form-field>
         <mat-label>system</mat-label>
-        <input matInput [formControl]="system" />
-        @if ($any(system).errors?.required && (system.dirty || system.touched)) {
-          <mat-error>system required</mat-error>
-          } @if ($any(system).errors?.maxlength && (system.dirty || system.touched))
-          {
+        <input matInput [formField]="form.system" />
+        @if (
+          form.system().getError("maxLength") &&
+          (form.system().dirty() || form.system().touched())
+        ) {
           <mat-error>system too long</mat-error>
         }
       </mat-form-field>
@@ -33,15 +28,15 @@
     @if (scriptEntries()?.length) {
       <mat-form-field>
         <mat-label>script</mat-label>
-        <mat-select [formControl]="scriptCtl">
+        <mat-select [formField]="form.script">
           @for (e of scriptEntries(); track e) {
-            <mat-option [value]="e.id">{{
-              e.value
-            }}</mat-option>
+            <mat-option [value]="e.id">{{ e.value }}</mat-option>
           }
         </mat-select>
-        @if ($any(scriptCtl).errors?.required && (scriptCtl.dirty ||
-          scriptCtl.touched)) {
+        @if (
+          form.script().getError("required") &&
+          (form.script().dirty() || form.script().touched())
+        ) {
           <mat-error>script required</mat-error>
         }
       </mat-form-field>
@@ -49,12 +44,17 @@
       <!-- script (free) -->
       <mat-form-field>
         <mat-label>script</mat-label>
-        <input matInput [formControl]="scriptCtl" />
-        @if ($any(scriptCtl).errors?.required && (scriptCtl.dirty ||
-          scriptCtl.touched)) {
+        <input matInput [formField]="form.script" />
+        @if (
+          form.script().getError("required") &&
+          (form.script().dirty() || form.script().touched())
+        ) {
           <mat-error>script required</mat-error>
-          } @if ($any(scriptCtl).errors?.maxlength && (scriptCtl.dirty ||
-          scriptCtl.touched)) {
+        }
+        @if (
+          form.script().getError("maxLength") &&
+          (form.script().dirty() || form.script().touched())
+        ) {
           <mat-error>script too long</mat-error>
         }
       </mat-form-field>
@@ -64,26 +64,21 @@
     @if (casingEntries()?.length) {
       <mat-form-field>
         <mat-label>casing</mat-label>
-        <mat-select [formControl]="casing">
+        <mat-select [formField]="form.casing">
           @for (e of casingEntries(); track e) {
-            <mat-option [value]="e.id">{{
-              e.value
-            }}</mat-option>
+            <mat-option [value]="e.id">{{ e.value }}</mat-option>
           }
         </mat-select>
-        @if ($any(casing).errors?.required && (casing.dirty || casing.touched)) {
-          <mat-error>casing required</mat-error>
-        }
       </mat-form-field>
     } @else {
       <!-- casing (free) -->
       <mat-form-field>
         <mat-label>casing</mat-label>
-        <input matInput [formControl]="casing" />
-        @if ($any(casing).errors?.required && (casing.dirty || casing.touched)) {
-          <mat-error>casing required</mat-error>
-          } @if ($any(casing).errors?.maxlength && (casing.dirty || casing.touched))
-          {
+        <input matInput [formField]="form.casing" />
+        @if (
+          form.casing().getError("maxLength") &&
+          (form.casing().dirty() || form.casing().touched())
+        ) {
           <mat-error>casing too long</mat-error>
         }
       </mat-form-field>
@@ -97,41 +92,45 @@
         <legend>features</legend>
         <cadmus-ui-flag-set
           [flags]="featFlags()"
-          [checkedIds]="features.value"
+          [checkedIds]="form.features().value()"
           (checkedIdsChange)="onFeatIdsChange($event)"
-          />
-        </fieldset>
-      </div>
-    }
-
-    <!-- note -->
-    <div style="margin-top: 8px">
-      <mat-form-field class="long-text">
-        <mat-label>note</mat-label>
-        <textarea rows="3" matInput [formControl]="note"></textarea>
-        @if ($any(note).errors?.maxlength && (note.dirty || note.touched)) {
-          <mat-error>note too long</mat-error>
-        }
-      </mat-form-field>
+        />
+      </fieldset>
     </div>
+  }
 
-    <!-- buttons -->
-    <div>
-      <button
-        type="button"
-        mat-icon-button
-        matTooltip="Discard changes"
-        (click)="cancel()"
-        >
-        <mat-icon class="mat-warn">clear</mat-icon>
-      </button>
-      <button
-        type="submit"
-        mat-icon-button
-        matTooltip="Accept changes"
-        [disabled]="form.invalid || form.pristine"
-        >
-        <mat-icon class="mat-primary">check_circle</mat-icon>
-      </button>
-    </div>
-  </form>
+  <!-- note -->
+  <div style="margin-top: 8px">
+    <mat-form-field class="long-text">
+      <mat-label>note</mat-label>
+      <textarea rows="3" matInput [formField]="form.note"></textarea>
+      @if (
+        form.note().getError("maxLength") &&
+        (form.note().dirty() || form.note().touched())
+      ) {
+        <mat-error>note too long</mat-error>
+      }
+    </mat-form-field>
+  </div>
+
+  <!-- buttons -->
+  <div>
+    <button
+      type="button"
+      mat-icon-button
+      matTooltip="Discard changes"
+      (click)="cancel()"
+    >
+      <mat-icon class="mat-warn">clear</mat-icon>
+    </button>
+    <button
+      type="button"
+      mat-icon-button
+      matTooltip="Accept changes"
+      [disabled]="form().invalid() || !form().dirty()"
+      (click)="save()"
+    >
+      <mat-icon class="mat-primary">check_circle</mat-icon>
+    </button>
+  </div>
+</div>

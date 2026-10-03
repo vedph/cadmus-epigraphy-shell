@@ -1,21 +1,15 @@
-
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
   effect,
   input,
+  linkedSignal,
   model,
   output,
+  untracked,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormField, form, maxLength, required } from '@angular/forms/signals';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -31,9 +25,13 @@ import {
   PhysicalSizeComponent,
 } from '@myrmidon/cadmus-mat-physical-size';
 import { ThesaurusEntry } from '@myrmidon/cadmus-core';
+import {
+  copyFormValue,
+  isImplicitSubmission,
+  setFieldFromChild,
+} from '@myrmidon/cadmus-ui';
 
 import { EpiTextArea } from '../epi-support-part';
-import { NgxToolsValidators } from '@myrmidon/ngx-tools';
 
 function entryToFlag(entry: ThesaurusEntry): Flag {
   return {
@@ -42,11 +40,57 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   };
 }
 
+interface EpiTextAreaControls {
+  eid: string;
+  type: string;
+  layout: string;
+  hasSize: boolean;
+  size: PhysicalSize | null;
+  features: string[];
+  hasFrame: boolean;
+  frameType: string;
+  frameDescription: string;
+  note: string;
+}
+
+function toDraft(area?: EpiTextArea | null): EpiTextAreaControls {
+  return {
+    eid: area?.eid || '',
+    type: area?.type || '',
+    layout: area?.layout || '',
+    hasSize: !!area?.size,
+    size: area?.size ? copyFormValue(area.size) : null,
+    features: [...(area?.features || [])],
+    hasFrame: !!(area?.frameType || area?.frameDescription),
+    frameType: area?.frameType || '',
+    frameDescription: area?.frameDescription || '',
+    note: area?.note || '',
+  };
+}
+
+function toModel(draft: EpiTextAreaControls): EpiTextArea {
+  return {
+    eid: draft.eid.trim() || undefined,
+    type: draft.type.trim(),
+    layout: draft.layout.trim() || undefined,
+    size:
+      draft.hasSize && draft.size ? copyFormValue(draft.size) : undefined,
+    features: draft.features.length ? [...draft.features] : undefined,
+    frameType: draft.hasFrame
+      ? draft.frameType.trim() || undefined
+      : undefined,
+    frameDescription: draft.hasFrame
+      ? draft.frameDescription.trim() || undefined
+      : undefined,
+    note: draft.note.trim() || undefined,
+  };
+}
+
 @Component({
   selector: 'cadmus-epi-text-area',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ReactiveFormsModule,
+    FormField,
     MatButtonModule,
     MatCheckboxModule,
     MatFormFieldModule,
@@ -55,8 +99,8 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     MatSelectModule,
     MatTooltipModule,
     PhysicalSizeComponent,
-    FlagSetComponent
-],
+    FlagSetComponent,
+  ],
   templateUrl: './epi-text-area.component.html',
   styleUrl: './epi-text-area.component.css',
 })
@@ -79,123 +123,76 @@ export class EpiTextAreaComponent {
   // physical-size-dim-tags
   public readonly szDimTagEntries = input<ThesaurusEntry[]>();
 
-  public featFlags = computed<Flag[]>(
-    () => this.featEntries()?.map((e) => entryToFlag(e)) || []
+  public readonly featFlags = computed<Flag[]>(
+    () => this.featEntries()?.map((e) => entryToFlag(e)) || [],
   );
 
   public readonly cancel = output();
 
-  public eid: FormControl<string | null>;
-  public type: FormControl<string>;
-  public layout: FormControl<string | null>;
-  public hasSize: FormControl<boolean>;
-  public size: FormControl<PhysicalSize | null>;
-  public features: FormControl<string[]>;
-  public hasFrame: FormControl<boolean>;
-  public frameType: FormControl<string | null>;
-  public frameDescription: FormControl<string | null>;
-  public note: FormControl<string | null>;
-  public form: FormGroup;
+  /**
+   * The editable draft, derived from the area. The echo of our own save,
+   * normalized by toModel, keeps the draft instead of rebuilding it.
+   */
+  private readonly _draft = linkedSignal<
+    EpiTextArea | undefined,
+    EpiTextAreaControls
+  >({
+    source: () => this.area(),
+    computation: (area, previous) =>
+      previous &&
+      JSON.stringify(area) === JSON.stringify(toModel(previous.value))
+        ? previous.value
+        : toDraft(area),
+  });
 
-  constructor(formBuilder: FormBuilder) {
-    // form
-    this.eid = formBuilder.control(null, Validators.maxLength(100));
-    this.type = formBuilder.control('', {
-      nonNullable: true,
-      validators: Validators.required,
-    });
-    this.layout = formBuilder.control(null, Validators.maxLength(50));
-    this.hasSize = formBuilder.control(false, { nonNullable: true });
-    this.size = formBuilder.control(null);
-    this.features = formBuilder.control([], { nonNullable: true });
-    this.hasFrame = formBuilder.control(false, { nonNullable: true });
-    this.frameType = formBuilder.control(null, [
-      Validators.maxLength(50),
-      NgxToolsValidators.conditionalValidator(
-        () => this.hasFrame.value,
-        Validators.required
-      ),
-    ]);
-    this.frameDescription = formBuilder.control(
-      null,
-      Validators.maxLength(5000)
-    );
-    this.note = formBuilder.control(null, Validators.maxLength(5000));
+  public readonly form = form(this._draft, (p) => {
+    maxLength(p.eid, 100);
+    required(p.type);
+    maxLength(p.layout, 50);
+    // frame type is required only when there is a frame
+    required(p.frameType, { when: ({ valueOf }) => valueOf(p.hasFrame) });
+    maxLength(p.frameType, 50);
+    maxLength(p.frameDescription, 5000);
+    maxLength(p.note, 5000);
+  });
 
-    this.form = formBuilder.group({
-      eid: this.eid,
-      type: this.type,
-      layout: this.layout,
-      hasSize: this.hasSize,
-      size: this.size,
-      features: this.features,
-      hasFrame: this.hasFrame,
-      frameType: this.frameType,
-      frameDescription: this.frameDescription,
-      note: this.note,
-    });
-
-    // frame type is required only when there is a frame, so revalidate it
-    // whenever the frame toggle changes
-    this.hasFrame.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => this.frameType.updateValueAndValidity());
-
-    // when model changes, update form
+  constructor() {
+    // clear the interaction state when the draft mirrors the area again
     effect(() => {
-      this.updateForm(this.area());
+      const draft = this._draft();
+      untracked(() => {
+        if (this.isDraftInSync(draft)) {
+          this.form().reset();
+        }
+      });
     });
   }
 
-  private updateForm(area: EpiTextArea | undefined | null): void {
-    if (!area) {
-      this.form.reset();
-      return;
-    }
-
-    this.eid.setValue(area.eid || null);
-    this.type.setValue(area.type || '');
-    this.layout.setValue(area.layout || null);
-    this.hasSize.setValue(area.size ? true : false);
-    this.size.setValue(area.size || null);
-    this.features.setValue(area.features || []);
-    this.hasFrame.setValue(
-      area.frameType || area.frameDescription ? true : false,
-    );
-    this.frameType.setValue(area.frameType || null);
-    this.frameDescription.setValue(area.frameDescription || null);
-    this.note.setValue(area.note || null);
-
-    this.form.markAsPristine();
+  private isDraftInSync(draft: EpiTextAreaControls): boolean {
+    return JSON.stringify(draft) === JSON.stringify(toDraft(this.area()));
   }
 
-  private getArea(): EpiTextArea {
-    return {
-      eid: this.eid.value || undefined,
-      type: this.type.value?.trim(),
-      layout: this.layout.value?.trim() || undefined,
-      size: this.hasSize.value ? this.size.value || undefined : undefined,
-      features: this.features.value?.length ? this.features.value : undefined,
-      frameType: this.hasFrame.value
-        ? this.frameType.value || undefined
-        : undefined,
-      frameDescription: this.hasFrame.value
-        ? this.frameDescription.value?.trim() || undefined
-        : undefined,
-      note: this.note.value?.trim() || undefined,
-    };
-  }
-
-  public onSizeChange(size: PhysicalSize): void {
-    this.size.setValue(size);
-    this.size.markAsDirty();
-    this.size.updateValueAndValidity();
+  public onSizeChange(size: PhysicalSize | undefined): void {
+    setFieldFromChild(this.form.size, size ? copyFormValue(size) : null);
   }
 
   public onFeatCheckedIdsChange(ids: string[]): void {
-    this.features.setValue(ids);
-    this.features.markAsDirty();
-    this.features.updateValueAndValidity();
+    setFieldFromChild(this.form.features, [...ids]);
+  }
+
+  /**
+   * Enter in a text input saves, as the implicit submission of the former
+   * form did, unless the save button is disabled.
+   */
+  public onEnterKey(event: Event): void {
+    if (!isImplicitSubmission(event)) {
+      return;
+    }
+    event.preventDefault();
+    if (this.form().invalid() || !this.form().dirty()) {
+      return;
+    }
+    this.save();
   }
 
   public dismiss(): void {
@@ -203,9 +200,11 @@ export class EpiTextAreaComponent {
   }
 
   public save(): void {
-    if (this.form.invalid) {
+    if (this.form().invalid()) {
+      this.form().markAsTouched();
       return;
     }
-    this.area.set(this.getArea());
+    this.area.set(toModel(this._draft()));
+    this.form().reset();
   }
 }

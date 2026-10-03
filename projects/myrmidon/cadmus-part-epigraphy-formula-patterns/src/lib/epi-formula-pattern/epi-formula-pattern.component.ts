@@ -2,19 +2,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   effect,
+  inject,
   input,
+  linkedSignal,
   model,
   output,
   signal,
+  untracked,
 } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormField, form, maxLength, required } from '@angular/forms/signals';
 import { take } from 'rxjs';
 
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
@@ -29,10 +25,11 @@ import {
   MatExpansionPanelHeader,
 } from '@angular/material/expansion';
 
-import { deepCopy, NgxToolsValidators } from '@myrmidon/ngx-tools';
+import { NgxToolsSignalValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
 
 import { ThesaurusEntry } from '@myrmidon/cadmus-core';
+import { copyFormValue, isImplicitSubmission } from '@myrmidon/cadmus-ui';
 
 import {
   EpiFormulaPattern,
@@ -40,6 +37,33 @@ import {
 } from '../epi-formula-patterns-part';
 import { EpiFormulaTokenComponent } from '../epi-formula-token/epi-formula-token.component';
 import { EpiFormulaTokenPipe } from '../epi-formula-token.pipe';
+
+interface EpiFormulaPatternControls {
+  eid: string;
+  language: string;
+  tag: string;
+  tokens: EpiFormulaToken[];
+}
+
+function toDraft(
+  pattern?: EpiFormulaPattern | null,
+): EpiFormulaPatternControls {
+  return {
+    eid: pattern?.eid || '',
+    language: pattern?.language || '',
+    tag: pattern?.tag || '',
+    tokens: copyFormValue(pattern?.tokens || []),
+  };
+}
+
+function toModel(draft: EpiFormulaPatternControls): EpiFormulaPattern {
+  return {
+    eid: draft.eid.trim() || undefined,
+    language: draft.language.trim(),
+    tag: draft.tag.trim() || undefined,
+    tokens: copyFormValue(draft.tokens),
+  };
+}
 
 /**
  * Epigraphic formula pattern editor.
@@ -50,8 +74,7 @@ import { EpiFormulaTokenPipe } from '../epi-formula-token.pipe';
   styleUrls: ['./epi-formula-pattern.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    FormsModule,
-    ReactiveFormsModule,
+    FormField,
     MatFormField,
     MatLabel,
     MatInput,
@@ -69,6 +92,8 @@ import { EpiFormulaTokenPipe } from '../epi-formula-token.pipe';
   ],
 })
 export class EpiFormulaPatternComponent {
+  private readonly _dialogService = inject(DialogService);
+
   /**
    * The pattern being edited.
    */
@@ -86,52 +111,57 @@ export class EpiFormulaPatternComponent {
   public readonly edited = signal<EpiFormulaToken | undefined>(undefined);
   public readonly editedIndex = signal<number>(-1);
 
-  public eid: FormControl<string | null>;
-  public language: FormControl<string>;
-  public tag: FormControl<string | null>;
-  public tokens: FormControl<EpiFormulaToken[]>;
-  public form: FormGroup;
+  /**
+   * The editable draft, derived from the pattern. The echo of our own save,
+   * normalized by toModel, keeps the draft instead of rebuilding it.
+   */
+  private readonly _draft = linkedSignal<
+    EpiFormulaPattern | undefined,
+    EpiFormulaPatternControls
+  >({
+    source: () => this.pattern(),
+    computation: (pattern, previous) =>
+      previous &&
+      JSON.stringify(pattern) === JSON.stringify(toModel(previous.value))
+        ? previous.value
+        : toDraft(pattern),
+  });
 
-  constructor(
-    formBuilder: FormBuilder,
-    private _dialogService: DialogService,
-  ) {
-    // form
-    this.eid = formBuilder.control(null, Validators.maxLength(500));
-    this.language = formBuilder.control('', {
-      validators: [Validators.required, Validators.maxLength(50)],
-      nonNullable: true,
-    });
-    this.tag = formBuilder.control(null, Validators.maxLength(50));
-    this.tokens = formBuilder.control([], {
-      validators: NgxToolsValidators.strictMinLengthValidator(1),
-      nonNullable: true,
-    });
-    this.form = formBuilder.group({
-      eid: this.eid,
-      language: this.language,
-      tag: this.tag,
-      tokens: this.tokens,
-    });
+  public readonly form = form(this._draft, (p) => {
+    maxLength(p.eid, 500);
+    required(p.language);
+    maxLength(p.language, 50);
+    maxLength(p.tag, 50);
+    NgxToolsSignalValidators.strictMinLength(p.tokens, 1);
+  });
 
+  constructor() {
+    // any pattern set closes the token being edited
     effect(() => {
-      this.updateForm(this.pattern());
+      this.pattern();
+      untracked(() => this.closeToken());
+    });
+
+    // clear the interaction state when the draft mirrors the pattern again
+    effect(() => {
+      const draft = this._draft();
+      untracked(() => {
+        if (this.isDraftInSync(draft)) {
+          this.form().reset();
+        }
+      });
     });
   }
 
-  private updateForm(pattern?: EpiFormulaPattern) {
-    this.closeToken();
-
-    if (!pattern) {
-      this.form.reset();
-      return;
-    }
-    this.eid.setValue(pattern.eid || null);
-    this.language.setValue(pattern.language);
-    this.tag.setValue(pattern.tag || null);
-    this.tokens.setValue(pattern.tokens || []);
-    this.form.markAsPristine();
+  private isDraftInSync(draft: EpiFormulaPatternControls): boolean {
+    return JSON.stringify(draft) === JSON.stringify(toDraft(this.pattern()));
   }
+
+  private setTokens(tokens: EpiFormulaToken[]): void {
+    this.form.tokens().value.set(tokens);
+    this.form.tokens().markAsDirty();
+  }
+
   public addToken(): void {
     const token: EpiFormulaToken = {
       tags: [],
@@ -142,7 +172,7 @@ export class EpiFormulaPatternComponent {
 
   public editToken(token: EpiFormulaToken, index: number): void {
     this.editedIndex.set(index);
-    this.edited.set(deepCopy(token));
+    this.edited.set(copyFormValue(token));
   }
 
   public closeToken(): void {
@@ -151,15 +181,13 @@ export class EpiFormulaPatternComponent {
   }
 
   public saveToken(token: EpiFormulaToken): void {
-    const tokens = [...this.tokens.value];
+    const tokens = [...this.form.tokens().value()];
     if (this.editedIndex() === -1) {
-      tokens.push(token);
+      tokens.push(copyFormValue(token));
     } else {
-      tokens.splice(this.editedIndex(), 1, token);
+      tokens.splice(this.editedIndex(), 1, copyFormValue(token));
     }
-    this.tokens.setValue(tokens);
-    this.tokens.markAsDirty();
-    this.tokens.updateValueAndValidity();
+    this.setTokens(tokens);
     this.closeToken();
   }
 
@@ -175,11 +203,9 @@ export class EpiFormulaPatternComponent {
             // keep the edited index pointing to the edited token
             this.editedIndex.set(this.editedIndex() - 1);
           }
-          const tokens = [...this.tokens.value];
+          const tokens = [...this.form.tokens().value()];
           tokens.splice(index, 1);
-          this.tokens.setValue(tokens);
-          this.tokens.markAsDirty();
-          this.tokens.updateValueAndValidity();
+          this.setTokens(tokens);
         }
       });
   }
@@ -200,37 +226,46 @@ export class EpiFormulaPatternComponent {
     if (index < 1) {
       return;
     }
-    const token = this.tokens.value[index];
-    const tokens = [...this.tokens.value];
+    const tokens = [...this.form.tokens().value()];
+    const token = tokens[index];
     tokens.splice(index, 1);
     tokens.splice(index - 1, 0, token);
     this.swapEditedIndex(index, index - 1);
-    this.tokens.setValue(tokens);
-    this.tokens.markAsDirty();
-    this.tokens.updateValueAndValidity();
+    this.setTokens(tokens);
   }
 
   public moveTokenDown(index: number): void {
-    if (index + 1 >= this.tokens.value.length) {
+    const tokens = [...this.form.tokens().value()];
+    if (index + 1 >= tokens.length) {
       return;
     }
-    const token = this.tokens.value[index];
-    const tokens = [...this.tokens.value];
+    const token = tokens[index];
     tokens.splice(index, 1);
     tokens.splice(index + 1, 0, token);
     this.swapEditedIndex(index, index + 1);
-    this.tokens.setValue(tokens);
-    this.tokens.markAsDirty();
-    this.tokens.updateValueAndValidity();
+    this.setTokens(tokens);
   }
 
-  private getPattern(): EpiFormulaPattern {
-    return {
-      eid: this.eid.value || undefined,
-      language: this.language.value,
-      tag: this.tag.value || undefined,
-      tokens: this.tokens.value,
-    };
+  /**
+   * Enter in a text input saves, as the implicit submission of the former
+   * form did, unless the save button is disabled. Inputs owned by another
+   * form (e.g. the thesaurus tree filter in the token editor) submit that
+   * form instead, as they did when this editor was a form.
+   * The form check is redundant from @myrmidon/cadmus-ui 20.0.1, whose
+   * isImplicitSubmission excludes them: drop it when upgrading.
+   */
+  public onEnterKey(event: Event): void {
+    if (
+      !isImplicitSubmission(event) ||
+      (event.target as HTMLInputElement).form
+    ) {
+      return;
+    }
+    event.preventDefault();
+    if (this.form().invalid() || !this.form().dirty()) {
+      return;
+    }
+    this.save();
   }
 
   public cancel(): void {
@@ -238,9 +273,11 @@ export class EpiFormulaPatternComponent {
   }
 
   public save(): void {
-    if (this.form.invalid) {
+    if (this.form().invalid()) {
+      this.form().markAsTouched();
       return;
     }
-    this.pattern.set(this.getPattern());
+    this.pattern.set(toModel(this._draft()));
+    this.form().reset();
   }
 }

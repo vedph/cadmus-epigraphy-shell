@@ -1,18 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  OnInit,
+  computed,
+  inject,
+  linkedSignal,
   signal,
 } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
-import {
-  FormControl,
-  FormBuilder,
-  FormGroup,
-  UntypedFormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
 import { take } from 'rxjs/operators';
 
 import {
@@ -31,19 +25,15 @@ import {
   MatExpansionPanelHeader,
 } from '@angular/material/expansion';
 
-import { deepCopy, NgxToolsValidators } from '@myrmidon/ngx-tools';
+import { NgxToolsSignalValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
-import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import {
   CloseSaveButtonsComponent,
   ModelEditorComponentBase,
   HelpLinkComponent,
+  copyFormValue,
 } from '@myrmidon/cadmus-ui';
-import {
-  ThesauriSet,
-  ThesaurusEntry,
-  EditedObject,
-} from '@myrmidon/cadmus-core';
+import { ThesaurusEntry } from '@myrmidon/cadmus-core';
 
 import {
   EpiFormulaPattern,
@@ -52,6 +42,18 @@ import {
 } from '../epi-formula-patterns-part';
 import { EpiFormulaPatternComponent } from '../epi-formula-pattern/epi-formula-pattern.component';
 import { EpiFormulaTokenPipe } from '../epi-formula-token.pipe';
+
+interface EpiFormulaPatternsPartControls {
+  patterns: EpiFormulaPattern[];
+}
+
+function toDraft(
+  part?: EpiFormulaPatternsPart | null,
+): EpiFormulaPatternsPartControls {
+  return {
+    patterns: copyFormValue(part?.patterns || []),
+  };
+}
 
 /**
  * EpiFormulaPatterns part editor component.
@@ -64,8 +66,6 @@ import { EpiFormulaTokenPipe } from '../epi-formula-token.pipe';
   styleUrls: ['./epi-formula-patterns-part.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    FormsModule,
-    ReactiveFormsModule,
     MatCard,
     MatCardHeader,
     MatCardAvatar,
@@ -85,96 +85,42 @@ import { EpiFormulaTokenPipe } from '../epi-formula-token.pipe';
     HelpLinkComponent,
   ],
 })
-export class EpiFormulaPatternsPartComponent
-  extends ModelEditorComponentBase<EpiFormulaPatternsPart>
-  implements OnInit
-{
+export class EpiFormulaPatternsPartComponent extends ModelEditorComponentBase<EpiFormulaPatternsPart> {
+  private readonly _dialogService = inject(DialogService);
+
   public readonly edited = signal<EpiFormulaPattern | undefined>(undefined);
   public readonly editedIndex = signal<number>(-1);
 
+  private readonly _draft = linkedSignal(() => toDraft(this.data()?.value));
+  public readonly form = this.createForm(this._draft, (p) => {
+    // at least 1 entry
+    NgxToolsSignalValidators.strictMinLength(p.patterns, 1);
+  });
+
   // epi-formula-pattern-languages
-  public readonly langEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+  public readonly langEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['epi-formula-pattern-languages']?.entries,
+  );
   // epi-formula-pattern-tags
-  public readonly tagEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+  public readonly tagEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['epi-formula-pattern-tags']?.entries,
+  );
   // epi-formula-token-tags
-  public readonly tokTagEntries = signal<ThesaurusEntry[] | undefined>(
-    undefined,
+  public readonly tokTagEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['epi-formula-token-tags']?.entries,
   );
 
-  public patterns: FormControl<EpiFormulaPattern[]>;
-
-  constructor(
-    authService: AuthJwtService,
-    formBuilder: FormBuilder,
-    private _dialogService: DialogService,
-  ) {
-    super(authService, formBuilder);
-    // form
-    this.patterns = formBuilder.control([], {
-      // at least 1 entry
-      validators: NgxToolsValidators.strictMinLengthValidator(1),
-      nonNullable: true,
-    });
-  }
-
-  public override ngOnInit(): void {
-    super.ngOnInit();
-  }
-
-  protected buildForm(formBuilder: FormBuilder): FormGroup | UntypedFormGroup {
-    return formBuilder.group({
-      entries: this.patterns,
-    });
-  }
-
-  private updateThesauri(thesauri: ThesauriSet): void {
-    let key = 'epi-formula-pattern-languages';
-    if (this.hasThesaurus(key)) {
-      this.langEntries.set(thesauri[key].entries);
-    } else {
-      this.langEntries.set(undefined);
-    }
-    key = 'epi-formula-pattern-tags';
-    if (this.hasThesaurus(key)) {
-      this.tagEntries.set(thesauri[key].entries);
-    } else {
-      this.tagEntries.set(undefined);
-    }
-    key = 'epi-formula-token-tags';
-    if (this.hasThesaurus(key)) {
-      this.tokTagEntries.set(thesauri[key].entries);
-    } else {
-      this.tokTagEntries.set(undefined);
-    }
-  }
-
-  private updateForm(part?: EpiFormulaPatternsPart | null): void {
-    if (!part) {
-      this.form.reset();
-      return;
-    }
-    this.patterns.setValue(part.patterns || []);
-    this.form.markAsPristine();
-  }
-
-  protected override onDataSet(
-    data?: EditedObject<EpiFormulaPatternsPart>,
-  ): void {
-    // thesauri
-    if (data?.thesauri) {
-      this.updateThesauri(data.thesauri);
-    }
-
-    // form
-    this.updateForm(data?.value);
-  }
-
   protected getValue(): EpiFormulaPatternsPart {
-    let part = this.getEditedPart(
+    const part = this.getEditedPart(
       EPI_FORMULA_PATTERNS_PART_TYPEID,
     ) as EpiFormulaPatternsPart;
-    part.patterns = this.patterns.value || [];
+    part.patterns = copyFormValue(this._draft().patterns);
     return part;
+  }
+
+  private setPatterns(patterns: EpiFormulaPattern[]): void {
+    this.form.patterns().value.set(patterns);
+    this.form.patterns().markAsDirty();
   }
 
   public addPattern(): void {
@@ -187,7 +133,7 @@ export class EpiFormulaPatternsPartComponent
 
   public editPattern(entry: EpiFormulaPattern, index: number): void {
     this.editedIndex.set(index);
-    this.edited.set(deepCopy(entry));
+    this.edited.set(copyFormValue(entry));
   }
 
   public closePattern(): void {
@@ -196,15 +142,13 @@ export class EpiFormulaPatternsPartComponent
   }
 
   public savePattern(pattern: EpiFormulaPattern): void {
-    const patterns = [...this.patterns.value];
+    const patterns = [...this.form.patterns().value()];
     if (this.editedIndex() === -1) {
-      patterns.push(pattern);
+      patterns.push(copyFormValue(pattern));
     } else {
-      patterns.splice(this.editedIndex(), 1, pattern);
+      patterns.splice(this.editedIndex(), 1, copyFormValue(pattern));
     }
-    this.patterns.setValue(patterns);
-    this.patterns.markAsDirty();
-    this.patterns.updateValueAndValidity();
+    this.setPatterns(patterns);
     this.closePattern();
   }
 
@@ -220,11 +164,9 @@ export class EpiFormulaPatternsPartComponent
             // keep the edited index pointing to the edited pattern
             this.editedIndex.set(this.editedIndex() - 1);
           }
-          const patterns = [...this.patterns.value];
+          const patterns = [...this.form.patterns().value()];
           patterns.splice(index, 1);
-          this.patterns.setValue(patterns);
-          this.patterns.markAsDirty();
-          this.patterns.updateValueAndValidity();
+          this.setPatterns(patterns);
         }
       });
   }
@@ -245,27 +187,23 @@ export class EpiFormulaPatternsPartComponent
     if (index < 1) {
       return;
     }
-    const pattern = this.patterns.value[index];
-    const patterns = [...this.patterns.value];
+    const patterns = [...this.form.patterns().value()];
+    const pattern = patterns[index];
     patterns.splice(index, 1);
     patterns.splice(index - 1, 0, pattern);
     this.swapEditedIndex(index, index - 1);
-    this.patterns.setValue(patterns);
-    this.patterns.markAsDirty();
-    this.patterns.updateValueAndValidity();
+    this.setPatterns(patterns);
   }
 
   public movePatternDown(index: number): void {
-    if (index + 1 >= this.patterns.value.length) {
+    const patterns = [...this.form.patterns().value()];
+    if (index + 1 >= patterns.length) {
       return;
     }
-    const pattern = this.patterns.value[index];
-    const patterns = [...this.patterns.value];
+    const pattern = patterns[index];
     patterns.splice(index, 1);
     patterns.splice(index + 1, 0, pattern);
     this.swapEditedIndex(index, index + 1);
-    this.patterns.setValue(patterns);
-    this.patterns.markAsDirty();
-    this.patterns.updateValueAndValidity();
+    this.setPatterns(patterns);
   }
 }

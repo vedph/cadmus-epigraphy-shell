@@ -1,10 +1,10 @@
-<form [formGroup]="form" (submit)="save()">
+<div>
   <div class="form-row">
     <!-- placeholder -->
-    <mat-checkbox [formControl]="placeholder">placeholder</mat-checkbox>
+    <mat-checkbox [formField]="form.placeholder">placeholder</mat-checkbox>
 
     <!-- optional -->
-    <mat-checkbox [formControl]="optional">optional</mat-checkbox>
+    <mat-checkbox [formField]="form.optional">optional</mat-checkbox>
   </div>
 
   <!-- tags -->
@@ -19,54 +19,66 @@
         (entryChange)="onEntryChange($event)"
       />
       <!-- list -->
-      @if (tags.value.length) {
-      <table>
-        <tbody>
-          @for ( e of tags.value; track e; let i = $index; let first = $first;
-          let last = $last) {
-          <tr>
-            <td>
-              <button
-                [disabled]="first"
-                mat-icon-button
-                type="button"
-                matTooltip="Move tag up"
-                (click)="moveTagUp(i)"
-              >
-                <mat-icon>arrow_upward</mat-icon>
-              </button>
-              <button
-                [disabled]="last"
-                mat-icon-button
-                type="button"
-                matTooltip="Move tag down"
-                (click)="moveTagDown(i)"
-              >
-                <mat-icon>arrow_downward</mat-icon>
-              </button>
-              <button type="button" mat-icon-button (click)="removeTag(i)">
-                <mat-icon class="mat-warn">delete</mat-icon>
-              </button>
-            </td>
-            <td>{{ e.value }}</td>
-          </tr>
-          }
-        </tbody>
-      </table>
+      @if (tagLabels().length) {
+        <table>
+          <tbody>
+            @for (
+              label of tagLabels();
+              track $index;
+              let i = $index;
+              let first = $first;
+              let last = $last
+            ) {
+              <tr>
+                <td>
+                  <button
+                    [disabled]="first"
+                    mat-icon-button
+                    type="button"
+                    matTooltip="Move tag up"
+                    (click)="moveTagUp(i)"
+                  >
+                    <mat-icon>arrow_upward</mat-icon>
+                  </button>
+                  <button
+                    [disabled]="last"
+                    mat-icon-button
+                    type="button"
+                    matTooltip="Move tag down"
+                    (click)="moveTagDown(i)"
+                  >
+                    <mat-icon>arrow_downward</mat-icon>
+                  </button>
+                  <button type="button" mat-icon-button (click)="removeTag(i)">
+                    <mat-icon class="mat-warn">delete</mat-icon>
+                  </button>
+                </td>
+                <td>{{ label }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
       } @else {
-      <span class="error">no tags</span>
+        <span class="error">no tags</span>
       }
     </div>
   </fieldset>
 
   <!-- values -->
   <mat-form-field class="long-text">
-    <textarea [formControl]="values" matInput rows="3"></textarea>
+    <textarea [formField]="form.values" matInput rows="3"></textarea>
     <mat-hint>value(s), one per line</mat-hint>
-    @if ($any(values).errors?.required && (values.dirty || values.touched)) {
-    <mat-error>value(s) required</mat-error>
-    } @if ($any(values).errors?.maxlength && (values.dirty || values.touched)) {
-    <mat-error>value(s) too long</mat-error>
+    @if (
+      form.values().getError("required") &&
+      (form.values().dirty() || form.values().touched())
+    ) {
+      <mat-error>value(s) required</mat-error>
+    }
+    @if (
+      form.values().getError("maxLength") &&
+      (form.values().dirty() || form.values().touched())
+    ) {
+      <mat-error>value(s) too long</mat-error>
     }
   </mat-form-field>
 
@@ -74,9 +86,12 @@
   <div>
     <mat-form-field class="long-text">
       <mat-label>note</mat-label>
-      <textarea matInput [formControl]="note"></textarea>
-      @if ($any(note).errors?.maxlength && (note.dirty || note.touched)) {
-      <mat-error>note too long</mat-error>
+      <textarea matInput [formField]="form.note"></textarea>
+      @if (
+        form.note().getError("maxLength") &&
+        (form.note().dirty() || form.note().touched())
+      ) {
+        <mat-error>note too long</mat-error>
       }
     </mat-form-field>
   </div>
@@ -92,12 +107,13 @@
       <mat-icon class="mat-warn">clear</mat-icon>
     </button>
     <button
-      type="submit"
+      type="button"
       mat-icon-button
       matTooltip="Accept changes"
-      [disabled]="form.invalid || form.pristine"
+      [disabled]="form().invalid() || !form().dirty()"
+      (click)="save()"
     >
       <mat-icon class="mat-primary">check_circle</mat-icon>
     </button>
   </div>
-</form>
+</div>

@@ -16,6 +16,12 @@ import {
 import { EpiScriptComponent } from '../epi-script/epi-script.component';
 import { EpiScriptsPartComponent } from './epi-scripts-part.component';
 
+// the form tags the objects in its arrays with an identity Symbol:
+// compare their plain data only
+function plain<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value));
+}
+
 const THESAURI: ThesauriSet = {
   'epi-script-systems': {
     id: 'epi-script-systems@en',
@@ -128,8 +134,8 @@ describe('EpiScriptsPartComponent', () => {
 
   it('should create with an invalid empty form', () => {
     expect(component).toBeTruthy();
-    expect(component.scripts.value).toEqual([]);
-    expect(component.form.invalid).toBe(true);
+    expect(plain(component.form.scripts().value())).toEqual([]);
+    expect(component.form().invalid()).toBe(true);
     expect(fixture.nativeElement.querySelector('table')).toBeNull();
     expect(component.userLevel).toBe(3);
   });
@@ -147,9 +153,9 @@ describe('EpiScriptsPartComponent', () => {
     expect(component.scriptEntries()?.length).toBe(2);
     expect(component.casingEntries()?.length).toBe(1);
     expect(component.featEntries()?.length).toBe(1);
-    expect(component.scripts.value).toEqual(createScripts());
-    expect(component.form.valid).toBe(true);
-    expect(component.form.pristine).toBe(true);
+    expect(plain(component.form.scripts().value())).toEqual(createScripts());
+    expect(component.form().valid()).toBe(true);
+    expect(component.form().dirty()).toBe(false);
   });
 
   it('should render scripts with looked up values', () => {
@@ -174,14 +180,14 @@ describe('EpiScriptsPartComponent', () => {
   it('should reset form when data has no value', () => {
     setData({ value: createPart(), thesauri: THESAURI });
     setData({ value: null, thesauri: THESAURI });
-    expect(component.scripts.value).toEqual([]);
+    expect(plain(component.form.scripts().value())).toEqual([]);
   });
 
   it('should default scripts to empty array when missing', () => {
     const part = createPart();
     part.scripts = undefined as unknown as EpiScript[];
     setData({ value: part, thesauri: {} });
-    expect(component.scripts.value).toEqual([]);
+    expect(plain(component.form.scripts().value())).toEqual([]);
   });
 
   it('should add a new script defaulting to first script entry', () => {
@@ -200,15 +206,15 @@ describe('EpiScriptsPartComponent', () => {
 
   it('should edit a copy of a script', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editScript(component.scripts.value[1], 1);
+    component.editScript(component.form.scripts().value()[1], 1);
     fixture.detectChanges();
 
     expect(component.editedIndex()).toBe(1);
     expect(component.edited()).toEqual(createScripts()[1]);
-    expect(component.edited()).not.toBe(component.scripts.value[1]);
+    expect(component.edited()).not.toBe(component.form.scripts().value()[1]);
     expect(getRows()[1].classList.contains('selected')).toBe(true);
     const editor = getChildEditor()!;
-    expect(editor.scriptCtl.value).toBe('unc');
+    expect(editor.form.script().value()).toBe('unc');
     expect(editor.systemEntries()).toEqual(THESAURI['epi-script-systems'].entries);
   });
 
@@ -235,34 +241,35 @@ describe('EpiScriptsPartComponent', () => {
     component.addScript();
     component.saveScript({ script: 'new' });
 
-    expect(component.scripts.value).toEqual([{ script: 'new' }]);
-    expect(component.scripts.dirty).toBe(true);
-    expect(component.form.valid).toBe(true);
+    expect(plain(component.form.scripts().value())).toEqual([{ script: 'new' }]);
+    expect(component.form.scripts().dirty()).toBe(true);
+    expect(component.form().valid()).toBe(true);
     expect(component.edited()).toBeUndefined();
+    fixture.detectChanges();
     expect(spy).toHaveBeenCalledWith(true);
   });
 
   it('should replace an edited script', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editScript(component.scripts.value[1], 1);
+    component.editScript(component.form.scripts().value()[1], 1);
     component.saveScript({ script: 'replaced' });
 
-    expect(component.scripts.value.length).toBe(3);
-    expect(component.scripts.value[1]).toEqual({ script: 'replaced' });
+    expect(component.form.scripts().value().length).toBe(3);
+    expect(plain(component.form.scripts().value()[1])).toEqual({ script: 'replaced' });
     expect(component.editedIndex()).toBe(-1);
   });
 
   it('should save script from child editor', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editScript(component.scripts.value[0], 0);
+    component.editScript(component.form.scripts().value()[0], 0);
     fixture.detectChanges();
 
     const editor = getChildEditor()!;
-    editor.note.setValue('note');
+    editor.form.note().value.set('note');
     editor.save();
     fixture.detectChanges();
 
-    expect(component.scripts.value[0]).toEqual({
+    expect(plain(component.form.scripts().value()[0])).toEqual({
       system: 'lat',
       script: 'cap',
       casing: 'upper',
@@ -276,23 +283,23 @@ describe('EpiScriptsPartComponent', () => {
     setData({ value: createPart(), thesauri: THESAURI });
     component.deleteScript(1);
     expect(dialogService.confirm).toHaveBeenCalled();
-    expect(component.scripts.value).toEqual([
+    expect(plain(component.form.scripts().value())).toEqual([
       createScripts()[0],
       createScripts()[2],
     ]);
-    expect(component.scripts.dirty).toBe(true);
+    expect(component.form.scripts().dirty()).toBe(true);
   });
 
   it('should not delete a script without confirmation', () => {
     dialogService.confirm.mockReturnValue(of(false));
     setData({ value: createPart(), thesauri: THESAURI });
     component.deleteScript(1);
-    expect(component.scripts.value.length).toBe(3);
+    expect(component.form.scripts().value().length).toBe(3);
   });
 
   it('should close the editor when deleting the edited script', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editScript(component.scripts.value[1], 1);
+    component.editScript(component.form.scripts().value()[1], 1);
     component.deleteScript(1);
     expect(component.edited()).toBeUndefined();
     expect(component.editedIndex()).toBe(-1);
@@ -300,12 +307,12 @@ describe('EpiScriptsPartComponent', () => {
 
   it('should keep edited script when deleting a previous script', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editScript(component.scripts.value[2], 2);
+    component.editScript(component.form.scripts().value()[2], 2);
     component.deleteScript(0);
     expect(component.editedIndex()).toBe(1);
 
     component.saveScript({ script: 'y' });
-    expect(component.scripts.value).toEqual([
+    expect(plain(component.form.scripts().value())).toEqual([
       createScripts()[1],
       { script: 'y' },
     ]);
@@ -313,7 +320,7 @@ describe('EpiScriptsPartComponent', () => {
 
   it('should keep edited script when deleting a following script', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editScript(component.scripts.value[0], 0);
+    component.editScript(component.form.scripts().value()[0], 0);
     component.deleteScript(2);
     expect(component.editedIndex()).toBe(0);
   });
@@ -322,36 +329,36 @@ describe('EpiScriptsPartComponent', () => {
     setData({ value: createPart(), thesauri: THESAURI });
     const scripts = createScripts();
     component.moveScriptUp(0);
-    expect(component.scripts.value).toEqual(scripts);
-    expect(component.scripts.dirty).toBe(false);
+    expect(plain(component.form.scripts().value())).toEqual(scripts);
+    expect(component.form.scripts().dirty()).toBe(false);
 
     component.moveScriptUp(2);
-    expect(component.scripts.value).toEqual([
+    expect(plain(component.form.scripts().value())).toEqual([
       scripts[0],
       scripts[2],
       scripts[1],
     ]);
-    expect(component.scripts.dirty).toBe(true);
+    expect(component.form.scripts().dirty()).toBe(true);
   });
 
   it('should move scripts down', () => {
     setData({ value: createPart(), thesauri: THESAURI });
     const scripts = createScripts();
     component.moveScriptDown(2);
-    expect(component.scripts.value).toEqual(scripts);
+    expect(plain(component.form.scripts().value())).toEqual(scripts);
 
     component.moveScriptDown(0);
-    expect(component.scripts.value).toEqual([
+    expect(plain(component.form.scripts().value())).toEqual([
       scripts[1],
       scripts[0],
       scripts[2],
     ]);
-    expect(component.scripts.dirty).toBe(true);
+    expect(component.form.scripts().dirty()).toBe(true);
   });
 
   it('should keep edited script when moving scripts', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editScript(component.scripts.value[1], 1);
+    component.editScript(component.form.scripts().value()[1], 1);
 
     // moving the edited script itself
     component.moveScriptUp(1);
@@ -370,7 +377,7 @@ describe('EpiScriptsPartComponent', () => {
     expect(component.editedIndex()).toBe(1);
 
     component.saveScript({ script: 'edited' });
-    expect(component.scripts.value[1]).toEqual({ script: 'edited' });
+    expect(plain(component.form.scripts().value()[1])).toEqual({ script: 'edited' });
   });
 
   it('should disable move buttons for first and last rows', () => {
@@ -390,13 +397,13 @@ describe('EpiScriptsPartComponent', () => {
     buttons[0].click();
     expect(component.editedIndex()).toBe(1);
     buttons[1].click();
-    expect(component.scripts.value[0]).toEqual(createScripts()[1]);
+    expect(plain(component.form.scripts().value()[0])).toEqual(createScripts()[1]);
     fixture.detectChanges();
     getRows()[0].querySelectorAll('button')[2].click();
-    expect(component.scripts.value[1]).toEqual(createScripts()[1]);
+    expect(plain(component.form.scripts().value()[1])).toEqual(createScripts()[1]);
     fixture.detectChanges();
     getRows()[1].querySelectorAll('button')[3].click();
-    expect(component.scripts.value.length).toBe(2);
+    expect(component.form.scripts().value().length).toBe(2);
   });
 
   it('should save edited part', () => {
@@ -411,7 +418,7 @@ describe('EpiScriptsPartComponent', () => {
       .value!;
     expect(part.id).toBe('p1');
     expect(part.scripts.map((s) => s.script)).toEqual(['unc', 'cap', 'x']);
-    expect(component.form.pristine).toBe(true);
+    expect(component.form().dirty()).toBe(false);
   });
 
   it('should save a new part using identity', () => {
@@ -433,6 +440,90 @@ describe('EpiScriptsPartComponent', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     component.save();
     expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should save a model whose scripts carry no Symbol tags', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    const spy = vi.fn();
+    component.data.subscribe(spy);
+    // the form's own objects are tagged...
+    expect(
+      Object.getOwnPropertySymbols(component.form.scripts().value()[0]).length,
+    ).toBeGreaterThan(0);
+
+    component.moveScriptDown(0);
+    component.save();
+
+    // ...but the saved ones are not
+    const part = (spy.mock.calls[0][0] as EditedObject<EpiScriptsPart>)
+      .value!;
+    for (const script of part.scripts) {
+      expect(Object.getOwnPropertySymbols(script)).toEqual([]);
+    }
+  });
+
+  it('should not tag or change the scripts of the bound part', () => {
+    const part = createPart();
+    setData({ value: part, thesauri: THESAURI });
+    component.editScript(component.form.scripts().value()[0], 0);
+    component.saveScript({ script: 'changed' });
+    component.save();
+    expect(part.scripts).toEqual(createScripts());
+    for (const script of part.scripts) {
+      expect(Object.getOwnPropertySymbols(script)).toEqual([]);
+    }
+  });
+
+  it('should pass the child editor a script with no Symbol tags', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    component.editScript(component.form.scripts().value()[0], 0);
+    expect(Object.getOwnPropertySymbols(component.edited()!)).toEqual([]);
+  });
+
+  it('should stay pristine when data is bound, and when it is bound again', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    expect(component.isDirty()).toBe(false);
+    component.moveScriptDown(0);
+    expect(component.isDirty()).toBe(true);
+    setData({ value: createPart(), thesauri: THESAURI });
+    expect(component.isDirty()).toBe(false);
+  });
+
+  it('should render no <form>, also with the child editor open', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    component.editScript(component.form.scripts().value()[0], 0);
+    fixture.detectChanges();
+    expect(getChildEditor()).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('form')).toBeNull();
+  });
+
+  it('should not save the part on Enter in the child editor', () => {
+    // no thesauri: the child editor has free text inputs
+    setData({ value: createPart(), thesauri: {} });
+    const spy = vi.fn();
+    component.data.subscribe(spy);
+    component.editScript(component.form.scripts().value()[0], 0);
+    fixture.detectChanges();
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      'cadmus-epi-script input',
+    );
+    input.value = 'grc';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    input.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    fixture.detectChanges();
+
+    // the child saved its script into the part, which was not saved
+    expect(plain(component.form.scripts().value()[0]).system).toBe('grc');
+    expect(component.edited()).toBeUndefined();
+    expect(spy).not.toHaveBeenCalled();
+    expect(component.isDirty()).toBe(true);
   });
 
   it('should emit editorClose on close', () => {

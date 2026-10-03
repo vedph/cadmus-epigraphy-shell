@@ -159,15 +159,17 @@ describe('EpiTechniquePartFeatureComponent', () => {
     await setup('p1');
     const editor = getEditor();
     expect(editor.identity()).toEqual(component.identity());
-    expect(editor.grooveType.value).toBe('v');
-    expect(editor.techniques.value).toEqual(['incision']);
+    expect(editor.form.grooveType().value()).toBe('v');
+    expect(editor.form.techniques().value()).toEqual(['incision']);
   });
 
   it('should track editor dirty state', async () => {
     await setup('p1');
     const editor = getEditor();
-    editor.note.setValue('x');
-    editor.note.markAsDirty();
+    editor.form.note().value.set('x');
+    editor.form.note().markAsDirty();
+    // dirtyChange is emitted by an effect
+    fixture.detectChanges();
     expect(component.dirty()).toBe(true);
     expect(component.canDeactivate()).toBe(false);
   });
@@ -175,7 +177,7 @@ describe('EpiTechniquePartFeatureComponent', () => {
   it('should save the edited part', async () => {
     await setup('p1');
     const editor = getEditor();
-    editor.note.setValue('note');
+    editor.form.note().value.set('note');
     editor.save();
     await fixture.whenStable();
 

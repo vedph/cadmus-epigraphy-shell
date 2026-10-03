@@ -3,6 +3,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { MATERIAL_ANIMATIONS } from '@angular/material/core';
 import { MatTabGroup } from '@angular/material/tabs';
+import { MatTooltip } from '@angular/material/tooltip';
+import { By } from '@angular/platform-browser';
 import { BehaviorSubject, of } from 'rxjs';
 
 import { AuthJwtService, User } from '@myrmidon/auth-jwt-login';
@@ -26,6 +28,12 @@ function thesaurus(key: string, ids: string[]) {
   };
 }
 
+// the form tags the objects in its arrays with an identity Symbol:
+// compare their plain data only
+function plain<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value));
+}
+
 const THESAURI: ThesauriSet = {
   'epi-support-materials': thesaurus('epi-support-materials', [
     'marble',
@@ -45,10 +53,9 @@ const THESAURI: ThesauriSet = {
     'main',
     'side',
   ]),
-  'epi-support-text-area-layouts': thesaurus(
-    'epi-support-text-area-layouts',
-    ['lines'],
-  ),
+  'epi-support-text-area-layouts': thesaurus('epi-support-text-area-layouts', [
+    'lines',
+  ]),
   'epi-support-text-area-features': thesaurus(
     'epi-support-text-area-features',
     ['ruling'],
@@ -127,7 +134,10 @@ describe('EpiSupportPartComponent', () => {
   }
 
   function eids(): (string | undefined)[] {
-    return component.areas.value.map((a) => a.eid);
+    return component.form
+      .areas()
+      .value()
+      .map((a) => a.eid);
   }
 
   beforeEach(async () => {
@@ -175,8 +185,8 @@ describe('EpiSupportPartComponent', () => {
 
   it('should create with an invalid empty form', () => {
     expect(component).toBeTruthy();
-    expect(component.form.invalid).toBe(true);
-    expect(component.material.hasError('required')).toBe(true);
+    expect(component.form().invalid()).toBe(true);
+    expect(!!component.form.material().getError('required')).toBe(true);
     expect(component.featFlags()).toEqual([]);
   });
 
@@ -240,16 +250,18 @@ describe('EpiSupportPartComponent', () => {
 
   it('should update form from part', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    expect(component.material.value).toBe('marble');
-    expect(component.objectType.value).toBe('stele');
-    expect(component.hasSize.value).toBe(true);
-    expect(component.size.value).toEqual(createPart().size);
-    expect(component.counts.value).toEqual([{ id: 'lines', value: 5 }]);
-    expect(component.features.value).toEqual(['broken']);
-    expect(component.areas.value).toEqual(createAreas());
-    expect(component.note.value).toBe('a note');
-    expect(component.form.valid).toBe(true);
-    expect(component.form.pristine).toBe(true);
+    expect(component.form.material().value()).toBe('marble');
+    expect(component.form.objectType().value()).toBe('stele');
+    expect(component.form.hasSize().value()).toBe(true);
+    expect(component.form.size().value()).toEqual(createPart().size);
+    expect(plain(component.form.counts().value())).toEqual([
+      { id: 'lines', value: 5 },
+    ]);
+    expect(component.form.features().value()).toEqual(['broken']);
+    expect(plain(component.form.areas().value())).toEqual(createAreas());
+    expect(component.form.note().value()).toBe('a note');
+    expect(component.form().valid()).toBe(true);
+    expect(component.form().dirty()).toBe(false);
   });
 
   it('should map missing part values to defaults', () => {
@@ -266,22 +278,22 @@ describe('EpiSupportPartComponent', () => {
       },
       thesauri: {},
     });
-    expect(component.material.value).toBe('');
-    expect(component.objectType.value).toBeNull();
-    expect(component.hasSize.value).toBe(false);
-    expect(component.size.value).toBeNull();
-    expect(component.counts.value).toEqual([]);
-    expect(component.features.value).toEqual([]);
-    expect(component.areas.value).toEqual([]);
-    expect(component.note.value).toBeNull();
+    expect(component.form.material().value()).toBe('');
+    expect(component.form.objectType().value()).toBe('');
+    expect(component.form.hasSize().value()).toBe(false);
+    expect(component.form.size().value()).toBeNull();
+    expect(plain(component.form.counts().value())).toEqual([]);
+    expect(component.form.features().value()).toEqual([]);
+    expect(plain(component.form.areas().value())).toEqual([]);
+    expect(component.form.note().value()).toBe('');
   });
 
   it('should reset form when data has no value', () => {
     setData({ value: createPart(), thesauri: THESAURI });
     setData({ value: null, thesauri: THESAURI });
-    expect(component.material.value).toBe('');
-    expect(component.hasSize.value).toBe(false);
-    expect(component.areas.value).toEqual([]);
+    expect(component.form.material().value()).toBe('');
+    expect(component.form.hasSize().value()).toBe(false);
+    expect(plain(component.form.areas().value())).toEqual([]);
   });
 
   it('should use free inputs for material and object type without thesauri', () => {
@@ -294,7 +306,7 @@ describe('EpiSupportPartComponent', () => {
     expect(
       fixture.nativeElement.querySelector('cadmus-mat-physical-size'),
     ).toBeNull();
-    component.hasSize.setValue(true);
+    component.form.hasSize().value.set(true);
     fixture.detectChanges();
     expect(
       fixture.nativeElement.querySelector('cadmus-mat-physical-size'),
@@ -302,12 +314,12 @@ describe('EpiSupportPartComponent', () => {
   });
 
   it('should validate max lengths', () => {
-    component.material.setValue('x'.repeat(51));
-    component.objectType.setValue('x'.repeat(51));
-    component.note.setValue('x'.repeat(5001));
-    expect(component.material.hasError('maxlength')).toBe(true);
-    expect(component.objectType.hasError('maxlength')).toBe(true);
-    expect(component.note.hasError('maxlength')).toBe(true);
+    component.form.material().value.set('x'.repeat(51));
+    component.form.objectType().value.set('x'.repeat(51));
+    component.form.note().value.set('x'.repeat(5001));
+    expect(!!component.form.material().getError('maxLength')).toBe(true);
+    expect(!!component.form.objectType().getError('maxLength')).toBe(true);
+    expect(!!component.form.note().getError('maxLength')).toBe(true);
   });
 
   it('should show material and object type errors', () => {
@@ -318,30 +330,32 @@ describe('EpiSupportPartComponent', () => {
         ) as NodeListOf<HTMLElement>,
       ).map((e) => e.textContent!.trim());
 
-    component.material.markAsTouched();
+    component.form.material().markAsTouched();
     fixture.detectChanges();
     expect(errors()).toEqual(['material required']);
 
-    component.material.setValue('x'.repeat(51));
-    component.objectType.setValue('x'.repeat(51));
-    component.objectType.markAsTouched();
+    component.form.material().value.set('x'.repeat(51));
+    component.form.objectType().value.set('x'.repeat(51));
+    component.form.objectType().markAsTouched();
     fixture.detectChanges();
     expect(errors()).toEqual(['material too long', 'objectType too long']);
   });
 
   it('should update features, size and counts', () => {
     component.onFeatIdsChange(['reused']);
-    expect(component.features.value).toEqual(['reused']);
-    expect(component.features.dirty).toBe(true);
+    expect(component.form.features().value()).toEqual(['reused']);
+    expect(component.form.features().dirty()).toBe(true);
 
     const size = { d: { value: 2, unit: 'cm' } };
     component.onSupportSizeChange(size);
-    expect(component.size.value).toEqual(size);
-    expect(component.size.dirty).toBe(true);
+    expect(component.form.size().value()).toEqual(size);
+    expect(component.form.size().dirty()).toBe(true);
 
     component.onCountsChange([{ id: 'lines', value: 3 }]);
-    expect(component.counts.value).toEqual([{ id: 'lines', value: 3 }]);
-    expect(component.counts.dirty).toBe(true);
+    expect(plain(component.form.counts().value())).toEqual([
+      { id: 'lines', value: 3 },
+    ]);
+    expect(component.form.counts().dirty()).toBe(true);
   });
 
   it('should render features and counts in features tab', async () => {
@@ -391,12 +405,12 @@ describe('EpiSupportPartComponent', () => {
   it('should edit a copy of an area', async () => {
     setData({ value: createPart(), thesauri: THESAURI });
     await selectTab(1);
-    component.editArea(component.areas.value[1], 1);
+    component.editArea(component.form.areas().value()[1], 1);
     fixture.detectChanges();
     expect(component.editedArea()).toEqual(createAreas()[1]);
-    expect(component.editedArea()).not.toBe(component.areas.value[1]);
+    expect(component.editedArea()).not.toBe(component.form.areas().value()[1]);
     expect(getAreaRows()[1].classList.contains('selected')).toBe(true);
-    expect(getAreaEditor()!.eid.value).toBe('b');
+    expect(getAreaEditor()!.form.eid().value()).toBe('b');
   });
 
   it('should close area editor on its cancel', async () => {
@@ -412,14 +426,14 @@ describe('EpiSupportPartComponent', () => {
   it('should append a new area', () => {
     component.addArea();
     component.saveArea({ type: 'x' });
-    expect(component.areas.value).toEqual([{ type: 'x' }]);
-    expect(component.areas.dirty).toBe(true);
+    expect(plain(component.form.areas().value())).toEqual([{ type: 'x' }]);
+    expect(component.form.areas().dirty()).toBe(true);
     expect(component.editedArea()).toBeUndefined();
   });
 
   it('should replace an edited area', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editArea(component.areas.value[1], 1);
+    component.editArea(component.form.areas().value()[1], 1);
     component.saveArea({ type: 'main', eid: 'z' });
     expect(eids()).toEqual(['a', 'z', 'c']);
   });
@@ -427,13 +441,13 @@ describe('EpiSupportPartComponent', () => {
   it('should save area from area editor', async () => {
     setData({ value: createPart(), thesauri: THESAURI });
     await selectTab(1);
-    component.editArea(component.areas.value[2], 2);
+    component.editArea(component.form.areas().value()[2], 2);
     fixture.detectChanges();
     const editor = getAreaEditor()!;
-    editor.note.setValue('note');
+    editor.form.note().value.set('note');
     editor.save();
     fixture.detectChanges();
-    expect(component.areas.value[2]).toEqual({
+    expect(plain(component.form.areas().value()[2])).toEqual({
       eid: 'c',
       type: 'side',
       layout: undefined,
@@ -451,7 +465,7 @@ describe('EpiSupportPartComponent', () => {
     component.deleteArea(1);
     expect(dialogService.confirm).toHaveBeenCalled();
     expect(eids()).toEqual(['a', 'c']);
-    expect(component.areas.dirty).toBe(true);
+    expect(component.form.areas().dirty()).toBe(true);
   });
 
   it('should not delete an area without confirmation', () => {
@@ -463,14 +477,14 @@ describe('EpiSupportPartComponent', () => {
 
   it('should close the editor when deleting the edited area', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editArea(component.areas.value[1], 1);
+    component.editArea(component.form.areas().value()[1], 1);
     component.deleteArea(1);
     expect(component.editedArea()).toBeUndefined();
   });
 
   it('should keep edited area when deleting a previous area', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editArea(component.areas.value[2], 2);
+    component.editArea(component.form.areas().value()[2], 2);
     component.deleteArea(0);
     expect(component.editedAreaIndex()).toBe(1);
     component.saveArea({ type: 'side', eid: 'c2' });
@@ -482,17 +496,17 @@ describe('EpiSupportPartComponent', () => {
     component.moveAreaUp(0);
     component.moveAreaDown(2);
     expect(eids()).toEqual(['a', 'b', 'c']);
-    expect(component.areas.dirty).toBe(false);
+    expect(component.form.areas().dirty()).toBe(false);
     component.moveAreaUp(2);
     expect(eids()).toEqual(['a', 'c', 'b']);
     component.moveAreaDown(0);
     expect(eids()).toEqual(['c', 'a', 'b']);
-    expect(component.areas.dirty).toBe(true);
+    expect(component.form.areas().dirty()).toBe(true);
   });
 
   it('should keep edited area when moving areas', () => {
     setData({ value: createPart(), thesauri: THESAURI });
-    component.editArea(component.areas.value[1], 1);
+    component.editArea(component.form.areas().value()[1], 1);
     component.moveAreaDown(1);
     expect(component.editedAreaIndex()).toBe(2);
     component.moveAreaUp(2);
@@ -525,9 +539,9 @@ describe('EpiSupportPartComponent', () => {
     setData({ value: createPart(), thesauri: THESAURI });
     const spy = vi.fn();
     component.data.subscribe(spy);
-    component.material.setValue(' stone ');
-    component.objectType.setValue(' stele ');
-    component.note.setValue(' note ');
+    component.form.material().value.set(' stone ');
+    component.form.objectType().value.set(' stele ');
+    component.form.note().value.set(' note ');
     component.save();
     const part = (spy.mock.calls[0][0] as EditedObject<EpiSupportPart>).value!;
     expect(part.id).toBe('p1');
@@ -538,17 +552,17 @@ describe('EpiSupportPartComponent', () => {
     expect(part.features).toEqual(['broken']);
     expect(part.textAreas).toEqual(createAreas());
     expect(part.note).toBe('note');
-    expect(component.form.pristine).toBe(true);
+    expect(component.form().dirty()).toBe(false);
   });
 
   it('should save empty optional values as undefined', () => {
     setData({ value: createPart(), thesauri: THESAURI });
     const spy = vi.fn();
     component.data.subscribe(spy);
-    component.objectType.setValue('');
-    component.hasSize.setValue(false);
-    component.areas.setValue([]);
-    component.note.setValue('  ');
+    component.form.objectType().value.set('');
+    component.form.hasSize().value.set(false);
+    component.form.areas().value.set([]);
+    component.form.note().value.set('  ');
     component.save();
     const part = (spy.mock.calls[0][0] as EditedObject<EpiSupportPart>).value!;
     expect(part.objectType).toBeUndefined();
@@ -560,7 +574,7 @@ describe('EpiSupportPartComponent', () => {
   it('should save a new part using identity', () => {
     const spy = vi.fn();
     component.data.subscribe(spy);
-    component.material.setValue('marble');
+    component.form.material().value.set('marble');
     component.save();
     const part = (spy.mock.calls[0][0] as EditedObject<EpiSupportPart>).value!;
     expect(part.itemId).toBe('i1');
@@ -574,5 +588,101 @@ describe('EpiSupportPartComponent', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
     component.save();
     expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should save a model whose arrays carry no Symbol tags', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    const spy = vi.fn();
+    component.data.subscribe(spy);
+    expect(
+      Object.getOwnPropertySymbols(component.form.areas().value()[0]).length,
+    ).toBeGreaterThan(0);
+
+    component.moveAreaDown(0);
+    component.save();
+
+    const part = (spy.mock.calls[0][0] as EditedObject<EpiSupportPart>).value!;
+    for (const item of [...part.textAreas!, ...part.counts!]) {
+      expect(Object.getOwnPropertySymbols(item)).toEqual([]);
+    }
+  });
+
+  it('should not tag or change the bound part', () => {
+    const part = createPart();
+    setData({ value: part, thesauri: THESAURI });
+    component.editArea(component.form.areas().value()[0], 0);
+    expect(Object.getOwnPropertySymbols(component.editedArea()!)).toEqual([]);
+    component.saveArea({ type: 'main', eid: 'changed' });
+    component.onCountsChange([{ id: 'lines', value: 9 }]);
+    component.save();
+    expect(part.textAreas).toEqual(createAreas());
+    expect(part.counts).toEqual([{ id: 'lines', value: 5 }]);
+    for (const item of [...part.textAreas!, ...part.counts!]) {
+      expect(Object.getOwnPropertySymbols(item)).toEqual([]);
+    }
+  });
+
+  it('should stay pristine when children emit the bound values', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    component.onFeatIdsChange(['broken']);
+    component.onCountsChange([
+      { id: 'lines', value: 5, tag: undefined, note: undefined },
+    ]);
+    // a normalized copy, as the autosaving size editor emits
+    component.onSupportSizeChange({
+      w: { value: 50, unit: 'cm', tag: undefined },
+      h: { value: 100, unit: 'cm', tag: undefined },
+      tag: undefined,
+      note: undefined,
+    });
+    expect(component.isDirty()).toBe(false);
+  });
+
+  it('should stay pristine when data is bound, and when it is bound again', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    expect(component.isDirty()).toBe(false);
+    component.moveAreaDown(0);
+    expect(component.isDirty()).toBe(true);
+    setData({ value: createPart(), thesauri: THESAURI });
+    expect(component.isDirty()).toBe(false);
+  });
+
+  it('should save empty arrays and strings as missing', () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    const spy = vi.fn();
+    component.data.subscribe(spy);
+    component.onFeatIdsChange([]);
+    component.onCountsChange([]);
+    component.form.objectType().value.set(' ');
+    component.form.note().value.set('');
+    component.form.hasSize().value.set(false);
+    component.save();
+    const part = (spy.mock.calls[0][0] as EditedObject<EpiSupportPart>).value!;
+    expect(part.features).toBeUndefined();
+    expect(part.counts).toBeUndefined();
+    expect(part.objectType).toBeUndefined();
+    expect(part.note).toBeUndefined();
+    expect(part.size).toBeUndefined();
+  });
+
+  it('should attach a tooltip to each area action button', async () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    await selectTab(1);
+    const buttons = fixture.debugElement.queryAll(
+      By.css('tbody tr button[mattooltip]'),
+    );
+    expect(buttons.length).toBe(4 * getAreaRows().length);
+    for (const button of buttons) {
+      expect(button.injector.get(MatTooltip, null)).toBeTruthy();
+    }
+  });
+
+  it('should render no <form>, also with the area editor open', async () => {
+    setData({ value: createPart(), thesauri: THESAURI });
+    await selectTab(1);
+    component.editArea(component.form.areas().value()[0], 0);
+    fixture.detectChanges();
+    expect(getAreaEditor()).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('form')).toBeNull();
   });
 });

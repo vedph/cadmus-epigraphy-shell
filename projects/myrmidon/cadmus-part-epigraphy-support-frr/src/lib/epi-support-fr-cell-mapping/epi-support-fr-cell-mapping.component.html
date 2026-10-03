@@ -1,15 +1,17 @@
-<form [formGroup]="form" (submit)="save()">
+<div (keydown.enter)="onEnterKey($event)">
   <!-- location -->
   <mat-form-field>
     <mat-label>location</mat-label>
-    <input matInput [formControl]="location" />
+    <input matInput [formField]="form.location" />
     @if (
-      $any(location).errors?.required && (location.dirty || location.touched)
+      form.location().getError("required") &&
+      (form.location().dirty() || form.location().touched())
     ) {
       <mat-error>location required</mat-error>
     }
     @if (
-      $any(location).errors?.maxlength && (location.dirty || location.touched)
+      form.location().getError("maxLength") &&
+      (form.location().dirty() || form.location().touched())
     ) {
       <mat-error>location too long</mat-error>
     }
@@ -19,10 +21,10 @@
     <!-- headTextLoc -->
     <mat-form-field>
       <mat-label>head loc.</mat-label>
-      <input matInput [formControl]="headTextLoc" />
+      <input matInput [formField]="form.headTextLoc" />
       @if (
-        $any(headTextLoc).errors?.maxlength &&
-        (headTextLoc.dirty || headTextLoc.touched)
+        form.headTextLoc().getError("maxLength") &&
+        (form.headTextLoc().dirty() || form.headTextLoc().touched())
       ) {
         <mat-error>head loc. too long</mat-error>
       }
@@ -31,9 +33,10 @@
     <!-- headText -->
     <mat-form-field>
       <mat-label>head text</mat-label>
-      <input matInput [formControl]="headText" />
+      <input matInput [formField]="form.headText" />
       @if (
-        $any(headText).errors?.maxlength && (headText.dirty || headText.touched)
+        form.headText().getError("maxLength") &&
+        (form.headText().dirty() || form.headText().touched())
       ) {
         <mat-error>head text too long</mat-error>
       }
@@ -44,10 +47,10 @@
     <!-- tailTextLoc -->
     <mat-form-field>
       <mat-label>tail loc.</mat-label>
-      <input matInput [formControl]="tailTextLoc" />
+      <input matInput [formField]="form.tailTextLoc" />
       @if (
-        $any(tailTextLoc).errors?.maxlength &&
-        (tailTextLoc.dirty || tailTextLoc.touched)
+        form.tailTextLoc().getError("maxLength") &&
+        (form.tailTextLoc().dirty() || form.tailTextLoc().touched())
       ) {
         <mat-error>tail loc. too long</mat-error>
       }
@@ -56,9 +59,10 @@
     <!-- tailText -->
     <mat-form-field>
       <mat-label>tail text</mat-label>
-      <input matInput [formControl]="tailText" />
+      <input matInput [formField]="form.tailText" />
       @if (
-        $any(tailText).errors?.maxlength && (tailText.dirty || tailText.touched)
+        form.tailText().getError("maxLength") &&
+        (form.tailText().dirty() || form.tailText().touched())
       ) {
         <mat-error>tail text too long</mat-error>
       }
@@ -76,12 +80,13 @@
       <mat-icon class="mat-warn">clear</mat-icon>
     </button>
     <button
-      type="submit"
+      type="button"
       mat-icon-button
       matTooltip="Save mapping"
-      [disabled]="form.invalid || form.pristine"
+      [disabled]="form().invalid() || !form().dirty()"
+      (click)="save()"
     >
       <mat-icon class="mat-primary">check_circle</mat-icon>
     </button>
   </div>
-</form>
+</div>

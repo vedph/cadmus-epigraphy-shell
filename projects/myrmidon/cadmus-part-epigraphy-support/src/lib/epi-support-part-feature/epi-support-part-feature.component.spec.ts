@@ -167,14 +167,16 @@ describe('EpiSupportPartFeatureComponent', () => {
     await setup('p1');
     const editor = getEditor();
     expect(editor.identity()).toEqual(component.identity());
-    expect(editor.material.value).toBe('marble');
+    expect(editor.form.material().value()).toBe('marble');
   });
 
   it('should track editor dirty state', async () => {
     await setup('p1');
     const editor = getEditor();
-    editor.material.setValue('stone');
-    editor.material.markAsDirty();
+    editor.form.material().value.set('stone');
+    editor.form.material().markAsDirty();
+    // dirtyChange is emitted by an effect
+    fixture.detectChanges();
     expect(component.dirty()).toBe(true);
     expect(component.canDeactivate()).toBe(false);
   });
@@ -182,8 +184,8 @@ describe('EpiSupportPartFeatureComponent', () => {
   it('should save the edited part', async () => {
     await setup('p1');
     const editor = getEditor();
-    editor.material.setValue('stone');
-    editor.material.markAsDirty();
+    editor.form.material().value.set('stone');
+    editor.form.material().markAsDirty();
     editor.save();
     await fixture.whenStable();
 

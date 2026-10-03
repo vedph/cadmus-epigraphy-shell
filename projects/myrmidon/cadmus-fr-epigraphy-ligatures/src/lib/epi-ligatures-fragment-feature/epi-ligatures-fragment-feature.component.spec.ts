@@ -175,8 +175,8 @@ describe('EpiLigaturesFragmentFeatureComponent', () => {
 
   it('should pass loaded data to the editor', () => {
     const editor = getEditor();
-    expect(editor.eid.value).toBe('e1');
-    expect(editor.types.value).toEqual(['lig']);
+    expect(editor.form.eid().value()).toBe('e1');
+    expect(editor.form.types().value()).toEqual(['lig']);
     expect(editor.typeFlags().length).toBe(2);
   });
 
@@ -189,15 +189,17 @@ describe('EpiLigaturesFragmentFeatureComponent', () => {
 
   it('should track editor dirty state', () => {
     const editor = getEditor();
-    editor.eid.setValue('e2');
-    editor.eid.markAsDirty();
+    editor.form.eid().value.set('e2');
+    editor.form.eid().markAsDirty();
+    // dirtyChange is emitted by an effect
+    fixture.detectChanges();
     expect(component.dirty()).toBe(true);
     expect(component.canDeactivate()).toBe(false);
   });
 
   it('should save the edited fragment into its layer part', async () => {
     const editor = getEditor();
-    editor.eid.setValue('e2');
+    editor.form.eid().value.set('e2');
     editor.save();
     await fixture.whenStable();
 

@@ -2,17 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   effect,
+  linkedSignal,
   model,
   output,
+  untracked,
 } from '@angular/core';
-
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormField, form, maxLength, required } from '@angular/forms/signals';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -20,13 +15,47 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+import { isImplicitSubmission } from '@myrmidon/cadmus-ui';
+
 import { EpiSupportFrCellMapping } from '../epi-support-frr-part';
+
+interface EpiSupportFrCellMappingControls {
+  location: string;
+  headText: string;
+  headTextLoc: string;
+  tailText: string;
+  tailTextLoc: string;
+}
+
+function toDraft(
+  mapping?: EpiSupportFrCellMapping | null,
+): EpiSupportFrCellMappingControls {
+  return {
+    location: mapping?.location || '',
+    headText: mapping?.headText || '',
+    headTextLoc: mapping?.headTextLoc || '',
+    tailText: mapping?.tailText || '',
+    tailTextLoc: mapping?.tailTextLoc || '',
+  };
+}
+
+function toModel(
+  draft: EpiSupportFrCellMappingControls,
+): EpiSupportFrCellMapping {
+  return {
+    location: draft.location.trim(),
+    headText: draft.headText.trim() || undefined,
+    headTextLoc: draft.headTextLoc.trim() || undefined,
+    tailText: draft.tailText.trim() || undefined,
+    tailTextLoc: draft.tailTextLoc.trim() || undefined,
+  };
+}
 
 @Component({
   selector: 'cadmus-epi-support-fr-cell-mapping',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ReactiveFormsModule,
+    FormField,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
@@ -44,65 +73,60 @@ export class EpiSupportFrCellMappingComponent {
 
   public readonly mappingCancel = output();
 
-  public location: FormControl<string>;
-  public headText: FormControl<string | null>;
-  public headTextLoc: FormControl<string | null>;
-  public tailText: FormControl<string | null>;
-  public tailTextLoc: FormControl<string | null>;
-  public form: FormGroup;
+  /**
+   * The editable draft, derived from the mapping. The echo of our own save,
+   * normalized by toModel, keeps the draft instead of rebuilding it.
+   */
+  private readonly _draft = linkedSignal<
+    EpiSupportFrCellMapping | undefined,
+    EpiSupportFrCellMappingControls
+  >({
+    source: () => this.mapping(),
+    computation: (mapping, previous) =>
+      previous &&
+      JSON.stringify(mapping) === JSON.stringify(toModel(previous.value))
+        ? previous.value
+        : toDraft(mapping),
+  });
 
-  constructor(formBuilder: FormBuilder) {
-    this.location = formBuilder.control<string>('', {
-      validators: [Validators.required, Validators.maxLength(300)],
-      nonNullable: true,
-    });
-    this.headText = formBuilder.control<string | null>(null, {
-      validators: Validators.maxLength(500),
-    });
-    this.headTextLoc = formBuilder.control<string | null>(null, {
-      validators: Validators.maxLength(100),
-    });
-    this.tailText = formBuilder.control<string | null>(null, {
-      validators: Validators.maxLength(500),
-    });
-    this.tailTextLoc = formBuilder.control<string | null>(null, {
-      validators: Validators.maxLength(100),
-    });
-    this.form = formBuilder.group({
-      location: this.location,
-      headText: this.headText,
-      headTextLoc: this.headTextLoc,
-      tailText: this.tailText,
-      tailTextLoc: this.tailTextLoc,
-    });
+  public readonly form = form(this._draft, (p) => {
+    required(p.location);
+    maxLength(p.location, 300);
+    maxLength(p.headText, 500);
+    maxLength(p.headTextLoc, 100);
+    maxLength(p.tailText, 500);
+    maxLength(p.tailTextLoc, 100);
+  });
 
+  constructor() {
+    // clear the interaction state when the draft mirrors the mapping again
     effect(() => {
-      this.updateForm(this.mapping());
+      const draft = this._draft();
+      untracked(() => {
+        if (this.isDraftInSync(draft)) {
+          this.form().reset();
+        }
+      });
     });
   }
 
-  private updateForm(mapping?: EpiSupportFrCellMapping) {
-    if (!mapping) {
-      this.form.reset();
+  private isDraftInSync(draft: EpiSupportFrCellMappingControls): boolean {
+    return JSON.stringify(draft) === JSON.stringify(toDraft(this.mapping()));
+  }
+
+  /**
+   * Enter in a text input saves, as the implicit submission of the former
+   * form did, unless the save button is disabled.
+   */
+  public onEnterKey(event: Event): void {
+    if (!isImplicitSubmission(event)) {
       return;
     }
-
-    this.location.setValue(mapping.location);
-    this.headText.setValue(mapping.headText || null);
-    this.headTextLoc.setValue(mapping.headTextLoc || null);
-    this.tailText.setValue(mapping.tailText || null);
-    this.tailTextLoc.setValue(mapping.tailTextLoc || null);
-    this.form.markAsPristine();
-  }
-
-  private getMapping(): EpiSupportFrCellMapping {
-    return {
-      location: this.location.value?.trim(),
-      headText: this.headText.value?.trim() || undefined,
-      headTextLoc: this.headTextLoc.value?.trim() || undefined,
-      tailText: this.tailText.value?.trim() || undefined,
-      tailTextLoc: this.tailTextLoc.value?.trim() || undefined,
-    };
+    event.preventDefault();
+    if (this.form().invalid() || !this.form().dirty()) {
+      return;
+    }
+    this.save();
   }
 
   public cancel(): void {
@@ -110,9 +134,11 @@ export class EpiSupportFrCellMappingComponent {
   }
 
   public save(): void {
-    if (!this.form.valid) {
+    if (this.form().invalid()) {
+      this.form().markAsTouched();
       return;
     }
-    this.mapping.set(this.getMapping());
+    this.mapping.set(toModel(this._draft()));
+    this.form().reset();
   }
 }

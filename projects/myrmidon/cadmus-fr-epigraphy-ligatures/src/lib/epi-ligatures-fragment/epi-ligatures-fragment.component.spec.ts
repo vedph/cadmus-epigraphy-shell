@@ -41,6 +41,15 @@ describe('EpiLigaturesFragmentComponent', () => {
     fixture.detectChanges();
   }
 
+  function getSaveButton(): HTMLButtonElement | undefined {
+    const buttons: HTMLElement = fixture.nativeElement.querySelector(
+      'cadmus-close-save-buttons',
+    );
+    return Array.from(buttons.querySelectorAll('button')).find((b) =>
+      b.textContent?.includes('save'),
+    );
+  }
+
   beforeEach(async () => {
     const user = { userName: 'zeus', roles: ['admin'] } as unknown as User;
     user$ = new BehaviorSubject<User | null>(user);
@@ -74,8 +83,8 @@ describe('EpiLigaturesFragmentComponent', () => {
 
   it('should create with an empty invalid form', () => {
     expect(component).toBeTruthy();
-    expect(component.form.invalid).toBe(true);
-    expect(component.types.value).toEqual([]);
+    expect(component.form().invalid()).toBe(true);
+    expect(component.form.types().value()).toEqual([]);
     expect(component.typeFlags()).toEqual([]);
     expect(component.userLevel).toBe(4);
   });
@@ -94,12 +103,12 @@ describe('EpiLigaturesFragmentComponent', () => {
       { id: 'lig', label: 'ligature' },
       { id: 'inl', label: 'inlay' },
     ]);
-    expect(component.types.value).toEqual(['lig']);
-    expect(component.eid.value).toBe('e1');
-    expect(component.groupId.value).toBe('g1');
-    expect(component.note.value).toBe('a note');
-    expect(component.form.pristine).toBe(true);
-    expect(component.form.valid).toBe(true);
+    expect(component.form.types().value()).toEqual(['lig']);
+    expect(component.form.eid().value()).toBe('e1');
+    expect(component.form.groupId().value()).toBe('g1');
+    expect(component.form.note().value()).toBe('a note');
+    expect(component.form().dirty()).toBe(false);
+    expect(component.form().valid()).toBe(true);
   });
 
   it('should render a checkbox for each type flag', () => {
@@ -115,23 +124,23 @@ describe('EpiLigaturesFragmentComponent', () => {
     expect(component.typeFlags()).toEqual([]);
   });
 
-  it('should map missing optional fragment values to null', () => {
+  it('should map missing optional fragment values to empty strings', () => {
     setData({
       value: { location: '1.1', types: undefined as unknown as string[] },
       thesauri: {},
     });
-    expect(component.types.value).toEqual([]);
-    expect(component.eid.value).toBeNull();
-    expect(component.groupId.value).toBeNull();
-    expect(component.note.value).toBeNull();
+    expect(component.form.types().value()).toEqual([]);
+    expect(component.form.eid().value()).toBe('');
+    expect(component.form.groupId().value()).toBe('');
+    expect(component.form.note().value()).toBe('');
   });
 
   it('should reset form when data has no value', () => {
     setData({ value: createFragment(), thesauri: THESAURI });
     setData({ value: null as unknown as EpiLigaturesFragment, thesauri: {} });
-    expect(component.types.value).toEqual([]);
-    expect(component.eid.value).toBeNull();
-    expect(component.note.value).toBeNull();
+    expect(component.form.types().value()).toEqual([]);
+    expect(component.form.eid().value()).toBe('');
+    expect(component.form.note().value()).toBe('');
   });
 
   it('should update types on flag change, marking them dirty', () => {
@@ -140,10 +149,11 @@ describe('EpiLigaturesFragmentComponent', () => {
 
     component.onTypeIdsChange(['inl', 'lig']);
 
-    expect(component.types.value).toEqual(['inl', 'lig']);
-    expect(component.types.dirty).toBe(true);
-    expect(component.form.valid).toBe(true);
+    expect(component.form.types().value()).toEqual(['inl', 'lig']);
+    expect(component.form.types().dirty()).toBe(true);
+    expect(component.form().valid()).toBe(true);
     expect(component.isDirty()).toBe(true);
+    fixture.detectChanges();
     expect(dirtySpy).toHaveBeenCalledWith(true);
   });
 
@@ -153,35 +163,35 @@ describe('EpiLigaturesFragmentComponent', () => {
       fixture.nativeElement.querySelectorAll('mat-checkbox input');
     inputs[1].click();
     fixture.detectChanges();
-    expect(component.types.value).toEqual(['lig', 'inl']);
-    expect(component.form.dirty).toBe(true);
+    expect(component.form.types().value()).toEqual(['lig', 'inl']);
+    expect(component.form().dirty()).toBe(true);
   });
 
   it('should validate max lengths', () => {
     component.onTypeIdsChange(['lig']);
-    component.eid.setValue('x'.repeat(501));
-    expect(component.eid.hasError('maxlength')).toBe(true);
-    component.eid.setValue('x'.repeat(500));
-    expect(component.eid.valid).toBe(true);
+    component.form.eid().value.set('x'.repeat(501));
+    expect(!!component.form.eid().getError('maxLength')).toBe(true);
+    component.form.eid().value.set('x'.repeat(500));
+    expect(component.form.eid().valid()).toBe(true);
 
-    component.groupId.setValue('x'.repeat(101));
-    expect(component.groupId.hasError('maxlength')).toBe(true);
+    component.form.groupId().value.set('x'.repeat(101));
+    expect(!!component.form.groupId().getError('maxLength')).toBe(true);
 
-    component.note.setValue('x'.repeat(1001));
-    expect(component.note.hasError('maxlength')).toBe(true);
-    expect(component.form.invalid).toBe(true);
+    component.form.note().value.set('x'.repeat(1001));
+    expect(!!component.form.note().getError('maxLength')).toBe(true);
+    expect(component.form().invalid()).toBe(true);
   });
 
   it('should show error messages for too long values', () => {
-    component.eid.setValue('x'.repeat(501));
-    component.eid.markAsDirty();
-    component.eid.markAsTouched();
-    component.groupId.setValue('x'.repeat(101));
-    component.groupId.markAsDirty();
-    component.groupId.markAsTouched();
-    component.note.setValue('x'.repeat(1001));
-    component.note.markAsDirty();
-    component.note.markAsTouched();
+    component.form.eid().value.set('x'.repeat(501));
+    component.form.eid().markAsDirty();
+    component.form.eid().markAsTouched();
+    component.form.groupId().value.set('x'.repeat(101));
+    component.form.groupId().markAsDirty();
+    component.form.groupId().markAsTouched();
+    component.form.note().value.set('x'.repeat(1001));
+    component.form.note().markAsDirty();
+    component.form.note().markAsTouched();
     fixture.detectChanges();
 
     const errors: string[] = Array.from(
@@ -211,9 +221,9 @@ describe('EpiLigaturesFragmentComponent', () => {
     component.data.subscribe(spy);
 
     component.onTypeIdsChange(['lig', 'inl']);
-    component.eid.setValue('  e2 ');
-    component.groupId.setValue(' g2 ');
-    component.note.setValue(' new note ');
+    component.form.eid().value.set('  e2 ');
+    component.form.groupId().value.set(' g2 ');
+    component.form.note().value.set(' new note ');
     component.save();
 
     expect(spy).toHaveBeenCalledTimes(1);
@@ -227,13 +237,13 @@ describe('EpiLigaturesFragmentComponent', () => {
     });
     // thesauri are preserved
     expect(data.thesauri).toBe(THESAURI);
-    expect(component.form.pristine).toBe(true);
+    expect(component.form().dirty()).toBe(false);
   });
 
   it('should not mutate the input fragment when saving', () => {
     const fr = createFragment();
     setData({ value: fr, thesauri: THESAURI });
-    component.eid.setValue('changed');
+    component.form.eid().value.set('changed');
     component.save();
     expect(fr.eid).toBe('e1');
   });
@@ -259,15 +269,60 @@ describe('EpiLigaturesFragmentComponent', () => {
     expect(data.value!.eid).toBeUndefined();
   });
 
-  it('should save on form submit', () => {
+  it('should save from the save button', () => {
     setData({ value: createFragment(), thesauri: THESAURI });
     const spy = vi.fn();
     component.data.subscribe(spy);
 
-    const form: HTMLFormElement = fixture.nativeElement.querySelector('form');
-    form.dispatchEvent(new Event('submit'));
+    getSaveButton()!.click();
 
     expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should disable the save button while the form is invalid', () => {
+    expect(component.form().invalid()).toBe(true);
+    expect(getSaveButton()!.disabled).toBe(true);
+  });
+
+  it('should render no <form>', () => {
+    setData({ value: createFragment(), thesauri: THESAURI });
+    expect(fixture.nativeElement.querySelector('form')).toBeNull();
+  });
+
+  it('should become dirty when typing, and pristine on new data', () => {
+    setData({ value: createFragment(), thesauri: THESAURI });
+    const input: HTMLInputElement =
+      fixture.nativeElement.querySelector('input[matInput]');
+    input.value = 'typed';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(component.form.eid().value()).toBe('typed');
+    expect(component.isDirty()).toBe(true);
+
+    setData({ value: createFragment(), thesauri: THESAURI });
+    expect(component.form.eid().value()).toBe('e1');
+    expect(component.isDirty()).toBe(false);
+  });
+
+  it('should stay pristine when flags emit the bound ids', () => {
+    setData({ value: createFragment(), thesauri: THESAURI });
+    component.onTypeIdsChange(['lig']);
+    expect(component.isDirty()).toBe(false);
+  });
+
+  it('should save empty optional strings as undefined', () => {
+    setData({ value: createFragment(), thesauri: THESAURI });
+    const spy = vi.fn();
+    component.data.subscribe(spy);
+    component.form.eid().value.set(' ');
+    component.form.groupId().value.set('');
+    component.form.note().value.set('  ');
+    component.save();
+    const fr = (spy.mock.calls[0][0] as EditedObject<EpiLigaturesFragment>)
+      .value!;
+    expect(fr.eid).toBeUndefined();
+    expect(fr.groupId).toBeUndefined();
+    expect(fr.note).toBeUndefined();
   });
 
   it('should emit editorClose on close', () => {
@@ -280,10 +335,10 @@ describe('EpiLigaturesFragmentComponent', () => {
   it('should disable form when disabled', () => {
     fixture.componentRef.setInput('disabled', true);
     fixture.detectChanges();
-    expect(component.form.disabled).toBe(true);
+    expect(component.form().disabled()).toBe(true);
     fixture.componentRef.setInput('disabled', false);
     fixture.detectChanges();
-    expect(component.form.enabled).toBe(true);
+    expect(!component.form().disabled()).toBe(true);
   });
 
   it('should update user level when user changes', () => {

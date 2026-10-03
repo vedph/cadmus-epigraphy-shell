@@ -3,17 +3,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  OnInit,
-  signal,
+  linkedSignal,
 } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormField, maxLength } from '@angular/forms/signals';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -28,18 +20,14 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import { Flag, FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
 
-import {
-  ThesauriSet,
-  ThesaurusEntry,
-  EditedObject,
-} from '@myrmidon/cadmus-core';
+import { ThesaurusEntry } from '@myrmidon/cadmus-core';
 import {
   CloseSaveButtonsComponent,
   ModelEditorComponentBase,
   HelpLinkComponent,
+  setFieldFromChild,
 } from '@myrmidon/cadmus-ui';
 
 import {
@@ -54,6 +42,22 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   };
 }
 
+interface EpiTechniquePartControls {
+  grooveType: string;
+  techniques: string[];
+  tools: string[];
+  note: string;
+}
+
+function toDraft(part?: EpiTechniquePart | null): EpiTechniquePartControls {
+  return {
+    grooveType: part?.grooveType || '',
+    techniques: [...(part?.techniques || [])],
+    tools: [...(part?.tools || [])],
+    note: part?.note || '',
+  };
+}
+
 /**
  * EpiTechnique part editor component.
  * Thesauri: epi-technique-groove-types, epi-technique-types, epi-technique-tools.
@@ -63,7 +67,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
+    FormField,
     MatButtonModule,
     MatCardModule,
     MatCheckboxModule,
@@ -83,126 +87,54 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   templateUrl: './epi-technique-part.component.html',
   styleUrl: './epi-technique-part.component.scss',
 })
-export class EpiTechniquePartComponent
-  extends ModelEditorComponentBase<EpiTechniquePart>
-  implements OnInit
-{
-  public grooveType: FormControl<string | null>;
-  public techniques: FormControl<string[]>;
-  public tools: FormControl<string[]>;
-  public note: FormControl<string | null>;
+export class EpiTechniquePartComponent extends ModelEditorComponentBase<EpiTechniquePart> {
+  private readonly _draft = linkedSignal(() => toDraft(this.data()?.value));
+  public readonly form = this.createForm(this._draft, (p) => {
+    maxLength(p.grooveType, 50);
+    maxLength(p.note, 5000);
+  });
 
   // epi-technique-groove-types
-  public readonly grooveTypeEntries = signal<ThesaurusEntry[] | undefined>(
-    undefined,
+  public readonly grooveTypeEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['epi-technique-groove-types']?.entries,
   );
   // epi-technique-types
-  public readonly techEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+  public readonly techEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['epi-technique-types']?.entries,
+  );
   // epi-technique-tools
-  public readonly toolEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+  public readonly toolEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['epi-technique-tools']?.entries,
+  );
 
   // flags
-  public readonly techFlags = computed<Flag[]>(() => {
-    const entries = this.techEntries();
-    return entries ? entries.map(entryToFlag) : [];
-  });
-  public readonly toolFlags = computed<Flag[]>(() => {
-    const entries = this.toolEntries();
-    return entries ? entries.map(entryToFlag) : [];
-  });
-
-  constructor(authService: AuthJwtService, formBuilder: FormBuilder) {
-    super(authService, formBuilder);
-    // form
-    this.grooveType = formBuilder.control(null, Validators.maxLength(50));
-    this.techniques = formBuilder.control([], { nonNullable: true });
-    this.tools = formBuilder.control([], { nonNullable: true });
-    this.note = formBuilder.control(null, {
-      validators: [Validators.maxLength(5000)],
-    });
-  }
-
-  public override ngOnInit(): void {
-    super.ngOnInit();
-  }
-
-  protected buildForm(formBuilder: FormBuilder): FormGroup | UntypedFormGroup {
-    return formBuilder.group({
-      grooveType: this.grooveType,
-      techniques: this.techniques,
-      tools: this.tools,
-      note: this.note,
-    });
-  }
-
-  private updateThesauri(thesauri: ThesauriSet): void {
-    let key = 'epi-technique-groove-types';
-    if (this.hasThesaurus(key)) {
-      this.grooveTypeEntries.set(thesauri[key].entries);
-    } else {
-      this.grooveTypeEntries.set(undefined);
-    }
-    key = 'epi-technique-types';
-    if (this.hasThesaurus(key)) {
-      this.techEntries.set(thesauri[key].entries);
-    } else {
-      this.techEntries.set(undefined);
-    }
-    key = 'epi-technique-tools';
-    if (this.hasThesaurus(key)) {
-      this.toolEntries.set(thesauri[key].entries);
-    } else {
-      this.toolEntries.set(undefined);
-    }
-  }
-
-  private updateForm(part?: EpiTechniquePart | null): void {
-    if (!part) {
-      this.form.reset();
-      return;
-    }
-
-    this.grooveType.setValue(part.grooveType || null);
-    this.techniques.setValue(part.techniques || []);
-    this.tools.setValue(part.tools || []);
-    this.note.setValue(part.note || null);
-
-    this.form.markAsPristine();
-  }
+  public readonly techFlags = computed<Flag[]>(
+    () => this.techEntries()?.map(entryToFlag) ?? [],
+  );
+  public readonly toolFlags = computed<Flag[]>(
+    () => this.toolEntries()?.map(entryToFlag) ?? [],
+  );
 
   public onTechIdsChange(ids: string[]): void {
-    this.techniques.setValue(ids);
-    this.techniques.markAsDirty();
-    this.techniques.updateValueAndValidity();
+    setFieldFromChild(this.form.techniques, [...ids]);
   }
 
   public onToolIdsChange(ids: string[]): void {
-    this.tools.setValue(ids);
-    this.tools.markAsDirty();
-    this.tools.updateValueAndValidity();
-  }
-
-  protected override onDataSet(data?: EditedObject<EpiTechniquePart>): void {
-    // thesauri
-    if (data?.thesauri) {
-      this.updateThesauri(data.thesauri);
-    }
-
-    // form
-    this.updateForm(data?.value);
+    setFieldFromChild(this.form.tools, [...ids]);
   }
 
   protected getValue(): EpiTechniquePart {
-    let part = this.getEditedPart(
+    const part = this.getEditedPart(
       EPI_TECHNIQUE_PART_TYPEID,
     ) as EpiTechniquePart;
+    const draft = this._draft();
 
-    part.grooveType = this.grooveType.value?.trim() || undefined;
-    part.techniques = this.techniques.value.length
-      ? this.techniques.value
+    part.grooveType = draft.grooveType.trim() || undefined;
+    part.techniques = draft.techniques.length
+      ? [...draft.techniques]
       : undefined;
-    part.tools = this.tools.value.length ? this.tools.value : undefined;
-    part.note = this.note.value?.trim() || undefined;
+    part.tools = draft.tools.length ? [...draft.tools] : undefined;
+    part.note = draft.note.trim() || undefined;
 
     return part;
   }

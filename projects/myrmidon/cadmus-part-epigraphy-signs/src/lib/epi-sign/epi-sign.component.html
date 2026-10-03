@@ -1,12 +1,18 @@
-<form [formGroup]="form" (submit)="save()">
+<div (keydown.enter)="onEnterKey($event)">
   <!-- id -->
   <mat-form-field>
     <mat-label>ID</mat-label>
-    <input matInput [formControl]="id" />
-    @if ($any(id).errors?.required && (id.dirty || id.touched)) {
+    <input matInput [formField]="form.id" />
+    @if (
+      form.id().getError("required") &&
+      (form.id().dirty() || form.id().touched())
+    ) {
       <mat-error>ID required</mat-error>
     }
-    @if ($any(id).errors?.maxlength && (id.dirty || id.touched)) {
+    @if (
+      form.id().getError("maxLength") &&
+      (form.id().dirty() || form.id().touched())
+    ) {
       <mat-error>ID too long</mat-error>
     }
   </mat-form-field>
@@ -16,7 +22,7 @@
     <legend>features</legend>
     <cadmus-ui-flag-set
       [flags]="featFlags()"
-      [checkedIds]="features.value"
+      [checkedIds]="form.features().value()"
       (checkedIdsChange)="onFeatIdsChange($event)"
     />
   </fieldset>
@@ -24,7 +30,9 @@
   <!-- description -->
   <div id="editor">
     <ngx-monaco-editor
-      [formControl]="description"
+      [value]="form.description().value()"
+      (valueChange)="setFieldFromEditor(form.description, $event)"
+      (blur)="form.description().markAsTouched()"
       [language]="'markdown'"
       [options]="editorOptions"
       (editorInitialized)="onEditorInit($event)"
@@ -39,7 +47,7 @@
       [nameEntries]="measNameEntries()"
       [unitEntries]="measUnitEntries() || []"
       [dimTagEntries]="measDimTagEntries()"
-      [measurements]="measurements.value"
+      [measurements]="form.measurements().value()"
       (measurementsChange)="onMeasurementsChange($event)"
     />
   </fieldset>
@@ -55,12 +63,13 @@
       <mat-icon class="mat-warn">clear</mat-icon>
     </button>
     <button
-      type="submit"
+      type="button"
       mat-icon-button
       matTooltip="Accept changes"
-      [disabled]="form.invalid || form.pristine"
+      [disabled]="form().invalid() || !form().dirty()"
+      (click)="save()"
     >
       <mat-icon class="mat-primary">check_circle</mat-icon>
     </button>
   </div>
-</form>
+</div>

@@ -1,20 +1,15 @@
-
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
   effect,
   input,
+  linkedSignal,
   model,
   output,
+  untracked,
 } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormField, form, maxLength, required } from '@angular/forms/signals';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -27,6 +22,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Flag, FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
 
 import { ThesaurusEntry } from '@myrmidon/cadmus-core';
+import { isImplicitSubmission, setFieldFromChild } from '@myrmidon/cadmus-ui';
 
 import { EpiScript } from '../epi-scripts-part';
 
@@ -37,11 +33,39 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   };
 }
 
+interface EpiScriptControls {
+  system: string;
+  script: string;
+  casing: string;
+  features: string[];
+  note: string;
+}
+
+function toDraft(script?: EpiScript | null): EpiScriptControls {
+  return {
+    system: script?.system || '',
+    script: script?.script || '',
+    casing: script?.casing || '',
+    features: [...(script?.features || [])],
+    note: script?.note || '',
+  };
+}
+
+function toModel(draft: EpiScriptControls): EpiScript {
+  return {
+    system: draft.system.trim() || undefined,
+    script: draft.script.trim(),
+    casing: draft.casing.trim() || undefined,
+    features: draft.features.length ? [...draft.features] : undefined,
+    note: draft.note.trim() || undefined,
+  };
+}
+
 @Component({
   selector: 'cadmus-epi-script',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ReactiveFormsModule,
+    FormField,
     MatButtonModule,
     MatCheckboxModule,
     MatFormFieldModule,
@@ -49,8 +73,8 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     MatInputModule,
     MatSelectModule,
     MatTooltipModule,
-    FlagSetComponent
-],
+    FlagSetComponent,
+  ],
   templateUrl: './epi-script.component.html',
   styleUrl: './epi-script.component.css',
 })
@@ -69,72 +93,66 @@ export class EpiScriptComponent {
 
   // flags
   public readonly featFlags = computed<Flag[]>(
-    () => this.featEntries()?.map(entryToFlag) || []
+    () => this.featEntries()?.map(entryToFlag) || [],
   );
 
-  public system: FormControl<string | null>;
-  public scriptCtl: FormControl<string>;
-  public casing: FormControl<string | null>;
-  public features: FormControl<string[]>;
-  public note: FormControl<string | null>;
-  public form: FormGroup;
+  /**
+   * The editable draft, derived from the script. The echo of our own save,
+   * normalized by toModel, keeps the draft instead of rebuilding it.
+   */
+  private readonly _draft = linkedSignal<
+    EpiScript | undefined,
+    EpiScriptControls
+  >({
+    source: () => this.script(),
+    computation: (script, previous) =>
+      previous &&
+      JSON.stringify(script) === JSON.stringify(toModel(previous.value))
+        ? previous.value
+        : toDraft(script),
+  });
 
-  constructor(formBuilder: FormBuilder) {
-    // form
-    this.system = formBuilder.control(null, Validators.maxLength(50));
-    this.scriptCtl = formBuilder.control('', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.maxLength(50)],
-    });
-    this.casing = formBuilder.control(null, Validators.maxLength(50));
-    this.features = formBuilder.control([], { nonNullable: true });
-    this.note = formBuilder.control(null, Validators.maxLength(5000));
+  public readonly form = form(this._draft, (p) => {
+    maxLength(p.system, 50);
+    required(p.script);
+    maxLength(p.script, 50);
+    maxLength(p.casing, 50);
+    maxLength(p.note, 5000);
+  });
 
-    this.form = formBuilder.group({
-      system: this.system,
-      script: this.scriptCtl,
-      casing: this.casing,
-      features: this.features,
-      note: this.note,
-    });
-
-    // when model changes, update form
+  constructor() {
+    // clear the interaction state when the draft mirrors the script again
     effect(() => {
-      this.updateForm(this.script());
+      const draft = this._draft();
+      untracked(() => {
+        if (this.isDraftInSync(draft)) {
+          this.form().reset();
+        }
+      });
     });
   }
 
-  private updateForm(script: EpiScript | undefined | null): void {
-    if (!script) {
-      this.form.reset();
-      return;
-    }
-
-    this.system.setValue(script.system || null);
-    this.scriptCtl.setValue(script.script || '');
-    this.casing.setValue(script.casing || null);
-    this.features.setValue(script.features || []);
-    this.note.setValue(script.note || null);
-
-    this.form.markAsPristine();
+  private isDraftInSync(draft: EpiScriptControls): boolean {
+    return JSON.stringify(draft) === JSON.stringify(toDraft(this.script()));
   }
 
   public onFeatIdsChange(ids: string[]): void {
-    this.features.setValue(ids);
-    this.features.markAsDirty();
-    this.features.updateValueAndValidity();
+    setFieldFromChild(this.form.features, [...ids]);
   }
 
-  private getScript(): EpiScript {
-    return {
-      system: this.system.value || undefined,
-      script: this.scriptCtl.value,
-      casing: this.casing.value || undefined,
-      features: this.features.value?.length
-        ? this.features.value || undefined
-        : undefined,
-      note: this.note.value || undefined,
-    };
+  /**
+   * Enter in a text input saves, as the implicit submission of the former
+   * form did, unless the save button is disabled.
+   */
+  public onEnterKey(event: Event): void {
+    if (!isImplicitSubmission(event)) {
+      return;
+    }
+    event.preventDefault();
+    if (this.form().invalid() || !this.form().dirty()) {
+      return;
+    }
+    this.save();
   }
 
   public cancel(): void {
@@ -142,9 +160,11 @@ export class EpiScriptComponent {
   }
 
   public save(): void {
-    if (this.form.invalid) {
+    if (this.form().invalid()) {
+      this.form().markAsTouched();
       return;
     }
-    this.script.set(this.getScript());
+    this.script.set(toModel(this._draft()));
+    this.form().reset();
   }
 }

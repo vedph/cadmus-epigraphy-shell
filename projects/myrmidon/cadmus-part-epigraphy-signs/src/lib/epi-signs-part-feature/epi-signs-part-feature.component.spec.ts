@@ -159,13 +159,15 @@ describe('EpiSignsPartFeatureComponent', () => {
     await setup('p1');
     const editor = getEditor();
     expect(editor.identity()).toEqual(component.identity());
-    expect(editor.signs.value).toEqual([{ id: 'a' }]);
+    expect(JSON.parse(JSON.stringify(editor.form.signs().value()))).toEqual([{ id: 'a' }]);
   });
 
   it('should track editor dirty state', async () => {
     await setup('p1');
     const editor = getEditor();
     editor.saveSign({ id: 'b' });
+    // dirtyChange is emitted by an effect
+    fixture.detectChanges();
     expect(component.dirty()).toBe(true);
     expect(component.canDeactivate()).toBe(false);
   });

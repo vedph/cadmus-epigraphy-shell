@@ -11,6 +11,12 @@ import {
 import { EpiFormulaTokenComponent } from '../epi-formula-token/epi-formula-token.component';
 import { EpiFormulaPatternComponent } from './epi-formula-pattern.component';
 
+// the form tags the objects in its arrays with an identity Symbol:
+// compare their plain data only
+function plain<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value));
+}
+
 const LANGS: ThesaurusEntry[] = [
   { id: 'lat', value: 'Latin' },
   { id: 'grc', value: 'Greek' },
@@ -61,7 +67,7 @@ describe('EpiFormulaPatternComponent', () => {
   }
 
   function values(): string[] {
-    return component.tokens.value.map((t) => t.values[0]);
+    return component.form.tokens().value().map((t) => t.values[0]);
   }
 
   function setPattern(pattern?: EpiFormulaPattern): void {
@@ -83,9 +89,9 @@ describe('EpiFormulaPatternComponent', () => {
 
   it('should create with an invalid empty form', () => {
     expect(component).toBeTruthy();
-    expect(component.form.invalid).toBe(true);
-    expect(component.language.hasError('required')).toBe(true);
-    expect(component.tokens.value).toEqual([]);
+    expect(component.form().invalid()).toBe(true);
+    expect(!!component.form.language().getError('required')).toBe(true);
+    expect(plain(component.form.tokens().value())).toEqual([]);
   });
 
   it('should use free inputs without thesauri', () => {
@@ -105,12 +111,12 @@ describe('EpiFormulaPatternComponent', () => {
 
   it('should update form from pattern', () => {
     setPattern(createPattern());
-    expect(component.eid.value).toBe('dm');
-    expect(component.language.value).toBe('lat');
-    expect(component.tag.value).toBe('funerary');
-    expect(component.tokens.value).toEqual(createTokens());
-    expect(component.form.valid).toBe(true);
-    expect(component.form.pristine).toBe(true);
+    expect(component.form.eid().value()).toBe('dm');
+    expect(component.form.language().value()).toBe('lat');
+    expect(component.form.tag().value()).toBe('funerary');
+    expect(plain(component.form.tokens().value())).toEqual(createTokens());
+    expect(component.form().valid()).toBe(true);
+    expect(component.form().dirty()).toBe(false);
   });
 
   it('should render tokens', () => {
@@ -126,48 +132,48 @@ describe('EpiFormulaPatternComponent', () => {
       language: 'lat',
       tokens: undefined as unknown as EpiFormulaToken[],
     });
-    expect(component.eid.value).toBeNull();
-    expect(component.tag.value).toBeNull();
-    expect(component.tokens.value).toEqual([]);
+    expect(component.form.eid().value()).toBe('');
+    expect(component.form.tag().value()).toBe('');
+    expect(plain(component.form.tokens().value())).toEqual([]);
   });
 
   it('should reset form when pattern is cleared', () => {
     setPattern(createPattern());
     setPattern(undefined);
-    expect(component.eid.value).toBeNull();
-    expect(component.language.value).toBe('');
-    expect(component.tokens.value).toEqual([]);
+    expect(component.form.eid().value()).toBe('');
+    expect(component.form.language().value()).toBe('');
+    expect(plain(component.form.tokens().value())).toEqual([]);
   });
 
   it('should close edited token when pattern changes', () => {
     setPattern(createPattern());
-    component.editToken(component.tokens.value[0], 0);
+    component.editToken(component.form.tokens().value()[0], 0);
     setPattern(createPattern());
     expect(component.edited()).toBeUndefined();
     expect(component.editedIndex()).toBe(-1);
   });
 
   it('should validate max lengths', () => {
-    component.eid.setValue('x'.repeat(501));
-    component.language.setValue('x'.repeat(51));
-    component.tag.setValue('x'.repeat(51));
-    expect(component.eid.hasError('maxlength')).toBe(true);
-    expect(component.language.hasError('maxlength')).toBe(true);
-    expect(component.tag.hasError('maxlength')).toBe(true);
+    component.form.eid().value.set('x'.repeat(501));
+    component.form.language().value.set('x'.repeat(51));
+    component.form.tag().value.set('x'.repeat(51));
+    expect(!!component.form.eid().getError('maxLength')).toBe(true);
+    expect(!!component.form.language().getError('maxLength')).toBe(true);
+    expect(!!component.form.tag().getError('maxLength')).toBe(true);
   });
 
   it('should show errors', () => {
-    component.language.markAsTouched();
+    component.form.language().markAsTouched();
     fixture.detectChanges();
     expect(getErrors()).toEqual(['language required']);
 
-    for (const [ctl, len] of [
-      [component.eid, 501],
-      [component.language, 51],
-      [component.tag, 51],
+    for (const [field, len] of [
+      [component.form.eid, 501],
+      [component.form.language, 51],
+      [component.form.tag, 51],
     ] as const) {
-      ctl.setValue('x'.repeat(len));
-      ctl.markAsTouched();
+      field().value.set('x'.repeat(len));
+      field().markAsTouched();
     }
     fixture.detectChanges();
     expect(getErrors()).toEqual([
@@ -179,7 +185,7 @@ describe('EpiFormulaPatternComponent', () => {
 
   it('should show language required error with select', () => {
     fixture.componentRef.setInput('langEntries', LANGS);
-    component.language.markAsTouched();
+    component.form.language().markAsTouched();
     fixture.detectChanges();
     expect(getErrors()).toEqual(['language required']);
   });
@@ -201,14 +207,15 @@ describe('EpiFormulaPatternComponent', () => {
       { id: 'd', value: 'deity' },
     ]);
     setPattern(createPattern());
-    component.editToken(component.tokens.value[0], 0);
+    component.editToken(component.form.tokens().value()[0], 0);
     fixture.detectChanges();
     expect(component.edited()).toEqual(createTokens()[0]);
-    expect(component.edited()).not.toBe(component.tokens.value[0]);
+    expect(component.edited()).not.toBe(component.form.tokens().value()[0]);
     expect(getRows()[0].classList.contains('selected')).toBe(true);
     const editor = getTokenEditor()!;
-    expect(editor.tags.value).toEqual([{ id: 'd', value: 'deity' }]);
-    expect(editor.values.value).toBe('dis');
+    expect(editor.form.tags().value()).toEqual(['d']);
+    expect(editor.tagLabels()).toEqual(['deity']);
+    expect(editor.form.values().value()).toBe('dis');
   });
 
   it('should close token editor on its close', () => {
@@ -223,27 +230,27 @@ describe('EpiFormulaPatternComponent', () => {
   it('should append a new token', () => {
     component.addToken();
     component.saveToken({ tags: ['x'], values: ['y'] });
-    expect(component.tokens.value).toEqual([{ tags: ['x'], values: ['y'] }]);
-    expect(component.tokens.dirty).toBe(true);
+    expect(plain(component.form.tokens().value())).toEqual([{ tags: ['x'], values: ['y'] }]);
+    expect(component.form.tokens().dirty()).toBe(true);
     expect(component.edited()).toBeUndefined();
   });
 
   it('should replace an edited token', () => {
     setPattern(createPattern());
-    component.editToken(component.tokens.value[1], 1);
+    component.editToken(component.form.tokens().value()[1], 1);
     component.saveToken({ tags: ['x'], values: ['y'] });
     expect(values()).toEqual(['dis', 'y', 'sacrum']);
   });
 
   it('should save token from token editor', () => {
     setPattern(createPattern());
-    component.editToken(component.tokens.value[1], 1);
+    component.editToken(component.form.tokens().value()[1], 1);
     fixture.detectChanges();
     const editor = getTokenEditor()!;
-    editor.values.setValue('manibus\nmanibusque');
+    editor.form.values().value.set('manibus\nmanibusque');
     editor.save();
     fixture.detectChanges();
-    expect(component.tokens.value[1].values).toEqual([
+    expect(component.form.tokens().value()[1].values).toEqual([
       'manibus',
       'manibusque',
     ]);
@@ -255,7 +262,7 @@ describe('EpiFormulaPatternComponent', () => {
     component.deleteToken(0);
     expect(dialogService.confirm).toHaveBeenCalled();
     expect(values()).toEqual(['manibus', 'sacrum']);
-    expect(component.tokens.dirty).toBe(true);
+    expect(component.form.tokens().dirty()).toBe(true);
   });
 
   it('should not delete a token without confirmation', () => {
@@ -267,14 +274,14 @@ describe('EpiFormulaPatternComponent', () => {
 
   it('should close the editor when deleting the edited token', () => {
     setPattern(createPattern());
-    component.editToken(component.tokens.value[1], 1);
+    component.editToken(component.form.tokens().value()[1], 1);
     component.deleteToken(1);
     expect(component.edited()).toBeUndefined();
   });
 
   it('should keep edited token when deleting a previous token', () => {
     setPattern(createPattern());
-    component.editToken(component.tokens.value[2], 2);
+    component.editToken(component.form.tokens().value()[2], 2);
     component.deleteToken(0);
     expect(component.editedIndex()).toBe(1);
     component.saveToken({ tags: [], values: ['z'] });
@@ -286,18 +293,18 @@ describe('EpiFormulaPatternComponent', () => {
     component.moveTokenUp(0);
     component.moveTokenDown(2);
     expect(values()).toEqual(['dis', 'manibus', 'sacrum']);
-    expect(component.tokens.dirty).toBe(false);
+    expect(component.form.tokens().dirty()).toBe(false);
 
     component.moveTokenUp(2);
     expect(values()).toEqual(['dis', 'sacrum', 'manibus']);
     component.moveTokenDown(0);
     expect(values()).toEqual(['sacrum', 'dis', 'manibus']);
-    expect(component.tokens.dirty).toBe(true);
+    expect(component.form.tokens().dirty()).toBe(true);
   });
 
   it('should keep edited token when moving tokens', () => {
     setPattern(createPattern());
-    component.editToken(component.tokens.value[0], 0);
+    component.editToken(component.form.tokens().value()[0], 0);
     component.moveTokenDown(0);
     expect(component.editedIndex()).toBe(1);
     component.moveTokenUp(2);
@@ -327,9 +334,9 @@ describe('EpiFormulaPatternComponent', () => {
     setPattern(createPattern());
     const spy = vi.fn();
     component.pattern.subscribe(spy);
-    component.eid.setValue('');
-    component.tag.setValue(null);
-    component.language.setValue('grc');
+    component.form.eid().value.set('');
+    component.form.tag().value.set('');
+    component.form.language().value.set('grc');
     component.save();
     expect(spy).toHaveBeenCalledWith({
       eid: undefined,
@@ -342,24 +349,143 @@ describe('EpiFormulaPatternComponent', () => {
   it('should not save when invalid', () => {
     const spy = vi.fn();
     component.pattern.subscribe(spy);
-    component.language.setValue('lat');
+    component.form.language().value.set('lat');
     component.save();
     // no tokens
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('should save on submit', () => {
+  it('should save on save button click', () => {
     setPattern(createPattern());
     const spy = vi.fn();
     component.pattern.subscribe(spy);
     component.moveTokenDown(0);
     fixture.detectChanges();
     const submit: HTMLButtonElement = fixture.nativeElement.querySelector(
-      'form > div:last-child button[type="submit"]',
+      'button[mattooltip="Accept changes"]',
     );
     expect(submit.disabled).toBe(false);
     submit.click();
     expect(spy).toHaveBeenCalled();
+  });
+
+  it('should disable save when pristine', () => {
+    setPattern(createPattern());
+    const save: HTMLButtonElement = fixture.nativeElement.querySelector(
+      'button[mattooltip="Accept changes"]',
+    );
+    expect(save.type).toBe('button');
+    expect(save.disabled).toBe(true);
+  });
+
+  it('should mark as touched when saving an invalid form', () => {
+    component.save();
+    expect(component.form.language().touched()).toBe(true);
+  });
+
+  it('should close the token editor when a new pattern is set', () => {
+    setPattern(createPattern());
+    component.editToken(component.form.tokens().value()[0], 0);
+    setPattern({ language: 'grc', tokens: createTokens() });
+    expect(component.edited()).toBeUndefined();
+    expect(component.editedIndex()).toBe(-1);
+  });
+
+  it('should not tag or change the tokens of the bound pattern', () => {
+    const pattern = createPattern();
+    setPattern(pattern);
+    component.editToken(component.form.tokens().value()[0], 0);
+    expect(Object.getOwnPropertySymbols(component.edited()!)).toEqual([]);
+    component.saveToken({ tags: ['x'], values: ['y'] });
+    component.save();
+    expect(pattern.tokens).toEqual(createTokens());
+    for (const t of pattern.tokens) {
+      expect(Object.getOwnPropertySymbols(t)).toEqual([]);
+    }
+  });
+
+  it('should save a pattern whose tokens carry no Symbol tags', () => {
+    setPattern(createPattern());
+    const spy = vi.fn();
+    component.pattern.subscribe(spy);
+    component.moveTokenDown(0);
+    component.save();
+    const saved = spy.mock.calls[0][0] as EpiFormulaPattern;
+    for (const t of saved.tokens) {
+      expect(Object.getOwnPropertySymbols(t)).toEqual([]);
+    }
+  });
+
+  it('should keep an in-progress edit when its own save echoes back normalized', () => {
+    setPattern(createPattern());
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      'input[matInput]',
+    );
+    input.value = 'abc ';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    component.save();
+    fixture.detectChanges();
+
+    expect(component.pattern()?.eid).toBe('abc');
+    expect(component.form.eid().value()).toBe('abc ');
+    input.value = component.form.eid().value() + 'd';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(component.form.eid().value()).toBe('abc d');
+  });
+
+  it('should save on Enter in its own text input when valid and dirty', () => {
+    setPattern(createPattern());
+    const spy = vi.fn();
+    component.pattern.subscribe(spy);
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      'input[matInput]',
+    );
+    input.value = 'e9';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    const event = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      bubbles: true,
+      cancelable: true,
+    });
+    input.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(true);
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining({ eid: 'e9' }));
+  });
+
+  it('should not save on Enter in the token editor tags filter, which has its own form', () => {
+    setPattern(createPattern());
+    // make the pattern dirty and valid, so that it could be saved
+    component.moveTokenDown(0);
+    const spy = vi.fn();
+    component.pattern.subscribe(spy);
+    component.editToken(component.form.tokens().value()[0], 0);
+    fixture.detectChanges();
+    const input: HTMLInputElement | null = fixture.nativeElement.querySelector(
+      'cadmus-epi-formula-token cadmus-thesaurus-tree form input',
+    );
+    expect(input).toBeTruthy();
+    input!.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should render no <form> of its own, also with the token editor open', () => {
+    setPattern(createPattern());
+    component.editToken(component.form.tokens().value()[0], 0);
+    fixture.detectChanges();
+    const forms = Array.from(
+      fixture.nativeElement.querySelectorAll('form') as NodeListOf<HTMLElement>,
+    );
+    // only the thesaurus tree's own filter form
+    expect(forms.every((f) => f.closest('cadmus-thesaurus-tree'))).toBe(true);
   });
 
   it('should emit editorClose on cancel', () => {

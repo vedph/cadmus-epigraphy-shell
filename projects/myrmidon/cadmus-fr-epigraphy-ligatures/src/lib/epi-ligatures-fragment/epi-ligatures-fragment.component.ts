@@ -2,19 +2,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  OnInit,
-  signal,
+  linkedSignal,
 } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  UntypedFormGroup,
-  Validators,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormField, maxLength } from '@angular/forms/signals';
 
 import {
   MatCard,
@@ -28,18 +19,14 @@ import { MatIcon } from '@angular/material/icon';
 import { MatFormField, MatLabel, MatError } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 
-import { NgxToolsValidators } from '@myrmidon/ngx-tools';
-import { AuthJwtService } from '@myrmidon/auth-jwt-login';
+import { NgxToolsSignalValidators } from '@myrmidon/ngx-tools';
 import { Flag, FlagSetComponent } from '@myrmidon/cadmus-ui-flag-set';
-import {
-  ThesauriSet,
-  ThesaurusEntry,
-  EditedObject,
-} from '@myrmidon/cadmus-core';
+import { ThesaurusEntry } from '@myrmidon/cadmus-core';
 import {
   ModelEditorComponentBase,
   CloseSaveButtonsComponent,
   HelpLinkComponent,
+  setFieldFromChild,
 } from '@myrmidon/cadmus-ui';
 
 import { EpiLigaturesFragment } from '../epi-ligatures-fragment';
@@ -48,6 +35,24 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   return {
     id: entry.id,
     label: entry.value,
+  };
+}
+
+interface EpiLigaturesFragmentControls {
+  types: string[];
+  eid: string;
+  groupId: string;
+  note: string;
+}
+
+function toDraft(
+  fr?: EpiLigaturesFragment | null,
+): EpiLigaturesFragmentControls {
+  return {
+    types: [...(fr?.types || [])],
+    eid: fr?.eid || '',
+    groupId: fr?.groupId || '',
+    note: fr?.note || '',
   };
 }
 
@@ -61,8 +66,7 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
   styleUrls: ['./epi-ligatures-fragment.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    FormsModule,
-    ReactiveFormsModule,
+    FormField,
     MatCard,
     MatCardHeader,
     MatCardAvatar,
@@ -80,94 +84,36 @@ function entryToFlag(entry: ThesaurusEntry): Flag {
     HelpLinkComponent,
   ],
 })
-export class EpiLigaturesFragmentComponent
-  extends ModelEditorComponentBase<EpiLigaturesFragment>
-  implements OnInit
-{
-  public types: FormControl<string[]>;
-  public eid: FormControl<string | null>;
-  public groupId: FormControl<string | null>;
-  public note: FormControl<string | null>;
+export class EpiLigaturesFragmentComponent extends ModelEditorComponentBase<EpiLigaturesFragment> {
+  private readonly _draft = linkedSignal(() => toDraft(this.data()?.value));
+  public readonly form = this.createForm(this._draft, (p) => {
+    NgxToolsSignalValidators.strictMinLength(p.types, 1);
+    maxLength(p.eid, 500);
+    maxLength(p.groupId, 100);
+    maxLength(p.note, 1000);
+  });
 
   // epi-ligature-types
-  public readonly typeEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+  public readonly typeEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['epi-ligature-types']?.entries,
+  );
 
   public readonly typeFlags = computed<Flag[]>(
     () => this.typeEntries()?.map(entryToFlag) ?? [],
   );
 
-  constructor(authService: AuthJwtService, formBuilder: FormBuilder) {
-    super(authService, formBuilder);
-    // form
-    this.types = formBuilder.control([], {
-      validators: NgxToolsValidators.strictMinLengthValidator(1),
-      nonNullable: true,
-    });
-    this.eid = formBuilder.control(null, Validators.maxLength(500));
-    this.groupId = formBuilder.control(null, Validators.maxLength(100));
-    this.note = formBuilder.control(null, Validators.maxLength(1000));
-  }
-
-  public override ngOnInit(): void {
-    super.ngOnInit();
-  }
-
-  protected buildForm(formBuilder: FormBuilder): FormGroup | UntypedFormGroup {
-    return formBuilder.group({
-      types: this.types,
-      eid: this.eid,
-      groupId: this.groupId,
-      note: this.note,
-    });
-  }
-
-  private updateThesauri(thesauri: ThesauriSet): void {
-    const key = 'epi-ligature-types';
-    if (this.hasThesaurus(key)) {
-      this.typeEntries.set(thesauri[key].entries);
-    } else {
-      this.typeEntries.set(undefined);
-    }
-  }
-
-  private updateForm(fr?: EpiLigaturesFragment | null): void {
-    if (!fr) {
-      this.form.reset();
-      return;
-    }
-
-    this.types.setValue(fr.types || []);
-    this.eid.setValue(fr.eid || null);
-    this.groupId.setValue(fr.groupId || null);
-    this.note.setValue(fr.note || null);
-    this.form.markAsPristine();
-  }
-
   public onTypeIdsChange(ids: string[]): void {
-    this.types.setValue(ids);
-    this.types.markAsDirty();
-    this.types.updateValueAndValidity();
-  }
-
-  protected override onDataSet(
-    data?: EditedObject<EpiLigaturesFragment>,
-  ): void {
-    // thesauri
-    if (data?.thesauri) {
-      this.updateThesauri(data.thesauri);
-    }
-
-    // form
-    this.updateForm(data?.value);
+    setFieldFromChild(this.form.types, [...ids]);
   }
 
   protected getValue(): EpiLigaturesFragment {
     const fr = this.getEditedFragment() as EpiLigaturesFragment;
+    const draft = this._draft();
 
-    fr.types = this.types.value;
-    fr.eid = this.eid.value?.trim();
-    fr.groupId = this.groupId.value?.trim();
-    fr.note = this.note.value?.trim();
+    fr.types = [...draft.types];
+    fr.eid = draft.eid.trim() || undefined;
+    fr.groupId = draft.groupId.trim() || undefined;
+    fr.note = draft.note.trim() || undefined;
 
     return fr;
   }

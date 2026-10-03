@@ -11,6 +11,12 @@ import { ThesaurusEntry } from '@myrmidon/cadmus-core';
 import { EpiSign } from '../epi-signs-part';
 import { EpiSignComponent } from './epi-sign.component';
 
+// the form tags the objects in its arrays with an identity Symbol:
+// compare their plain data only
+function plain<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value));
+}
+
 const FEATURES: ThesaurusEntry[] = [
   { id: 'serif', value: 'serif' },
   { id: 'hedera', value: 'hedera' },
@@ -91,6 +97,33 @@ describe('EpiSignComponent', () => {
     ).map((e) => e.textContent!.trim());
   }
 
+  function getIdInput(): HTMLInputElement {
+    return fixture.nativeElement.querySelector('input[matInput]');
+  }
+
+  function getSaveButton(): HTMLButtonElement {
+    return fixture.nativeElement.querySelector(
+      'button[mattooltip="Accept changes"]',
+    );
+  }
+
+  function typeInto(input: HTMLInputElement, value: string): void {
+    input.value = value;
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+  }
+
+  function pressEnter(target: HTMLElement): KeyboardEvent {
+    const event = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      bubbles: true,
+      cancelable: true,
+    });
+    target.dispatchEvent(event);
+    fixture.detectChanges();
+    return event;
+  }
+
   describe('without bindings', () => {
     beforeEach(async () => {
       await setup();
@@ -98,8 +131,8 @@ describe('EpiSignComponent', () => {
 
     it('should create with an invalid empty form', () => {
       expect(component).toBeTruthy();
-      expect(component.form.invalid).toBe(true);
-      expect(component.id.hasError('required')).toBe(true);
+      expect(component.form().invalid()).toBe(true);
+      expect(!!component.form.id().getError('required')).toBe(true);
       expect(component.featFlags()).toEqual([]);
     });
 
@@ -124,12 +157,12 @@ describe('EpiSignComponent', () => {
       fixture.componentRef.setInput('sign', createSign());
       fixture.detectChanges();
 
-      expect(component.id.value).toBe('a');
-      expect(component.features.value).toEqual(['serif']);
-      expect(component.description.value).toBe('A sign');
-      expect(component.measurements.value).toEqual(createSign().measurements);
-      expect(component.form.valid).toBe(true);
-      expect(component.form.pristine).toBe(true);
+      expect(component.form.id().value()).toBe('a');
+      expect(component.form.features().value()).toEqual(['serif']);
+      expect(component.form.description().value()).toBe('A sign');
+      expect(plain(component.form.measurements().value())).toEqual(createSign().measurements);
+      expect(component.form().valid()).toBe(true);
+      expect(component.form().dirty()).toBe(false);
     });
 
     it('should show description in the editor', async () => {
@@ -144,10 +177,10 @@ describe('EpiSignComponent', () => {
     it('should map missing sign values to defaults', () => {
       fixture.componentRef.setInput('sign', { id: '' });
       fixture.detectChanges();
-      expect(component.id.value).toBe('');
-      expect(component.features.value).toEqual([]);
-      expect(component.description.value).toBeNull();
-      expect(component.measurements.value).toEqual([]);
+      expect(component.form.id().value()).toBe('');
+      expect(component.form.features().value()).toEqual([]);
+      expect(component.form.description().value()).toBe('');
+      expect(plain(component.form.measurements().value())).toEqual([]);
     });
 
     it('should reset form when sign is cleared', () => {
@@ -155,23 +188,23 @@ describe('EpiSignComponent', () => {
       fixture.detectChanges();
       fixture.componentRef.setInput('sign', undefined);
       fixture.detectChanges();
-      expect(component.id.value).toBe('');
-      expect(component.features.value).toEqual([]);
-      expect(component.description.value).toBeNull();
-      expect(component.measurements.value).toEqual([]);
+      expect(component.form.id().value()).toBe('');
+      expect(component.form.features().value()).toEqual([]);
+      expect(component.form.description().value()).toBe('');
+      expect(plain(component.form.measurements().value())).toEqual([]);
     });
 
     it('should update features from flags', () => {
       component.onFeatIdsChange(['hedera']);
-      expect(component.features.value).toEqual(['hedera']);
-      expect(component.features.dirty).toBe(true);
+      expect(component.form.features().value()).toEqual(['hedera']);
+      expect(component.form.features().dirty()).toBe(true);
     });
 
     it('should update measurements', () => {
       const measurements = [{ name: 'width', value: 2, unit: 'mm' }];
       component.onMeasurementsChange(measurements);
-      expect(component.measurements.value).toEqual(measurements);
-      expect(component.measurements.dirty).toBe(true);
+      expect(plain(component.form.measurements().value())).toEqual(measurements);
+      expect(component.form.measurements().dirty()).toBe(true);
     });
 
     it('should pass inputs to measurements set', () => {
@@ -185,18 +218,18 @@ describe('EpiSignComponent', () => {
     });
 
     it('should validate max lengths', () => {
-      component.id.setValue('x'.repeat(101));
-      expect(component.id.hasError('maxlength')).toBe(true);
-      component.description.setValue('x'.repeat(10001));
-      expect(component.description.hasError('maxlength')).toBe(true);
+      component.form.id().value.set('x'.repeat(101));
+      expect(!!component.form.id().getError('maxLength')).toBe(true);
+      component.form.description().value.set('x'.repeat(10001));
+      expect(!!component.form.description().getError('maxLength')).toBe(true);
     });
 
     it('should show ID errors', () => {
-      component.id.markAsTouched();
+      component.form.id().markAsTouched();
       fixture.detectChanges();
       expect(getErrors()).toEqual(['ID required']);
 
-      component.id.setValue('x'.repeat(101));
+      component.form.id().value.set('x'.repeat(101));
       fixture.detectChanges();
       expect(getErrors()).toEqual(['ID too long']);
     });
@@ -207,9 +240,9 @@ describe('EpiSignComponent', () => {
       const spy = vi.fn();
       component.sign.subscribe(spy);
 
-      component.id.setValue(' b ');
+      component.form.id().value.set(' b ');
       component.onFeatIdsChange(['hedera']);
-      component.description.setValue(' desc ');
+      component.form.description().value.set(' desc ');
       component.save();
 
       expect(spy).toHaveBeenCalledWith({
@@ -228,7 +261,7 @@ describe('EpiSignComponent', () => {
 
       component.onFeatIdsChange([]);
       component.onMeasurementsChange([]);
-      component.description.setValue('  ');
+      component.form.description().value.set('  ');
       component.save();
 
       expect(spy).toHaveBeenCalledWith({
@@ -246,21 +279,138 @@ describe('EpiSignComponent', () => {
       expect(spy).not.toHaveBeenCalled();
     });
 
-    it('should save on submit', () => {
+    it('should save on save button click', () => {
       const spy = vi.fn();
       component.sign.subscribe(spy);
-      const input: HTMLInputElement =
-        fixture.nativeElement.querySelector('input');
-      input.value = 'z';
-      input.dispatchEvent(new Event('input'));
+      typeInto(getIdInput(), 'z');
+
+      const save = getSaveButton();
+      expect(save.type).toBe('button');
+      expect(save.disabled).toBe(false);
+      save.click();
+      expect(spy).toHaveBeenCalledWith(expect.objectContaining({ id: 'z' }));
+    });
+
+    it('should disable save when pristine', () => {
+      fixture.componentRef.setInput('sign', createSign());
+      fixture.detectChanges();
+      expect(getSaveButton().disabled).toBe(true);
+    });
+
+    it('should mark as touched when saving an invalid form', () => {
+      component.save();
+      expect(component.form.id().touched()).toBe(true);
+    });
+
+    it('should become dirty when typing in the description editor', () => {
+      fixture.componentRef.setInput('sign', createSign());
+      fixture.detectChanges();
+      const textarea: HTMLTextAreaElement =
+        fixture.nativeElement.querySelector('ngx-monaco-editor textarea');
+      textarea.value = 'B sign';
+      textarea.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      expect(component.form.description().value()).toBe('B sign');
+      expect(component.form().dirty()).toBe(true);
+    });
+
+    it('should stay pristine when the description editor echoes its value', () => {
+      fixture.componentRef.setInput('sign', createSign());
+      fixture.detectChanges();
+      // the real Monaco editor reports programmatic writes as changes
+      component.setFieldFromEditor(component.form.description, 'A sign');
+      expect(component.form().dirty()).toBe(false);
+    });
+
+    it('should stay pristine when children emit the bound values', () => {
+      fixture.componentRef.setInput('sign', createSign());
+      fixture.detectChanges();
+      component.onFeatIdsChange(['serif']);
+      // a normalized copy, as autosaving children emit
+      component.onMeasurementsChange([
+        { name: 'height', value: 3, unit: 'cm', tag: undefined },
+      ]);
+      expect(component.form().dirty()).toBe(false);
+    });
+
+    it('should not adopt or tag the measurements of the bound sign', () => {
+      const sign = createSign();
+      fixture.componentRef.setInput('sign', sign);
+      fixture.detectChanges();
+      typeInto(getIdInput(), 'b');
+      component.save();
+      expect(Object.getOwnPropertySymbols(sign.measurements![0])).toEqual([]);
+      expect(sign.id).toBe('a');
+    });
+
+    it('should save a sign whose measurements carry no Symbol tags', () => {
+      fixture.componentRef.setInput('sign', createSign());
+      fixture.detectChanges();
+      const spy = vi.fn();
+      component.sign.subscribe(spy);
+      typeInto(getIdInput(), 'b');
+      component.save();
+      const saved = spy.mock.calls[0][0] as EpiSign;
+      expect(Object.getOwnPropertySymbols(saved.measurements![0])).toEqual([]);
+    });
+
+    it('should keep an in-progress edit when its own save echoes back normalized', () => {
+      fixture.componentRef.setInput('sign', createSign());
+      fixture.detectChanges();
+      const input = getIdInput();
+      typeInto(input, 'abc ');
+      component.save();
       fixture.detectChanges();
 
-      const submit: HTMLButtonElement = fixture.nativeElement.querySelector(
-        'button[type="submit"]',
-      );
-      expect(submit.disabled).toBe(false);
-      submit.click();
-      expect(spy).toHaveBeenCalledWith(expect.objectContaining({ id: 'z' }));
+      expect(component.sign()?.id).toBe('abc');
+      expect(component.form.id().value()).toBe('abc ');
+      typeInto(input, component.form.id().value() + 'd');
+      expect(component.form.id().value()).toBe('abc d');
+    });
+
+    it('should rebuild the draft and clear dirty state on a new sign', () => {
+      fixture.componentRef.setInput('sign', createSign());
+      fixture.detectChanges();
+      typeInto(getIdInput(), 'xyz');
+      expect(component.form().dirty()).toBe(true);
+
+      fixture.componentRef.setInput('sign', { id: 'q' });
+      fixture.detectChanges();
+      expect(component.form.id().value()).toBe('q');
+      expect(component.form().dirty()).toBe(false);
+    });
+
+    it('should save on Enter in the ID input only when valid and dirty', () => {
+      fixture.componentRef.setInput('sign', createSign());
+      fixture.detectChanges();
+      const spy = vi.fn();
+      component.sign.subscribe(spy);
+      const input = getIdInput();
+
+      // pristine: no save
+      pressEnter(input);
+      expect(spy).not.toHaveBeenCalled();
+
+      typeInto(input, 'b');
+      const event = pressEnter(input);
+      expect(event.defaultPrevented).toBe(true);
+      expect(spy).toHaveBeenCalledWith(expect.objectContaining({ id: 'b' }));
+    });
+
+    it('should not save on Enter in the description editor', () => {
+      fixture.componentRef.setInput('sign', createSign());
+      fixture.detectChanges();
+      typeInto(getIdInput(), 'b');
+      const spy = vi.fn();
+      component.sign.subscribe(spy);
+      const textarea: HTMLTextAreaElement =
+        fixture.nativeElement.querySelector('ngx-monaco-editor textarea');
+      pressEnter(textarea);
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should render no <form>', () => {
+      expect(fixture.nativeElement.querySelector('form')).toBeNull();
     });
 
     it('should emit signCancel on cancel', () => {

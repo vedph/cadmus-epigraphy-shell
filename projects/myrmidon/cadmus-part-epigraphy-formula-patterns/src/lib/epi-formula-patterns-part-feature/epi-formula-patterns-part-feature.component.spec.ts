@@ -158,13 +158,15 @@ describe('EpiFormulaPatternsPartFeatureComponent', () => {
     await setup('p1');
     const editor = getEditor();
     expect(editor.identity()).toEqual(component.identity());
-    expect(editor.patterns.value).toEqual([{ language: 'lat', tokens: [] }]);
+    expect(JSON.parse(JSON.stringify(editor.form.patterns().value()))).toEqual([{ language: 'lat', tokens: [] }]);
   });
 
   it('should track editor dirty state', async () => {
     await setup('p1');
     const editor = getEditor();
     editor.savePattern({ language: 'grc', tokens: [] });
+    // dirtyChange is emitted by an effect
+    fixture.detectChanges();
     expect(component.dirty()).toBe(true);
     expect(component.canDeactivate()).toBe(false);
   });

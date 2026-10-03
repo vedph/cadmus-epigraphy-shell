@@ -51,6 +51,29 @@ describe('EpiScriptComponent', () => {
     fixture.componentRef.setInput('featEntries', FEATURES);
   }
 
+  function getSaveButton(): HTMLButtonElement {
+    return fixture.nativeElement.querySelector(
+      'button[mattooltip="Accept changes"]',
+    );
+  }
+
+  function typeInto(input: HTMLInputElement, value: string): void {
+    input.value = value;
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+  }
+
+  function pressEnter(target: HTMLElement): KeyboardEvent {
+    const event = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      bubbles: true,
+      cancelable: true,
+    });
+    target.dispatchEvent(event);
+    fixture.detectChanges();
+    return event;
+  }
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [EpiScriptComponent],
@@ -63,8 +86,8 @@ describe('EpiScriptComponent', () => {
 
   it('should create with an invalid empty form', () => {
     expect(component).toBeTruthy();
-    expect(component.form.invalid).toBe(true);
-    expect(component.scriptCtl.hasError('required')).toBe(true);
+    expect(component.form().invalid()).toBe(true);
+    expect(component.form.script().getError('required')).toBeTruthy();
     expect(component.featFlags()).toEqual([]);
   });
 
@@ -88,28 +111,28 @@ describe('EpiScriptComponent', () => {
     ]);
   });
 
-  it('should update form from script model', () => {
+  it('should update form from script model, staying pristine', () => {
     fixture.componentRef.setInput('script', createScript());
     fixture.detectChanges();
 
-    expect(component.system.value).toBe('lat');
-    expect(component.scriptCtl.value).toBe('cap');
-    expect(component.casing.value).toBe('upper');
-    expect(component.features.value).toEqual(['serif']);
-    expect(component.note.value).toBe('a note');
-    expect(component.form.valid).toBe(true);
-    expect(component.form.pristine).toBe(true);
+    expect(component.form.system().value()).toBe('lat');
+    expect(component.form.script().value()).toBe('cap');
+    expect(component.form.casing().value()).toBe('upper');
+    expect(component.form.features().value()).toEqual(['serif']);
+    expect(component.form.note().value()).toBe('a note');
+    expect(component.form().valid()).toBe(true);
+    expect(component.form().dirty()).toBe(false);
   });
 
   it('should map missing script values to defaults', () => {
     fixture.componentRef.setInput('script', { script: '' });
     fixture.detectChanges();
 
-    expect(component.system.value).toBeNull();
-    expect(component.scriptCtl.value).toBe('');
-    expect(component.casing.value).toBeNull();
-    expect(component.features.value).toEqual([]);
-    expect(component.note.value).toBeNull();
+    expect(component.form.system().value()).toBe('');
+    expect(component.form.script().value()).toBe('');
+    expect(component.form.casing().value()).toBe('');
+    expect(component.form.features().value()).toEqual([]);
+    expect(component.form.note().value()).toBe('');
   });
 
   it('should reset form when script is cleared', () => {
@@ -118,45 +141,87 @@ describe('EpiScriptComponent', () => {
     fixture.componentRef.setInput('script', undefined);
     fixture.detectChanges();
 
-    expect(component.system.value).toBeNull();
-    expect(component.scriptCtl.value).toBe('');
-    expect(component.features.value).toEqual([]);
+    expect(component.form.system().value()).toBe('');
+    expect(component.form.script().value()).toBe('');
+    expect(component.form.features().value()).toEqual([]);
+  });
+
+  it('should rebuild the draft and clear dirty state on a new script', () => {
+    fixture.componentRef.setInput('script', createScript());
+    fixture.detectChanges();
+    typeInto(fixture.nativeElement.querySelectorAll('input')[0], 'xyz');
+    expect(component.form().dirty()).toBe(true);
+
+    fixture.componentRef.setInput('script', { script: 'unc' });
+    fixture.detectChanges();
+
+    expect(component.form.system().value()).toBe('');
+    expect(component.form.script().value()).toBe('unc');
+    expect(component.form().dirty()).toBe(false);
+  });
+
+  it('should stay dirty while typing', () => {
+    fixture.componentRef.setInput('script', createScript());
+    fixture.detectChanges();
+    const input: HTMLInputElement =
+      fixture.nativeElement.querySelectorAll('input')[0];
+    typeInto(input, 'l');
+    typeInto(input, 'la');
+    fixture.detectChanges();
+    expect(component.form().dirty()).toBe(true);
+    expect(getSaveButton().disabled).toBe(false);
+  });
+
+  it('should not adopt the features array of the bound script', () => {
+    const script = createScript();
+    fixture.componentRef.setInput('script', script);
+    fixture.detectChanges();
+    component.onFeatIdsChange(['ligature']);
+    component.save();
+    expect(script.features).toEqual(['serif']);
   });
 
   it('should update features from flags', () => {
     component.onFeatIdsChange(['serif', 'ligature']);
-    expect(component.features.value).toEqual(['serif', 'ligature']);
-    expect(component.features.dirty).toBe(true);
+    expect(component.form.features().value()).toEqual(['serif', 'ligature']);
+    expect(component.form.features().dirty()).toBe(true);
+  });
+
+  it('should stay pristine when flags emit the bound features', () => {
+    fixture.componentRef.setInput('script', createScript());
+    fixture.detectChanges();
+    component.onFeatIdsChange(['serif']);
+    expect(component.form().dirty()).toBe(false);
   });
 
   it('should validate max lengths', () => {
-    component.system.setValue('x'.repeat(51));
-    component.scriptCtl.setValue('x'.repeat(51));
-    component.casing.setValue('x'.repeat(51));
-    component.note.setValue('x'.repeat(5001));
-    expect(component.system.hasError('maxlength')).toBe(true);
-    expect(component.scriptCtl.hasError('maxlength')).toBe(true);
-    expect(component.casing.hasError('maxlength')).toBe(true);
-    expect(component.note.hasError('maxlength')).toBe(true);
+    component.form.system().value.set('x'.repeat(51));
+    component.form.script().value.set('x'.repeat(51));
+    component.form.casing().value.set('x'.repeat(51));
+    component.form.note().value.set('x'.repeat(5001));
+    expect(component.form.system().getError('maxLength')).toBeTruthy();
+    expect(component.form.script().getError('maxLength')).toBeTruthy();
+    expect(component.form.casing().getError('maxLength')).toBeTruthy();
+    expect(component.form.note().getError('maxLength')).toBeTruthy();
   });
 
   it('should show required script error', () => {
-    component.scriptCtl.markAsTouched();
+    component.form.script().markAsTouched();
     fixture.detectChanges();
     expect(getErrors()).toEqual(['script required']);
   });
 
   it('should show too long errors', () => {
-    for (const ctl of [
-      component.system,
-      component.scriptCtl,
-      component.casing,
+    for (const field of [
+      component.form.system,
+      component.form.script,
+      component.form.casing,
     ]) {
-      ctl.setValue('x'.repeat(51));
-      ctl.markAsTouched();
+      field().value.set('x'.repeat(51));
+      field().markAsTouched();
     }
-    component.note.setValue('x'.repeat(5001));
-    component.note.markAsTouched();
+    component.form.note().value.set('x'.repeat(5001));
+    component.form.note().markAsTouched();
     fixture.detectChanges();
     expect(getErrors()).toEqual([
       'system too long',
@@ -172,11 +237,11 @@ describe('EpiScriptComponent', () => {
     const spy = vi.fn();
     component.script.subscribe(spy);
 
-    component.system.setValue('grc');
-    component.scriptCtl.setValue('unc');
-    component.casing.setValue('lower');
+    component.form.system().value.set('grc');
+    component.form.script().value.set('unc');
+    component.form.casing().value.set('lower');
     component.onFeatIdsChange(['ligature']);
-    component.note.setValue('new note');
+    component.form.note().value.set('new note');
     component.save();
 
     expect(spy).toHaveBeenCalledWith({
@@ -186,18 +251,20 @@ describe('EpiScriptComponent', () => {
       features: ['ligature'],
       note: 'new note',
     });
+    expect(component.form().dirty()).toBe(false);
   });
 
-  it('should save empty optional values as undefined', () => {
+  it('should save trimmed values, and empty optional values as undefined', () => {
     fixture.componentRef.setInput('script', createScript());
     fixture.detectChanges();
     const spy = vi.fn();
     component.script.subscribe(spy);
 
-    component.system.setValue(null);
-    component.casing.setValue('');
+    component.form.system().value.set('');
+    component.form.script().value.set(' cap ');
+    component.form.casing().value.set('  ');
     component.onFeatIdsChange([]);
-    component.note.setValue(null);
+    component.form.note().value.set('');
     component.save();
 
     expect(spy).toHaveBeenCalledWith({
@@ -209,47 +276,122 @@ describe('EpiScriptComponent', () => {
     });
   });
 
-  it('should not save when invalid', () => {
+  it('should keep an in-progress edit when its own save echoes back normalized', () => {
+    fixture.componentRef.setInput('script', createScript());
+    fixture.detectChanges();
+    const input: HTMLInputElement =
+      fixture.nativeElement.querySelectorAll('input')[0];
+    typeInto(input, 'abc ');
+    component.save();
+    fixture.detectChanges();
+
+    // the model got the trimmed value...
+    expect(component.script()?.system).toBe('abc');
+    // ...but the draft still holds what the user typed
+    expect(component.form.system().value()).toBe('abc ');
+
+    // so continuing to type yields "abc d", not "abcd"
+    typeInto(input, component.form.system().value() + 'd');
+    expect(component.form.system().value()).toBe('abc d');
+  });
+
+  it('should not save when invalid, and mark it as touched', () => {
     const spy = vi.fn();
     component.script.subscribe(spy);
     component.save();
     expect(spy).not.toHaveBeenCalled();
+    expect(component.form.script().touched()).toBe(true);
   });
 
-  it('should save on submit button click', () => {
+  it('should save on save button click', () => {
     const spy = vi.fn();
     component.script.subscribe(spy);
-    const input: HTMLInputElement =
-      fixture.nativeElement.querySelectorAll('input')[1];
-    input.value = 'cap';
-    input.dispatchEvent(new Event('input'));
-    fixture.detectChanges();
+    typeInto(fixture.nativeElement.querySelectorAll('input')[1], 'cap');
 
-    const submit: HTMLButtonElement = fixture.nativeElement.querySelector(
-      'button[type="submit"]',
-    );
-    expect(submit.disabled).toBe(false);
-    submit.click();
+    const save = getSaveButton();
+    expect(save.type).toBe('button');
+    expect(save.disabled).toBe(false);
+    save.click();
 
     expect(spy).toHaveBeenCalledWith(
       expect.objectContaining({ script: 'cap' }),
     );
   });
 
-  it('should disable submit when pristine', () => {
+  it('should disable save when pristine', () => {
     fixture.componentRef.setInput('script', createScript());
     fixture.detectChanges();
-    const submit: HTMLButtonElement = fixture.nativeElement.querySelector(
-      'button[type="submit"]',
+    expect(getSaveButton().disabled).toBe(true);
+  });
+
+  it('should disable save when invalid', () => {
+    fixture.componentRef.setInput('script', createScript());
+    fixture.detectChanges();
+    typeInto(fixture.nativeElement.querySelectorAll('input')[1], '');
+    expect(component.form().dirty()).toBe(true);
+    expect(getSaveButton().disabled).toBe(true);
+  });
+
+  it('should save on Enter in a text input when valid and dirty', () => {
+    fixture.componentRef.setInput('script', createScript());
+    fixture.detectChanges();
+    const spy = vi.fn();
+    component.script.subscribe(spy);
+    const input: HTMLInputElement =
+      fixture.nativeElement.querySelectorAll('input')[0];
+    typeInto(input, 'grc');
+
+    const event = pressEnter(input);
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(spy).toHaveBeenCalledWith(
+      expect.objectContaining({ system: 'grc' }),
     );
-    expect(submit.disabled).toBe(true);
+  });
+
+  it('should not save on Enter when pristine or invalid', () => {
+    fixture.componentRef.setInput('script', createScript());
+    fixture.detectChanges();
+    const spy = vi.fn();
+    component.script.subscribe(spy);
+    const inputs: NodeListOf<HTMLInputElement> =
+      fixture.nativeElement.querySelectorAll('input');
+
+    // pristine
+    pressEnter(inputs[0]);
+    // invalid
+    typeInto(inputs[1], '');
+    pressEnter(inputs[1]);
+
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should not save on Enter in the note textarea', () => {
+    fixture.componentRef.setInput('script', createScript());
+    fixture.detectChanges();
+    const spy = vi.fn();
+    component.script.subscribe(spy);
+    const textarea: HTMLTextAreaElement =
+      fixture.nativeElement.querySelector('textarea');
+    textarea.value = 'line';
+    textarea.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+
+    const event = pressEnter(textarea);
+
+    expect(event.defaultPrevented).toBe(false);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should render no <form>', () => {
+    expect(fixture.nativeElement.querySelector('form')).toBeNull();
   });
 
   it('should emit scriptCancel on cancel', () => {
     const spy = vi.fn();
     component.scriptCancel.subscribe(spy);
     const cancel: HTMLButtonElement = fixture.nativeElement.querySelector(
-      'button[type="button"]',
+      'button[mattooltip="Discard changes"]',
     );
     cancel.click();
     expect(spy).toHaveBeenCalled();

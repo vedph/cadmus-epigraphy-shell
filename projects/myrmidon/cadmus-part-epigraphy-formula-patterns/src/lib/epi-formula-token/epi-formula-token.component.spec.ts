@@ -33,8 +33,14 @@ describe('EpiFormulaTokenComponent', () => {
     ).map((e) => e.textContent!.trim());
   }
 
+  function getSaveButton(): HTMLButtonElement {
+    return fixture.nativeElement.querySelector(
+      'button[mattooltip="Accept changes"]',
+    );
+  }
+
   function tagIds(): string[] {
-    return component.tags.value.map((t) => t.id);
+    return component.form.tags().value();
   }
 
   beforeEach(async () => {
@@ -50,9 +56,9 @@ describe('EpiFormulaTokenComponent', () => {
 
   it('should create with an invalid empty form', () => {
     expect(component).toBeTruthy();
-    expect(component.form.invalid).toBe(true);
-    expect(component.tags.value).toEqual([]);
-    expect(component.values.hasError('required')).toBe(true);
+    expect(component.form().invalid()).toBe(true);
+    expect(component.form.tags().value()).toEqual([]);
+    expect(!!component.form.values().getError('required')).toBe(true);
     expect(fixture.nativeElement.querySelector('.error').textContent).toBe(
       'no tags',
     );
@@ -68,17 +74,15 @@ describe('EpiFormulaTokenComponent', () => {
     fixture.componentRef.setInput('token', createToken());
     fixture.detectChanges();
 
-    expect(component.optional.value).toBe(true);
-    expect(component.placeholder.value).toBe(false);
-    // unknown tags get an entry with their ID as value
-    expect(component.tags.value).toEqual([
-      { id: 'n', value: 'noun' },
-      { id: 'x', value: 'x' },
-    ]);
-    expect(component.values.value).toBe('dis\ndeis');
-    expect(component.note.value).toBe('a note');
-    expect(component.form.valid).toBe(true);
-    expect(component.form.pristine).toBe(true);
+    expect(component.form.optional().value()).toBe(true);
+    expect(component.form.placeholder().value()).toBe(false);
+    expect(component.form.tags().value()).toEqual(['n', 'x']);
+    // unknown tags are labeled with their ID
+    expect(component.tagLabels()).toEqual(['noun', 'x']);
+    expect(component.form.values().value()).toBe('dis\ndeis');
+    expect(component.form.note().value()).toBe('a note');
+    expect(component.form().valid()).toBe(true);
+    expect(component.form().dirty()).toBe(false);
   });
 
   it('should render tags list', () => {
@@ -94,10 +98,10 @@ describe('EpiFormulaTokenComponent', () => {
   it('should map missing token values to defaults', () => {
     fixture.componentRef.setInput('token', { tags: [], values: [] });
     fixture.detectChanges();
-    expect(component.optional.value).toBe(false);
-    expect(component.placeholder.value).toBe(false);
-    expect(component.values.value).toBe('');
-    expect(component.note.value).toBeNull();
+    expect(component.form.optional().value()).toBe(false);
+    expect(component.form.placeholder().value()).toBe(false);
+    expect(component.form.values().value()).toBe('');
+    expect(component.form.note().value()).toBe('');
   });
 
   it('should reset form when token is cleared', () => {
@@ -105,10 +109,10 @@ describe('EpiFormulaTokenComponent', () => {
     fixture.detectChanges();
     fixture.componentRef.setInput('token', undefined);
     fixture.detectChanges();
-    expect(component.optional.value).toBe(false);
-    expect(component.tags.value).toEqual([]);
-    expect(component.values.value).toBe('');
-    expect(component.note.value).toBeNull();
+    expect(component.form.optional().value()).toBe(false);
+    expect(component.form.tags().value()).toEqual([]);
+    expect(component.form.values().value()).toBe('');
+    expect(component.form.note().value()).toBe('');
   });
 
   it('should append a picked tag only once', () => {
@@ -116,7 +120,7 @@ describe('EpiFormulaTokenComponent', () => {
     component.onEntryChange(TAGS[2]);
     component.onEntryChange(TAGS[0]);
     expect(tagIds()).toEqual(['n', 'v']);
-    expect(component.tags.dirty).toBe(true);
+    expect(component.form.tags().dirty()).toBe(true);
   });
 
   it('should remove a tag', () => {
@@ -124,9 +128,9 @@ describe('EpiFormulaTokenComponent', () => {
     fixture.detectChanges();
     component.removeTag(0);
     expect(tagIds()).toEqual(['x']);
-    expect(component.tags.dirty).toBe(true);
+    expect(component.form.tags().dirty()).toBe(true);
     component.removeTag(0);
-    expect(component.tags.invalid).toBe(true);
+    expect(component.form.tags().invalid()).toBe(true);
   });
 
   it('should move tags up and down', () => {
@@ -171,20 +175,20 @@ describe('EpiFormulaTokenComponent', () => {
   });
 
   it('should validate max lengths', () => {
-    component.values.setValue('x'.repeat(501));
-    expect(component.values.hasError('maxlength')).toBe(true);
-    component.note.setValue('x'.repeat(1001));
-    expect(component.note.hasError('maxlength')).toBe(true);
+    component.form.values().value.set('x'.repeat(501));
+    expect(!!component.form.values().getError('maxLength')).toBe(true);
+    component.form.note().value.set('x'.repeat(1001));
+    expect(!!component.form.note().getError('maxLength')).toBe(true);
   });
 
   it('should show values and note errors', () => {
-    component.values.markAsTouched();
+    component.form.values().markAsTouched();
     fixture.detectChanges();
     expect(getErrors()).toEqual(['value(s) required']);
 
-    component.values.setValue('x'.repeat(501));
-    component.note.setValue('x'.repeat(1001));
-    component.note.markAsTouched();
+    component.form.values().value.set('x'.repeat(501));
+    component.form.note().value.set('x'.repeat(1001));
+    component.form.note().markAsTouched();
     fixture.detectChanges();
     expect(getErrors()).toEqual(['value(s) too long', 'note too long']);
   });
@@ -195,10 +199,10 @@ describe('EpiFormulaTokenComponent', () => {
     const spy = vi.fn();
     component.token.subscribe(spy);
 
-    component.optional.setValue(false);
-    component.placeholder.setValue(true);
-    component.values.setValue(' a \n\n b \n');
-    component.note.setValue(' note ');
+    component.form.optional().value.set(false);
+    component.form.placeholder().value.set(true);
+    component.form.values().value.set(' a \n\n b \n');
+    component.form.note().value.set(' note ');
     component.save();
 
     expect(spy).toHaveBeenCalledWith({
@@ -215,7 +219,7 @@ describe('EpiFormulaTokenComponent', () => {
     fixture.detectChanges();
     const spy = vi.fn();
     component.token.subscribe(spy);
-    component.note.setValue('  ');
+    component.form.note().value.set('  ');
     component.save();
     expect(spy.mock.calls[0][0].note).toBeUndefined();
     expect(spy.mock.calls[0][0].isOptional).toBe(true);
@@ -224,27 +228,98 @@ describe('EpiFormulaTokenComponent', () => {
   it('should not save when invalid', () => {
     const spy = vi.fn();
     component.token.subscribe(spy);
-    component.values.setValue('x');
+    component.form.values().value.set('x');
     component.save();
     // no tags
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('should save on submit', () => {
+  it('should save on save button click', () => {
     fixture.componentRef.setInput('token', createToken());
     fixture.detectChanges();
     const spy = vi.fn();
     component.token.subscribe(spy);
     component.onEntryChange(TAGS[2]);
     fixture.detectChanges();
-    const submit: HTMLButtonElement = fixture.nativeElement.querySelector(
-      'button[type="submit"]',
-    );
-    expect(submit.disabled).toBe(false);
-    submit.click();
+    const save = getSaveButton();
+    expect(save.type).toBe('button');
+    expect(save.disabled).toBe(false);
+    save.click();
     expect(spy).toHaveBeenCalledWith(
       expect.objectContaining({ tags: ['n', 'x', 'v'] }),
     );
+  });
+
+  it('should relabel tags when their entries change, keeping edits', () => {
+    fixture.componentRef.setInput('token', createToken());
+    fixture.detectChanges();
+    component.onEntryChange(TAGS[2]);
+    fixture.componentRef.setInput('tagEntries', [
+      ...TAGS,
+      { id: 'x', value: 'other' },
+    ]);
+    fixture.detectChanges();
+    expect(component.tagLabels()).toEqual(['noun', 'other', 'verb']);
+    expect(tagIds()).toEqual(['n', 'x', 'v']);
+    expect(component.form().dirty()).toBe(true);
+  });
+
+  it('should disable save when pristine', () => {
+    fixture.componentRef.setInput('token', createToken());
+    fixture.detectChanges();
+    expect(getSaveButton().disabled).toBe(true);
+  });
+
+  it('should mark as touched when saving an invalid form', () => {
+    component.save();
+    expect(component.form.values().touched()).toBe(true);
+  });
+
+  it('should keep an in-progress edit when its own save echoes back normalized', () => {
+    fixture.componentRef.setInput('token', createToken());
+    fixture.detectChanges();
+    const textarea: HTMLTextAreaElement =
+      fixture.nativeElement.querySelector('textarea');
+    textarea.value = 'dis\nabc ';
+    textarea.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    component.save();
+    fixture.detectChanges();
+
+    expect(component.token()?.values).toEqual(['dis', 'abc']);
+    expect(component.form.values().value()).toBe('dis\nabc ');
+    textarea.value = component.form.values().value() + 'd';
+    textarea.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(component.form.values().value()).toBe('dis\nabc d');
+  });
+
+  it('should rebuild the draft and clear dirty state on a new token', () => {
+    fixture.componentRef.setInput('token', createToken());
+    fixture.detectChanges();
+    component.onEntryChange(TAGS[2]);
+    expect(component.form().dirty()).toBe(true);
+    fixture.componentRef.setInput('token', { tags: ['v'], values: ['x'] });
+    fixture.detectChanges();
+    expect(tagIds()).toEqual(['v']);
+    expect(component.form().dirty()).toBe(false);
+  });
+
+  it('should not adopt the tags of the bound token', () => {
+    const token = createToken();
+    fixture.componentRef.setInput('token', token);
+    fixture.detectChanges();
+    component.onEntryChange(TAGS[2]);
+    component.save();
+    expect(token.tags).toEqual(['n', 'x']);
+  });
+
+  it('should render no <form> of its own', () => {
+    // the thesaurus tree renders its own filter form
+    const forms = Array.from(
+      fixture.nativeElement.querySelectorAll('form') as NodeListOf<HTMLElement>,
+    );
+    expect(forms.every((f) => f.closest('cadmus-thesaurus-tree'))).toBe(true);
   });
 
   it('should emit editorClose on cancel', () => {

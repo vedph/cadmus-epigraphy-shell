@@ -1,18 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  OnInit,
+  computed,
+  inject,
+  linkedSignal,
   signal,
 } from '@angular/core';
-import {
-  FormControl,
-  FormBuilder,
-  FormGroup,
-  UntypedFormGroup,
-  ReactiveFormsModule,
-} from '@angular/forms';
-
 import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -20,23 +15,20 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { take } from 'rxjs';
 
-import { deepCopy, NgxToolsValidators } from '@myrmidon/ngx-tools';
+import { NgxToolsSignalValidators } from '@myrmidon/ngx-tools';
 import { DialogService } from '@myrmidon/ngx-mat-tools';
-import { AuthJwtService } from '@myrmidon/auth-jwt-login';
 import {
   CloseSaveButtonsComponent,
   ModelEditorComponentBase,
   HelpLinkComponent,
+  copyFormValue,
 } from '@myrmidon/cadmus-ui';
-import {
-  ThesauriSet,
-  ThesaurusEntry,
-  EditedObject,
-} from '@myrmidon/cadmus-core';
+import { ThesaurusEntry } from '@myrmidon/cadmus-core';
 import { PhysicalSizePipe } from '@myrmidon/cadmus-mat-physical-size';
 
 import {
@@ -45,6 +37,16 @@ import {
   EpiSupportFrrPart,
 } from '../epi-support-frr-part';
 import { EpiSupportFrComponent } from '../epi-support-fr/epi-support-fr.component';
+
+interface EpiSupportFrrPartControls {
+  fragments: EpiSupportFr[];
+}
+
+function toDraft(part?: EpiSupportFrrPart | null): EpiSupportFrrPartControls {
+  return {
+    fragments: copyFormValue(part?.fragments || []),
+  };
+}
 
 /**
  * EpiSupportFrrPart editor component.
@@ -56,8 +58,6 @@ import { EpiSupportFrComponent } from '../epi-support-fr/epi-support-fr.componen
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    CommonModule,
-    ReactiveFormsModule,
     MatButtonModule,
     MatCardModule,
     MatExpansionModule,
@@ -74,107 +74,47 @@ import { EpiSupportFrComponent } from '../epi-support-fr/epi-support-fr.componen
   templateUrl: './epi-support-frr-part.component.html',
   styleUrl: './epi-support-frr-part.component.scss',
 })
-export class EpiSupportFrrPartComponent
-  extends ModelEditorComponentBase<EpiSupportFrrPart>
-  implements OnInit
-{
+export class EpiSupportFrrPartComponent extends ModelEditorComponentBase<EpiSupportFrrPart> {
+  private readonly _dialogService = inject(DialogService);
+  private readonly _snackbar = inject(MatSnackBar);
+
   public readonly edited = signal<EpiSupportFr | undefined>(undefined);
   public readonly editedIndex = signal<number>(-1);
 
+  private readonly _draft = linkedSignal(() => toDraft(this.data()?.value));
+  public readonly form = this.createForm(this._draft, (p) => {
+    // at least 1 entry
+    NgxToolsSignalValidators.strictMinLength(p.fragments, 1);
+  });
+
   // physical-size-units
-  public readonly unitEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+  public readonly unitEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['physical-size-units']?.entries,
+  );
   // physical-size-tags
-  public readonly tagEntries = signal<ThesaurusEntry[] | undefined>(undefined);
+  public readonly tagEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['physical-size-tags']?.entries,
+  );
   // physical-size-dim-tags
-  public readonly dimTagEntries = signal<ThesaurusEntry[] | undefined>(
-    undefined,
+  public readonly dimTagEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['physical-size-dim-tags']?.entries,
   );
   // physical-grid-presets
-  public readonly gridPresetEntries = signal<ThesaurusEntry[] | undefined>(
-    undefined,
+  public readonly gridPresetEntries = computed<ThesaurusEntry[] | undefined>(
+    () => this.data()?.thesauri?.['physical-grid-presets']?.entries,
   );
 
-  public fragments: FormControl<EpiSupportFr[]>;
-
-  constructor(
-    authService: AuthJwtService,
-    formBuilder: FormBuilder,
-    private _dialogService: DialogService,
-  ) {
-    super(authService, formBuilder);
-    // form
-    this.fragments = formBuilder.control([], {
-      // at least 1 entry
-      validators: NgxToolsValidators.strictMinLengthValidator(1),
-      nonNullable: true,
-    });
-  }
-
-  public override ngOnInit(): void {
-    super.ngOnInit();
-  }
-
-  protected buildForm(formBuilder: FormBuilder): FormGroup | UntypedFormGroup {
-    return formBuilder.group({
-      entries: this.fragments,
-    });
-  }
-
-  private updateThesauri(thesauri: ThesauriSet): void {
-    let key = 'physical-size-units';
-    if (this.hasThesaurus(key)) {
-      this.unitEntries.set(thesauri[key].entries);
-    } else {
-      this.unitEntries.set(undefined);
-    }
-
-    key = 'physical-size-tags';
-    if (this.hasThesaurus(key)) {
-      this.tagEntries.set(thesauri[key].entries);
-    } else {
-      this.tagEntries.set(undefined);
-    }
-
-    key = 'physical-size-dim-tags';
-    if (this.hasThesaurus(key)) {
-      this.dimTagEntries.set(thesauri[key].entries);
-    } else {
-      this.dimTagEntries.set(undefined);
-    }
-
-    key = 'physical-grid-presets';
-    if (this.hasThesaurus(key)) {
-      this.gridPresetEntries.set(thesauri[key].entries);
-    } else {
-      this.gridPresetEntries.set(undefined);
-    }
-  }
-
-  private updateForm(part?: EpiSupportFrrPart | null): void {
-    if (!part) {
-      this.form.reset();
-      return;
-    }
-    this.fragments.setValue(part.fragments || []);
-    this.form.markAsPristine();
-  }
-
-  protected override onDataSet(data?: EditedObject<EpiSupportFrrPart>): void {
-    // thesauri
-    if (data?.thesauri) {
-      this.updateThesauri(data.thesauri);
-    }
-
-    // form
-    this.updateForm(data?.value);
-  }
-
   protected getValue(): EpiSupportFrrPart {
-    let part = this.getEditedPart(
+    const part = this.getEditedPart(
       EPI_SUPPORT_FRR_PART_TYPEID,
     ) as EpiSupportFrrPart;
-    part.fragments = this.fragments.value || [];
+    part.fragments = copyFormValue(this._draft().fragments);
     return part;
+  }
+
+  private setFragments(fragments: EpiSupportFr[]): void {
+    this.form.fragments().value.set(fragments);
+    this.form.fragments().markAsDirty();
   }
 
   public addFr(): void {
@@ -186,7 +126,7 @@ export class EpiSupportFrrPartComponent
 
   public editFr(entry: EpiSupportFr, index: number): void {
     this.editedIndex.set(index);
-    this.edited.set(deepCopy(entry));
+    this.edited.set(copyFormValue(entry));
   }
 
   public closeFr(): void {
@@ -194,23 +134,27 @@ export class EpiSupportFrrPartComponent
     this.edited.set(undefined);
   }
 
+  /**
+   * Save the edited fragment. A fragment whose ID belongs to another
+   * fragment is rejected with an error message, leaving the fragment editor
+   * open: the user must change its ID, or delete the other fragment.
+   */
   public saveFr(fr: EpiSupportFr): void {
-    const fragments = [...this.fragments.value];
-
-    // if fr.id already exists, replace it
-    const i = fragments.findIndex((f) => f.id === fr.id);
-    if (i > -1) {
-      this.editedIndex.set(i);
+    const fragments = [...this.form.fragments().value()];
+    if (fragments.some((f, i) => i !== this.editedIndex() && f.id === fr.id)) {
+      this._snackbar.open(
+        `A fragment with ID "${fr.id}" already exists: change the ID or delete that fragment.`,
+        'OK',
+        { duration: 5000 },
+      );
+      return;
     }
-
     if (this.editedIndex() === -1) {
-      fragments.push(fr);
+      fragments.push(copyFormValue(fr));
     } else {
-      fragments.splice(this.editedIndex(), 1, fr);
+      fragments.splice(this.editedIndex(), 1, copyFormValue(fr));
     }
-    this.fragments.setValue(fragments);
-    this.fragments.markAsDirty();
-    this.fragments.updateValueAndValidity();
+    this.setFragments(fragments);
     this.closeFr();
   }
 
@@ -226,11 +170,9 @@ export class EpiSupportFrrPartComponent
             // keep the edited index pointing to the edited fragment
             this.editedIndex.set(this.editedIndex() - 1);
           }
-          const fragments = [...this.fragments.value];
+          const fragments = [...this.form.fragments().value()];
           fragments.splice(index, 1);
-          this.fragments.setValue(fragments);
-          this.fragments.markAsDirty();
-          this.fragments.updateValueAndValidity();
+          this.setFragments(fragments);
         }
       });
   }
@@ -251,27 +193,23 @@ export class EpiSupportFrrPartComponent
     if (index < 1) {
       return;
     }
-    const fr = this.fragments.value[index];
-    const fragments = [...this.fragments.value];
+    const fragments = [...this.form.fragments().value()];
+    const fr = fragments[index];
     fragments.splice(index, 1);
     fragments.splice(index - 1, 0, fr);
     this.swapEditedIndex(index, index - 1);
-    this.fragments.setValue(fragments);
-    this.fragments.markAsDirty();
-    this.fragments.updateValueAndValidity();
+    this.setFragments(fragments);
   }
 
   public moveFrDown(index: number): void {
-    if (index + 1 >= this.fragments.value.length) {
+    const fragments = [...this.form.fragments().value()];
+    if (index + 1 >= fragments.length) {
       return;
     }
-    const fr = this.fragments.value[index];
-    const fragments = [...this.fragments.value];
+    const fr = fragments[index];
     fragments.splice(index, 1);
     fragments.splice(index + 1, 0, fr);
     this.swapEditedIndex(index, index + 1);
-    this.fragments.setValue(fragments);
-    this.fragments.markAsDirty();
-    this.fragments.updateValueAndValidity();
+    this.setFragments(fragments);
   }
 }

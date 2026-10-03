@@ -1,5 +1,8 @@
 # History
 
+## 16.0.0
+
+- 2026-10-03: ⚠️ migrated to signal forms bumping major versions to 16.
 - 2026-10-02:
   - updated Angular and packages.
   - ⚠️ migrated library tests from Karma/Jasmine to Vitest (`@angular/build:unit-test`, jsdom), removing all Karma/Jasmine packages. Set pnpm `extendNodePath: false` so that the test builder does not pick up a transitive `zone.js` (the workspace is zoneless). Added shared `test-setup.ts` (jsdom polyfills) and `test:lib`/`test:all` scripts.

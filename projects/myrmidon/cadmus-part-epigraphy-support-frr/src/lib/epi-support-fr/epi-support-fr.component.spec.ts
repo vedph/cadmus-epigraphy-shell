@@ -7,6 +7,12 @@ import { EpiSupportFr, EpiSupportFrCellMapping } from '../epi-support-frr-part';
 import { EpiSupportFrCellMappingComponent } from '../epi-support-fr-cell-mapping/epi-support-fr-cell-mapping.component';
 import { EpiSupportFrComponent } from './epi-support-fr.component';
 
+// the form tags the objects in its arrays with an identity Symbol:
+// compare their plain data only
+function plain<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value));
+}
+
 const PRESETS: ThesaurusEntry[] = [
   { id: 'small', value: 'small: 2x2' },
   { id: 'large', value: 'large: 4x3' },
@@ -65,7 +71,7 @@ describe('EpiSupportFrComponent', () => {
   }
 
   function locations(): string[] {
-    return component.mappings.value.map((m) => m.location);
+    return component.form.mappings().value().map((m) => m.location);
   }
 
   beforeEach(async () => {
@@ -83,9 +89,9 @@ describe('EpiSupportFrComponent', () => {
 
   it('should create with an invalid empty form', () => {
     expect(component).toBeTruthy();
-    expect(component.form.invalid).toBe(true);
-    expect(component.id.hasError('required')).toBe(true);
-    expect(component.location.hasError('required')).toBe(true);
+    expect(component.form().invalid()).toBe(true);
+    expect(!!component.form.id().getError('required')).toBe(true);
+    expect(!!component.form.location().getError('required')).toBe(true);
     expect(component.gridPresets()).toBeUndefined();
   });
 
@@ -101,11 +107,11 @@ describe('EpiSupportFrComponent', () => {
 
   it('should update form from fragment', () => {
     setFragment(createFragment());
-    expect(component.id.value).toBe('fr1');
-    expect(component.shelfmark.value).toBe('inv. 123');
-    expect(component.lost.value).toBe(true);
-    expect(component.size.value).toEqual(createFragment().size);
-    expect(component.location.value).toEqual({
+    expect(component.form.id().value()).toBe('fr1');
+    expect(component.form.shelfmark().value()).toBe('inv. 123');
+    expect(component.form.lost().value()).toBe(true);
+    expect(plain(component.form.size().value())).toEqual(createFragment().size);
+    expect(plain(component.form.location().value())).toEqual({
       rows: 2,
       columns: 3,
       coords: [
@@ -113,33 +119,33 @@ describe('EpiSupportFrComponent', () => {
         { row: 1, column: 2 },
       ],
     });
-    expect(component.mappings.value).toEqual(createMappings());
-    expect(component.note.value).toBe('a note');
-    expect(component.form.valid).toBe(true);
-    expect(component.form.pristine).toBe(true);
+    expect(plain(component.form.mappings().value())).toEqual(createMappings());
+    expect(component.form.note().value()).toBe('a note');
+    expect(component.form().valid()).toBe(true);
+    expect(component.form().dirty()).toBe(false);
   });
 
   it('should map missing fragment values to defaults', () => {
     setFragment({ id: 'x' });
-    expect(component.shelfmark.value).toBeNull();
-    expect(component.lost.value).toBe(false);
-    expect(component.size.value).toBeNull();
-    expect(component.location.value).toEqual({
+    expect(component.form.shelfmark().value()).toBe('');
+    expect(component.form.lost().value()).toBe(false);
+    expect(component.form.size().value()).toBeNull();
+    expect(plain(component.form.location().value())).toEqual({
       rows: 0,
       columns: 0,
       coords: [],
     });
-    expect(component.mappings.value).toEqual([]);
-    expect(component.note.value).toBeNull();
+    expect(plain(component.form.mappings().value())).toEqual([]);
+    expect(component.form.note().value()).toBe('');
   });
 
   it('should reset form when fragment is cleared', () => {
     setFragment(createFragment());
     setFragment(undefined);
-    expect(component.id.value).toBe('');
-    expect(component.lost.value).toBe(false);
-    expect(component.location.value).toBeNull();
-    expect(component.mappings.value).toEqual([]);
+    expect(component.form.id().value()).toBe('');
+    expect(component.form.lost().value()).toBe(false);
+    expect(component.form.location().value()).toBeNull();
+    expect(plain(component.form.mappings().value())).toEqual([]);
   });
 
   it('should render mappings', () => {
@@ -155,8 +161,8 @@ describe('EpiSupportFrComponent', () => {
   it('should update size', () => {
     const size = { w: { value: 1, unit: 'mm' } };
     component.onSizeChange(size);
-    expect(component.size.value).toEqual(size);
-    expect(component.size.dirty).toBe(true);
+    expect(plain(component.form.size().value())).toEqual(size);
+    expect(component.form.size().dirty()).toBe(true);
   });
 
   it('should update location', () => {
@@ -166,27 +172,27 @@ describe('EpiSupportFrComponent', () => {
       coords: [{ row: 1, column: 1 }],
     };
     component.onLocationChange(location);
-    expect(component.location.value).toEqual(location);
-    expect(component.location.dirty).toBe(true);
+    expect(plain(component.form.location().value())).toEqual(location);
+    expect(component.form.location().dirty()).toBe(true);
   });
 
   it('should validate max lengths', () => {
-    component.id.setValue('x'.repeat(101));
-    component.shelfmark.setValue('x'.repeat(101));
-    component.note.setValue('x'.repeat(1001));
-    expect(component.id.hasError('maxlength')).toBe(true);
-    expect(component.shelfmark.hasError('maxlength')).toBe(true);
-    expect(component.note.hasError('maxlength')).toBe(true);
+    component.form.id().value.set('x'.repeat(101));
+    component.form.shelfmark().value.set('x'.repeat(101));
+    component.form.note().value.set('x'.repeat(1001));
+    expect(!!component.form.id().getError('maxLength')).toBe(true);
+    expect(!!component.form.shelfmark().getError('maxLength')).toBe(true);
+    expect(!!component.form.note().getError('maxLength')).toBe(true);
   });
 
   it('should show errors', () => {
-    component.id.markAsTouched();
+    component.form.id().markAsTouched();
     fixture.detectChanges();
     expect(getErrors()).toEqual(['ID required']);
 
-    component.id.setValue('x'.repeat(101));
-    component.shelfmark.setValue('x'.repeat(101));
-    component.shelfmark.markAsTouched();
+    component.form.id().value.set('x'.repeat(101));
+    component.form.shelfmark().value.set('x'.repeat(101));
+    component.form.shelfmark().markAsTouched();
     fixture.detectChanges();
     expect(getErrors()).toEqual(['ID too long', 'shelfmark too long']);
   });
@@ -205,9 +211,9 @@ describe('EpiSupportFrComponent', () => {
     fixture.detectChanges();
     expect(component.editedIndex()).toBe(1);
     expect(component.editedMapping()).toEqual(createMappings()[1]);
-    expect(component.editedMapping()).not.toBe(component.mappings.value[1]);
+    expect(component.editedMapping()).not.toBe(component.form.mappings().value()[1]);
     expect(getMappingRows()[1].classList.contains('selected')).toBe(true);
-    expect(getMappingEditor()!.location.value).toBe('B1');
+    expect(getMappingEditor()!.form.location().value()).toBe('B1');
   });
 
   it('should close mapping editor on its cancel', () => {
@@ -224,7 +230,7 @@ describe('EpiSupportFrComponent', () => {
     component.addMapping();
     component.onMappingChange({ location: 'C2' });
     expect(locations()).toEqual(['A1', 'B1', 'A2', 'C2']);
-    expect(component.mappings.dirty).toBe(true);
+    expect(component.form.mappings().dirty()).toBe(true);
     expect(component.editedMapping()).toBeUndefined();
   });
 
@@ -241,10 +247,10 @@ describe('EpiSupportFrComponent', () => {
     component.editMapping(0);
     fixture.detectChanges();
     const editor = getMappingEditor()!;
-    editor.tailText.setValue('end');
+    editor.form.tailText().value.set('end');
     editor.save();
     fixture.detectChanges();
-    expect(component.mappings.value[0]).toEqual({
+    expect(plain(component.form.mappings().value()[0])).toEqual({
       location: 'A1',
       headText: 'dis',
       headTextLoc: undefined,
@@ -258,7 +264,7 @@ describe('EpiSupportFrComponent', () => {
     setFragment(createFragment());
     component.deleteMapping(1);
     expect(locations()).toEqual(['A1', 'A2']);
-    expect(component.mappings.dirty).toBe(true);
+    expect(component.form.mappings().dirty()).toBe(true);
   });
 
   it('should close mapping editor when deleting the edited mapping', () => {
@@ -291,8 +297,8 @@ describe('EpiSupportFrComponent', () => {
     setFragment(createFragment());
     const spy = vi.fn();
     component.fragment.subscribe(spy);
-    component.id.setValue(' fr2 ');
-    component.lost.setValue(false);
+    component.form.id().value.set(' fr2 ');
+    component.form.lost().value.set(false);
     component.onLocationChange({
       rows: 3,
       columns: 3,
@@ -301,7 +307,7 @@ describe('EpiSupportFrComponent', () => {
         { row: 3, column: 3 },
       ],
     });
-    component.note.setValue(' note ');
+    component.form.note().value.set(' note ');
     component.save();
     expect(spy).toHaveBeenCalledWith({
       id: 'fr2',
@@ -320,8 +326,8 @@ describe('EpiSupportFrComponent', () => {
     setFragment({ id: 'x', rowCount: 1, columnCount: 1, location: 'A1' });
     const spy = vi.fn();
     component.fragment.subscribe(spy);
-    component.shelfmark.setValue('  ');
-    component.note.setValue(' ');
+    component.form.shelfmark().value.set('  ');
+    component.form.note().value.set(' ');
     component.save();
     expect(spy).toHaveBeenCalledWith({
       id: 'x',
@@ -339,7 +345,7 @@ describe('EpiSupportFrComponent', () => {
   it('should not save when invalid', () => {
     const spy = vi.fn();
     component.fragment.subscribe(spy);
-    component.id.setValue('x');
+    component.form.id().value.set('x');
     component.save();
     // no location
     expect(spy).not.toHaveBeenCalled();
@@ -349,15 +355,173 @@ describe('EpiSupportFrComponent', () => {
     setFragment(createFragment());
     const spy = vi.fn();
     component.fragment.subscribe(spy);
-    component.id.setValue('fr3');
-    component.id.markAsDirty();
+    component.form.id().value.set('fr3');
+    component.form.id().markAsDirty();
     fixture.detectChanges();
     const submit: HTMLButtonElement = fixture.nativeElement.querySelector(
-      '#toolbar button[type="submit"]',
+      '#toolbar button[mattooltip="Save fragment"]',
     );
     expect(submit.disabled).toBe(false);
     submit.click();
     expect(spy).toHaveBeenCalledWith(expect.objectContaining({ id: 'fr3' }));
+  });
+
+  it('should use a plain save button disabled when pristine', () => {
+    setFragment(createFragment());
+    const save: HTMLButtonElement = fixture.nativeElement.querySelector(
+      '#toolbar button[mattooltip="Save fragment"]',
+    );
+    expect(save.type).toBe('button');
+    expect(save.disabled).toBe(true);
+  });
+
+  it('should mark as touched when saving an invalid form', () => {
+    component.save();
+    expect(component.form.id().touched()).toBe(true);
+  });
+
+  it('should stay pristine when children emit the bound values', () => {
+    setFragment(createFragment());
+    // normalized copies, as the autosaving size editor emits
+    component.onSizeChange({
+      w: { value: 20, unit: 'cm', tag: undefined },
+      h: { value: 30, unit: 'cm', tag: undefined },
+      tag: undefined,
+    });
+    component.onLocationChange({
+      rows: 2,
+      columns: 3,
+      coords: [
+        { row: 1, column: 1 },
+        { row: 1, column: 2 },
+      ],
+    });
+    expect(component.form().dirty()).toBe(false);
+  });
+
+  it('should not tag or change the bound fragment', () => {
+    const fr = createFragment();
+    setFragment(fr);
+    component.editMapping(0);
+    expect(Object.getOwnPropertySymbols(component.editedMapping()!)).toEqual(
+      [],
+    );
+    component.onMappingChange({ location: 'Z1' });
+    component.save();
+    expect(fr.cellMappings).toEqual(createMappings());
+    for (const m of fr.cellMappings!) {
+      expect(Object.getOwnPropertySymbols(m)).toEqual([]);
+    }
+  });
+
+  it('should save a fragment whose mappings carry no Symbol tags', () => {
+    setFragment(createFragment());
+    const spy = vi.fn();
+    component.fragment.subscribe(spy);
+    component.deleteMapping(0);
+    component.save();
+    const saved = spy.mock.calls[0][0] as EpiSupportFr;
+    for (const m of saved.cellMappings!) {
+      expect(Object.getOwnPropertySymbols(m)).toEqual([]);
+    }
+  });
+
+  it('should keep an in-progress edit when its own save echoes back normalized', () => {
+    setFragment(createFragment());
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      '#general input[matInput]',
+    );
+    input.value = 'abc ';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    component.save();
+    fixture.detectChanges();
+
+    expect(component.fragment()?.id).toBe('abc');
+    expect(component.form.id().value()).toBe('abc ');
+    input.value = component.form.id().value() + 'd';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(component.form.id().value()).toBe('abc d');
+  });
+
+  it('should save on Enter in its own text input when valid and dirty', () => {
+    setFragment(createFragment());
+    const spy = vi.fn();
+    component.fragment.subscribe(spy);
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      '#general input[matInput]',
+    );
+    input.value = 'fr9';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    input.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining({ id: 'fr9' }));
+  });
+
+  it('should save only the mapping on Enter in the mapping editor', () => {
+    setFragment(createFragment());
+    // make the fragment itself dirty and valid, so that it could be saved
+    component.form.note().value.set('changed');
+    component.form.note().markAsDirty();
+    const spy = vi.fn();
+    component.fragment.subscribe(spy);
+    component.editMapping(0);
+    fixture.detectChanges();
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      'cadmus-epi-support-fr-cell-mapping input',
+    );
+    input.value = 'C9';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    input.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    fixture.detectChanges();
+
+    expect(locations()[0]).toBe('C9');
+    expect(getMappingEditor()).toBeUndefined();
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should not save the fragment on Enter in a pristine mapping editor', () => {
+    setFragment(createFragment());
+    component.form.note().value.set('changed');
+    component.form.note().markAsDirty();
+    const spy = vi.fn();
+    component.fragment.subscribe(spy);
+    component.editMapping(0);
+    fixture.detectChanges();
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      'cadmus-epi-support-fr-cell-mapping input',
+    );
+    input.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    expect(spy).not.toHaveBeenCalled();
+    expect(getMappingEditor()).toBeTruthy();
+  });
+
+  it('should render no <form>, also with the mapping editor open', () => {
+    setFragment(createFragment());
+    component.editMapping(0);
+    fixture.detectChanges();
+    expect(getMappingEditor()).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('form')).toBeNull();
   });
 
   it('should emit fragmentCancel on cancel', () => {
@@ -365,7 +529,7 @@ describe('EpiSupportFrComponent', () => {
     component.fragmentCancel.subscribe(spy);
     (
       fixture.nativeElement.querySelector(
-        '#toolbar button[type="button"]',
+        '#toolbar button[mattooltip="Discard fragment"]',
       ) as HTMLButtonElement
     ).click();
     expect(spy).toHaveBeenCalled();
